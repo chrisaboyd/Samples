@@ -1,0 +1,41 @@
+{
+  "deletionTimestamp": null,
+  "description": null,
+  "dirSyncEnabled": null,
+  "displayName": "ollie Assignment Group",
+  "lastDirSyncTime": null,
+  "mail": null,
+  "mailEnabled": false,
+  "mailNickname": "olliegroup",
+  "objectId": "1c7e672b-c29e-44ea-99ca-da0e636d445a",
+  "objectType": "Group",
+  "odata.metadata": "https://graph.windows.net/ff5cf5e9-1096-4567-b4b8-f439670927f5/$metadata#directoryObjects/@Element",
+  "odata.type": "Microsoft.DirectoryServices.Group",
+  "onPremisesDomainName": null,
+  "onPremisesNetBiosName": null,
+  "onPremisesSamAccountName": null,
+  "onPremisesSecurityIdentifier": null,
+  "provisioningErrors": [],
+  "proxyAddresses": [],
+  "securityEnabled": true
+}
+Attempt #1 - testuser1@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:20:51 - Success
+Attempt #1 - testuser2@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:20:56 - Success
+Attempt #1 - testuser3@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:21:00 - Success
+Attempt #1 - testuser4@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:21:03 - Success
+Attempt #1 - testuser5@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:21:06 - Success
+Attempt #1 - testuser6@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:21:10 - Success
+Attempt #1 - testuser7@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:21:14 - Success
+Attempt #1 - testuser8@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:21:16 - Success
+Attempt #1 - testuser9@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:21:19 - Success
+Attempt #1 - testuser10@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:21:22 - Success
+Attempt #1 - testuser11@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:21:26 - Success
+Attempt #1 - testuser12@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:21:29 - Success
+Attempt #1 - testuser13@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:21:33 - Success
+Attempt #1 - testuser14@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:21:58 - Success
+Attempt #1 - testuser15@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:22:01 - Success
+Attempt #1 - testuser16@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:22:04 - Success
+Attempt #1 - testuser17@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:22:07 - Success
+Attempt #1 - testuser18@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:22:12 - Success
+Attempt #1 - testuser19@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:22:15 - Success
+Attempt #1 - testuser20@chimpraceraim.onmicrosoft.com - Mar 29 2022 - 15:22:18 - Success
