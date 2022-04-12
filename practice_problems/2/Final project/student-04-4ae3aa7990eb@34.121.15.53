@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+
+import operator
+import os
+import re
+
+userDict = {}
+errorDict = {}
+match_error = r'(INFO|ERROR)'
+
+#with open("/home/student-04-70301b588226/syslog.log", "r") as f:
+f = open("/home/student-04-70301b588226/syslog.log", "r")
+for line in f.readlines():
+    line = line.strip()
+    try:
+        if re.search(match_error, line):
+            user = re.search(r'(\(\w+\))', line)
+            newUser = re.sub("[()]", "", user.group(0))
+            userDict[newUser] = userDict.get(newUser, 0) + 1
+    except AttributeError:
+        pass
+    try:
+        test_value = re.search(match_error, line)
+        if test_value.group(0) == "ERROR":
+            match = r"ERROR ([\w+ ']*)"
+            find_error = re.search(match,line).group(1)
+            errorDict[find_error] = errorDict.get(find_error, 0) + 1
+    except AttributeError:
+         pass
+f.close()
+
+sortedUser = sorted(userDict.items(), key=operator.itemgetter(0))
+
+g = open("/home/student-04-70301b588226/userStats.csv", "w")
+for key in sortedUser:
+    g.write(str(key[0]) + ", " + str(key[1])+ "\n")
+g.close()
+#def user_stats(sortedUser):
+#    with open("userStats.csv", "w") as g:
+#        for item in sortedUser:
+#            g.write("{}, {}".format(item(0),item(1))
+#g.close()
+
+#def user_stats(sortedUser):
+#    with open ("userStats.csv", "w") as f:
+#        for item in sortedUser:
+#            f.write("{}, {}".format(item(0), item(1))
+#    f.close()
+
+#def error_stats(sortedError):
+#    with open("errorStats.csv", "w") as e:
+#        for item in sortedError:
+#            e.write("{}, {}".format(item(0),item(1))
+#    e.close()
+
+#sortedError = sorted(errorDict.items(), key=operator.itemgetter(1), reverse=True)
+
+
+#with open("/home/student-04-70301b588226/userStats.csv", "w") as g:
+#g = open("/home/student-04-70301b588226/userStats.csv", "w")
+#for item in userDict:
+#    g.write("{}, {}".format(item(0),item(1))
+#g.close()

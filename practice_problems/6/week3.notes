@@ -1,0 +1,32 @@
+#1/usr/bin/env python3
+
+from email.message import EmailMessage
+message = EmailMessage()
+message['From'] = "chris.allan.boyd@gmail.com"
+message['To'] = "clarissa.rebman@gmail.com"
+message['Subject'] = "This is a test."
+body = """
+CONTENTS of the email
+"""
+message.set_content(body)
+
+print (message)
+
+
+########
+# Sending through SMTP
+########
+import smtplib
+mail_server = smtplib.SMTP_SSL('smtp.example.com')
+
+import getpass
+mail_pass = getpass.getpass('Password? ')
+mail_server.login(sender, mail_pass)
+mail_server.send_message(message)
+mail_server.quit()
+
+
+
+
+###### PDF
+
