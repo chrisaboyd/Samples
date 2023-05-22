@@ -6,6 +6,7 @@ Security Onion is a free and open source Linux distribution for threat hunting, 
 It includes Elasticsearch, Logstash, Kibana, Snort, Suricata, Zeek, Wazuh, Sguil, Squert, NetworkMiner, and many other security tools.
 
 ```
+[Documentation Reference](https://docs.securityonion.net/en/2.3/)
 # Update the system
 sudo soup
 
