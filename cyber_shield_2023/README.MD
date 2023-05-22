@@ -78,70 +78,20 @@ Kali Linux is a Debian-based Linux distribution aimed at advanced Penetration Te
 
 | Command | Detail |
 | --- | --- |
-| `sudo soup` | Update the system |
-| `so-sensor-status` | Check sensor stats |
-| `sudo so-status` | Check status of all Security Onion services |
-| `sguil-client` | Query logs using Sguil |
-| `squert` | Start Squert web interface |
-| `so-kibana` | Access Kibana interface |
-| `so-capme` | Access CapMe for PCAP retrieval |
-| `networkminer` | Start NetworkMiner |
-| `zless /nsm/zeek/logs/current/conn.log` | Accessing Zeek logs |
-| `sudo so-zeek-stop` | Stopping Zeek |
-| `sudo so-zeek-start` | Starting Zeek |
-| `suricata -c /etc/suricata/suricata.yaml -i eth0` | Run Suricata in IDS mode |
-| `sudo suricata-update` | Update Suricata rules |
-| `sudo systemctl status suricata` | Check the status of Suricata |
-| `tail -f /var/log/suricata/fast.log` | Tail Suricata fast.log file |
-```
-# Update package lists for upgrades and new package installations
-sudo apt update
-
-# Upgrade all upgradable packages
-sudo apt upgrade
-
-# Start the Metasploit Framework
-msfconsole
-
-# Start Wireshark
-sudo wireshark
-
-# Launch Burp Suite
-burpsuite
-
-# Use Nmap to scan a host/network
-nmap <host>
-
-# Use SQLMap to automate SQL injection discovery and exploitation
-sqlmap
-
-# Capture network packets (needs interface in monitor mode)
-airodump-ng <interface>
-
-# Start the Aircrack-ng tool to crack wireless networks
-aircrack-ng
-
-# Use Hydra for brute forcing
-hydra
-
-# Sniffing and spoofing with Ettercap
-sudo ettercap -G
-
-# File and directory brute forcing with DirBuster
-dirbuster
-
-# SSL/TLS analysis with SSLyze
-sslyze
-
-# Use Nikto for web server scanning
-nikto -h <host>
-
-# Use John the Ripper for password cracking
-john
-
-# DNS reconnaissance with dnsrecon
-dnsrecon -d <domain>
-```
+| `msfconsole` | Start the Metasploit Framework |
+| `sudo wireshark` | Start Wireshark |
+| `burpsuite` | Launch Burp Suite |
+| `nmap <host>` | Use Nmap to scan a host/network |
+| `sqlmap` | Use SQLMap to automate SQL injection discovery and exploitation |
+| `airodump-ng <interface>` | Capture network packets (needs interface in monitor mode) |
+| `aircrack-ng` | Start the Aircrack-ng tool to crack wireless networks |
+| `hydra` | Use Hydra for brute forcing |
+| `sudo ettercap -G` | Sniffing and spoofing with Ettercap |
+| `dirbuster` | File and directory brute forcing with DirBuster |
+| `sslyze` | SSL/TLS analysis with SSLyze |
+| `nikto -h <host>` | Use Nikto for web server scanning |
+| `john` | Use John the Ripper for password cracking |
+| `dnsrecon -d <domain>` | DNS reconnaissance with dnsrecon |
 
 ### windows 10
 
@@ -150,67 +100,19 @@ Windows 10 is a series of personal computer operating systems produced by Micros
 
 | Command | Detail |
 | --- | --- |
-| `sudo soup` | Update the system |
-| `so-sensor-status` | Check sensor stats |
-| `sudo so-status` | Check status of all Security Onion services |
-| `sguil-client` | Query logs using Sguil |
-| `squert` | Start Squert web interface |
-| `so-kibana` | Access Kibana interface |
-| `so-capme` | Access CapMe for PCAP retrieval |
-| `networkminer` | Start NetworkMiner |
-| `zless /nsm/zeek/logs/current/conn.log` | Accessing Zeek logs |
-| `sudo so-zeek-stop` | Stopping Zeek |
-| `sudo so-zeek-start` | Starting Zeek |
-| `suricata -c /etc/suricata/suricata.yaml -i eth0` | Run Suricata in IDS mode |
-| `sudo suricata-update` | Update Suricata rules |
-| `sudo systemctl status suricata` | Check the status of Suricata |
-| `tail -f /var/log/suricata/fast.log` | Tail Suricata fast.log file |
-```
-# Display IP configuration
-ipconfig /all
-
-# Flush DNS cache
-ipconfig /flushdns
-
-# Check network connectivity
-ping <host>
-
-# Trace the route a packet takes to reach a host
-tracert <host>
-
-# Display active network connections
-netstat -ano
-
-# Open Windows Firewall settings
-wf.msc
-
-# Open Task Manager
-taskmgr
-
-# Open Resource Monitor
-resmon
-
-# Run a program as administrator
-runas /user:<User> <command>
-
-# List all running services
-sc query
-
-# Start a service
-sc start <service>
-
-# Stop a service
-sc stop <service>
-
-# List local users
-net user
-
-# Add a new user
-net user /add <username> <password>
-
-# Change a user's password
-net user <username> *
-
-# View system logs
-eventvwr.msc
-```
+| `ipconfig /all` | Display IP configuration |
+| `ipconfig /flushdns` | Flush DNS cache |
+| `ping <host>` | Check network connectivity |
+| `tracert <host>` | Trace the route a packet takes to reach a host |
+| `netstat -ano` | Display active network connections |
+| `wf.msc` | Open Windows Firewall settings |
+| `taskmgr` | Open Task Manager |
+| `resmon` | Open Resource Monitor |
+| `runas /user:<User> <command>` | Run a program as administrator |
+| `sc query` | List all running services |
+| `sc start <service>` | Start a service |
+| `sc stop <service>` | Stop a service |
+| `net user` | List local users |
+| `net user /add <username> <password>` | Add a new user |
+| `net user <username> *` | Change a user's password |
+| `eventvwr.msc` | View system logs |
