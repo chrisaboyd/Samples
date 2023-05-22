@@ -55,7 +55,7 @@ tail -f /var/log/suricata/fast.log
 
 ### Vyatta
 
-Vyatta provides software-based virtual router, virtual firewall and VPN products for Internet Protocol networks.
+Vyatta provides software-based virtual router, virtual firewall and VPN products for Internet Protocol networks.  
 [Documentation Reference](http://www.brocade.com/content/html/en/configuration-guide/vyatta_icg_preface.html)
 ```
 # Show version and system information
@@ -106,7 +106,7 @@ restart webproxy
 
 ### Ubuntu
 
-Ubuntu is an open-source software platform that runs everywhere from the PC to the server and the cloud.
+Ubuntu is an open-source software platform that runs everywhere from the PC to the server and the cloud.  
 [Documentation Reference](https://help.ubuntu.com/)
 
 ```
@@ -162,7 +162,7 @@ ping <host>
 
 ### Kali
 
-Kali Linux is a Debian-based Linux distribution aimed at advanced Penetration Testing and Security Auditing. 
+Kali Linux is a Debian-based Linux distribution aimed at advanced Penetration Testing and Security Auditing.   
 [Documentation Reference](https://www.kali.org/docs/)
 ```
 # Update package lists for upgrades and new package installations
@@ -216,7 +216,7 @@ dnsrecon -d <domain>
 
 ### windows 10
 
-Windows 10 is a series of personal computer operating systems produced by Microsoft as part of its Windows NT family of operating systems.
+Windows 10 is a series of personal computer operating systems produced by Microsoft as part of its Windows NT family of operating systems.  
 [Documentation Reference](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/windows-commands)
 ```
 # Display IP configuration
