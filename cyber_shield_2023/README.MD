@@ -38,7 +38,6 @@ Vyatta provides software-based virtual router, virtual firewall and VPN products
 | `configure` | Configure system parameters |
 | `set firewall name rule number` | Add a firewall rule |
 | `commit` | Save configuration changes |
-
 | `discard` | Discard uncommitted changes |
 | `exit` | Exit from configuration mode |
 | `show firewall` | Show firewall configurations |
