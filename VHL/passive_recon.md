@@ -56,4 +56,34 @@ dig axfr zonetransfer.me
   * `apt-get install recon-ng` - To upgrade
   * `recon-ng` - Start the application
     * `marketplace refresh` - update the modules list and install
-    * `marketplace search
+    * `marketplace search` or `marketplace search hibp` - List available modules
+    * `marketplace install recon/contacts-credentials/hibp-breach` - Install this module; requires an API key for HIBP and is $3.50 per month
+    * `keys add hip_api [API key]` to add your API key; (https://www.troyhunt.com/authentication-and-the-have-i-been-pwned-api/)[https://www.troyhunt.com/authentication-and-the-have-i-been-pwned-api/]
+    * `modules load recon/contacts-credentials/hibp_breach` - Load the module
+    * Only needed field is the source field for the e-mail address to search for
+    * `options set SOURCE info@microsoft.com` - command to set the search
+    * `run` to execute the search
+    * All results are stored in a database - can use `show credentials` to show the table 
+
+## Other Search Tools
+
+https://www.google.com
+https://www.google.com/maps
+https://www.exploit-db.com/google-hacking-database/
+https://www.shodan.io
+https://www.tineye.com
+https://www.netcraft.com
+https://pastebin.com
+https://haveibeenpwned.com
+
+## Collecting Company Info
+
+* Linkedin! Provides info about people, processes, technologies, products. 
+* Used to see what relationships exist with other companies
+* Employees which in turn can be used to gather data about technologies in place
+* EDGAR - Electronic Data Gathering Analysis and Retrieval System for companies registered with SEC'
+  * https://www.sec.gov/edgar/searchedgar/companysearch.html
+* California, Nevada and Delaware are also popular for business registrations
+  * https://businesssearch.sos.ca.gov
+  * https://esos.nv.gov/EntitySearch/OnlineEntitySearch
+* Crunchbase - online database of business information about private and public companies, like investment, financing, mergers and acquisitions, founding members, and leadership / C-suite.
