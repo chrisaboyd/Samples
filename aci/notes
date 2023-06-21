@@ -1,0 +1,96 @@
+Flow -> ACI Worker -> New container group -> 
+Managed Identity used for file share and Azure Keyvault
+Retrieve Code (by flow?) 
+
+
+Dockerfile that installs and sets up git:
+
+
+git config credential.helper "/bin/bash /tmp/credential-helper.sh"
+
+#!/bin/bash
+echo username=$GIT_USERNAME
+echo password=$GIT_PASSWORD
+
+
+Modify entrypoint
+run python azure sdk to retrieve bitbucket username / password, and export as $GIT_USERNAME, $GIT_PASSWORD
+
+
+https://github.com/EmilRex/kubernetes-worker-demo/tree/main/steps
+https://github.com/PrefectHQ/prefect/blob/main/src/prefect/projects/recipes/git/prefect.yaml
+
+
+=====================
+#Export for re-use
+export RG=""
+export KEYV=""
+
+# Create a resource group: # Already exists
+az group create --name $RG --location eastus
+
+# Create a keyvault # Naming 
+az keyvault create \
+  --name $KEYV \
+  --resource-group $RG \
+  --location eastus
+
+# Store a secret:
+az keyvault secret set \
+  --name <>\
+  --value "" \
+  --description BitBucketAccess --vault-name $KEYV
+
+=====================
+
+# Change these four parameters as needed
+export ACI_PERS_RESOURCE_GROUP=
+
+export ACI_PERS_STORAGE_ACCOUNT_NAME=
+
+export ACI_PERS_LOCATION=
+
+export ACI_PERS_SHARE_NAME=
+
+# Create the storage account with the parameters
+az storage account create \
+    --resource-group $ACI_PERS_RESOURCE_GROUP \
+    --name $ACI_PERS_STORAGE_ACCOUNT_NAME \
+    --location $ACI_PERS_LOCATION \
+    --sku Standard_LRS
+
+# Create the file share
+az storage share create \
+  --name $ACI_PERS_SHARE_NAME \
+  --account-name $ACI_PERS_STORAGE_ACCOUNT_NAME
+
+=====================
+
+# Create an Identity:
+az identity create \
+  --resource-group myResourceGroup \
+  --name myACIId
+
+# Get service principal ID of the user-assigned identity
+SP_ID=$(az identity show \
+  --resource-group myResourceGroup \
+  --name myACIId \
+  --query principalId --output tsv)
+
+# Get resource ID of the user-assigned identity
+RESOURCE_ID=$(az identity show \
+  --resource-group myResourceGroup \
+  --name myACIId \
+  --query id --output tsv)
+
+# Set the polic for Keyvault
+az keyvault set-policy \
+    --name mykeyvault \
+    --resource-group myResourceGroup \
+    --object-id $SP_ID \
+    --secret-permissions get
+
+https://learn.microsoft.com/en-us/azure/container-instances/container-instances-volume-azure-files
+
+YAML is preferred for multiple containers (initContainer + regular container)
+

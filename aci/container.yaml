@@ -1,0 +1,47 @@
+apiVersion: '2018-10-01'
+location: eastus
+name: mycontainergroup
+properties:
+  containers:
+  - name: mycontainer
+    properties:
+      image: mcr.microsoft.com/azure-cli
+      command: ['sh', '-c', 'echo The app is running! && sleep 3600']
+      resources:
+        requests:
+          cpu: 1.0
+          memoryInGb: 1.5
+      volumeMounts:
+      - name: git-repo
+        mountPath: /src
+  - name: git-init
+    properties:
+      image: alpine/git
+      command: ['git', 'clone', 'https://<username>:<password>@github.com/<username>/repo.git', '/mnt/repo']
+      resources:
+        requests:
+          cpu: 1.0
+          memoryInGb: 1.5
+      volumeMounts:
+      - name: git-repo
+        mountPath: /mnt
+  osType: Linux
+  restartPolicy: OnFailure
+  volumes:
+  - name: git-repo
+    azureFile:
+      shareName: myfileshare
+      storageAccountName: mystorageaccount
+      storageAccountKey: <storage-account-key>
+  initContainers:
+  - name: git-init
+    properties:
+      image: alpine/git
+      command: ['git', 'clone', 'https://<username>:<password>@github.com/<username>/repo.git', '/mnt/repo']
+      resources:
+        requests:
+          cpu: 1.0
+          memoryInGb: 1.5
+      volumeMounts:
+      - name: git-repo
+        mountPath: /mnt
