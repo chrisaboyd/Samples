@@ -8,4 +8,8 @@ VHL Overview
 
    b. [Active](/VHL/active_recon.md)
 
-    
+2. Resources
+
+   a. [BurpSuite](https://portswigger.net/web-security)
+
+   
