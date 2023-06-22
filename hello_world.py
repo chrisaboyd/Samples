@@ -1,7 +1,4 @@
-from prefect import task, flow
-from prefect import get_run_logger
-import time
-import pandas as pd
+from prefect import task, flow, get_run_logger
 
 
 def this_is_not_a_task(logger):
