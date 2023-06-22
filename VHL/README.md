@@ -14,7 +14,7 @@ VHL Overview
 
 3. Reporting
    
-   a. [Sample Report Template](/VHL/Report Template.md)
+   a. [Template](/VHL/Report_Template.md)
    
 
    
