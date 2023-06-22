@@ -12,4 +12,9 @@ VHL Overview
 
    a. [BurpSuite](https://portswigger.net/web-security)
 
+3. Reporting
+   
+   a. [Sample Report Template](/VHL/Report Template.md)
+   
+
    
