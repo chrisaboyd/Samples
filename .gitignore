@@ -11,3 +11,8 @@ terraform.*
 Chart.lock
 .chalice
 .chalice.*
+
+MTG/
+Meta/
+pref_exporter.py
+this
