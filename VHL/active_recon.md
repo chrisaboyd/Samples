@@ -192,7 +192,7 @@ Enumerating involved port scanning, fingerprinting services, and applications.
 
   * **WPScan** - scans for known vulnerabilities in WordPress, enumerate users, themes, plugins, and run dictionary attacks on user accounts. 
 
-    * Free plan includes 25 api requests a day
+    * Free plan includes 25 api requests a day 
 
     * `wpscan --update` always update to latest database. 
 
