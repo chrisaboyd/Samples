@@ -6,6 +6,7 @@ VHL Overview
 
    * [Passive](/VHL/passive_recon.md)
    * [Active](/VHL/active_recon.md)
+   * [OpenVAS](/VHL/OpenVAS.md)
 
 2. Resources
 
@@ -15,5 +16,4 @@ VHL Overview
    
    * [Template](</VHL/Report Template.md>)
    
-
    
