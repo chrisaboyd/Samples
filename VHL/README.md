@@ -12,8 +12,15 @@ VHL Overview
 
    * [BurpSuite](https://portswigger.net/web-security)
 
-3. Reporting
-   
+3. Exploitation
+
+   * [Exploits 101](/VHL/exploits.md)
+   * [Compiling Linux Kernel Exploits](/VHL/Linux.md)
+   * [Compiling Windows exploits on Linux](/VHL/Windows.md)
+   * [Transferring Exploits](/VHL/transferring_exploits.md)
+
+4. Reporting
+
    * [Template](</VHL/Report Template.md>)
-   
+
    
