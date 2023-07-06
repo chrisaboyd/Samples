@@ -18,6 +18,7 @@ VHL Overview
    * [Compiling Linux Kernel Exploits](/VHL/Linux.md)
    * [Compiling Windows exploits on Linux](/VHL/Windows.md)
    * [Transferring Exploits](/VHL/transferring_exploits.md)
+   * [Exploit Examples](/VHL/exploit_practice.md)
 
 4. Reporting
 
