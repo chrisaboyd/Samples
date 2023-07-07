@@ -1,0 +1,98 @@
+–
+sgr-04964b9855ee17c90	IPv4	Custom TCP	TCP	0	173.38.117.64/27	Cisco VPN Pool
+
+–
+sgr-0b10274b98bce2fea	IPv4	Custom TCP	TCP	0	72.163.220.0/27	Cisco VPN Pool
+
+–
+sgr-01bd367f9d67d85b7	IPv4	Custom TCP	TCP	0	34.224.19.93/32	Cisco App Scanner
+
+–
+sgr-0924d06e78ad3c45d	IPv4	Custom TCP	TCP	0	64.103.40.16/28	Cisco VPN Pool
+
+–
+sgr-0a40a71c4b8d3c38d	IPv4	Custom TCP	TCP	0	64.104.248.192/27	Cisco VPN Pool
+
+–
+sgr-01d453de6ea68ba8b	IPv4	Custom TCP	TCP	0	34.227.121.223/32	Cisco App Scanner
+
+–
+sgr-0c188e32c5046f9b8	IPv4	Custom TCP	TCP	0	64.104.44.96/27	Cisco VPN Pool
+
+–
+sgr-06e7a7e1a2bfd850d	IPv4	Custom TCP	TCP	0	173.38.220.32/27	Cisco VPN Pool
+
+–
+sgr-0aa5c8148b4a4da35	IPv4	Custom TCP	TCP	31620	0.0.0.0/0	kubernetes.io/rule/nlb/client=a6031ee73a20f4ed2833d8bdf855d738
+
+–
+sgr-0b99e7f44e9eee5c2	IPv4	Custom TCP	TCP	0	72.163.217.96/27	Cisco VPN Pool
+
+–
+sgr-06d503769c7129c05	IPv4	Custom TCP	TCP	0	173.36.113.96/27	Cisco VPN Pool
+
+–
+sgr-08e669481b1978134	IPv4	Custom TCP	TCP	0	173.38.209.0/27	Cisco VPN Pool
+
+–
+sgr-0dc3a165d7446c821	IPv4	Custom TCP	TCP	32685	10.10.100.0/28	kubernetes.io/rule/nlb/health=a6031ee73a20f4ed2833d8bdf855d738
+
+–
+sgr-0a8720db693bc2613	IPv4	Custom TCP	TCP	0	64.104.249.32/28	Cisco VPN Pool
+
+–
+sgr-015cdfc9132317602	IPv4	Custom TCP	TCP	0	34.192.183.106/32	Cisco APP Scanner
+
+–
+sgr-0c2a4c8f7488b1768	IPv4	Custom TCP	TCP	0	64.104.59.0/27	Cisco VPN Pool
+
+–
+sgr-0e619f0f5af4a77e4	IPv4	Custom TCP	TCP	0	198.135.0.232/29	Cisco VPN Pool
+
+–
+sgr-03a5b76d781acc8ab	IPv4	Custom TCP	TCP	0	128.107.241.160/27	Cisco VPN Pool
+
+–
+sgr-0dfb22ccb4f43a78a	IPv4	Custom TCP	TCP	0	64.104.124.32/27	Cisco VPN Pool
+
+–
+sgr-05c0246e078cbfca7	IPv4	Custom TCP	TCP	0	72.163.2.224/27	Cisco VPN Pool
+
+–
+sgr-03bea080dcc674577	IPv4	Custom TCP	TCP	0	173.36.240.160/27	Cisco VPN Pool
+
+–
+sgr-09907b049a1911978	–	All traffic	All	All	sg-0f620f13737fe0911 / eks-cluster-sg-cam-eks-dev-601069271	–
+
+–
+sgr-0c12c308af90f11e3	IPv4	Custom TCP	TCP	0	173.39.121.32/27	Cisco VPN Pool
+
+–
+sgr-012bafd8d38791523	IPv4	Custom TCP	TCP	0	173.38.117.87/32	Cisco VPN
+
+–
+sgr-0191219cfe85dffca	IPv4	Custom TCP	TCP	0	34.205.208.125/32	Cisco App Scanner
+
+–
+sgr-0bab6035c10238e7c	IPv4	Custom TCP	TCP	0	173.39.121.64/27	Cisco VPN Pool
+
+–
+sgr-060e095789396ad19	IPv4	Custom TCP	TCP	0	173.37.200.0/27	Cisco VPN Pool
+
+–
+sgr-0c24a27b164e448da	IPv4	Custom TCP	TCP	30054	0.0.0.0/0	kubernetes.io/rule/nlb/client=a6031ee73a20f4ed2833d8bdf855d738
+
+–
+sgr-0a9923156c76ff40e	IPv4	Custom ICMP - IPv4	Destination Unreachable	fragmentation required, and DF flag set	0.0.0.0/0	kubernetes.io/rule/nlb/mtu
+
+–
+sgr-003e8c1272824c0eb	IPv4	Custom TCP	TCP	0	131.226.33.86/32	Prefect VPN
+
+–
+sgr-06732109508b39c7b	IPv4	Custom TCP	TCP	0	173.36.120.0/28	Cisco VPN Pool
+
+–
+sgr-0db3fe35650dab56b	IPv4	Custom TCP	TCP	0	64.104.125.224/27	Cisco VPN Pool
+
+–
+sgr-052cd70373e4739e0	IPv4	Custom TCP	TCP	0	64.102.249.0/27	Cisco VPN Pool

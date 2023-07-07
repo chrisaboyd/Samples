@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"kubernetes.io/ingress.class":"nginx","nginx.ingress.kubernetes.io/whitelist-source-range":"131.226.33.86/32,173.38.117.87/32"},"name":"cam-ingress","namespace":"cam"},"spec":{"rules":[{"http":{"paths":[{"backend":{"service":{"name":"cam-app","port":{"number":3000}}},"path":"/","pathType":"Prefix"}]}}]}}
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/whitelist-source-range: 131.226.33.86/32,173.38.117.87/32,34.205.208.125/32,34.192.183.106/32,34.224.19.93/32,34.227.121.223/32
+  creationTimestamp: "2022-12-20T17:03:48Z"
+  generation: 3
+  name: cam-ingress
+  namespace: cam
+  resourceVersion: "1635194"
+  uid: 8190e268-5abd-439d-84b2-b55a60d7b77d
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: cam-app
+            port:
+              number: 3000
+        path: /
+        pathType: Prefix
+status:
+  loadBalancer:
+    ingress:
+    - hostname: a6031ee73a20f4ed2833d8bdf855d738-e70d6bd52d152c0a.elb.us-east-1.amazonaws.com
