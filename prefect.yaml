@@ -14,21 +14,26 @@ push: null
 
 # pull section allows you to provide instructions for cloning this project in remote locations
 pull:
+- prefect.deployments.steps.run_shell_script:
+    id: justatest
+    script: echo "this is only a test"
+    stream_output: true
 - prefect.deployments.steps.git_clone:
-    repository: git@github.com:chrisaboyd/Samples.git
+    repository: https://github.com/chrisaboyd/Samples.git
     branch: main
     access_token: null
+
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
 - name: hello_world_local
-  entrypoint: ./hello_world.py:hello_world
+  entrypoint: ./Prefect/hello_world.py:hello_world
   work_pool:
     name: local_test
     work_queue_name: null
     job_variables: {}
 - name: hello_world_k8s
-  entrypoint: ./hello_world.py:hello_world
+  entrypoint: ./Prefect/hello_world.py:hello_world
   work_pool:
     name: kubernetes
     work_queue_name: null
