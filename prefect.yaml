@@ -14,18 +14,10 @@ push: null
 
 # pull section allows you to provide instructions for cloning this project in remote locations
 pull:
-- prefect.deployments.steps.run_shell_script:
-    id: justatest
-    script: pwd
-    stream_output: true
 - prefect.deployments.steps.git_clone:
     repository: https://github.com/chrisaboyd/Samples.git
     branch: main
     access_token: null
-- prefect.deployments.steps.run_shell_script:
-    id: test2
-    script: prefect config set PREFECT_LOGGING_SETTINGS_PATH=/opt/prefect/Samples/Prefect/logging.yml 
-    stream_output: true
 
 
 # the deployments section allows you to provide configuration for deploying flows
