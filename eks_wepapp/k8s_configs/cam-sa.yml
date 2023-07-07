@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ServiceAccount
-metadata:
- name: cam-sa
- namespace: cam
- annotations:
-   eks.amazonaws.com/role-arn:  arn:aws:iam::837578041534:role/cam-eks-worker
