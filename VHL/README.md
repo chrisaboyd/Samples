@@ -20,7 +20,12 @@ VHL Overview
    * [Transferring Exploits](/VHL/transferring_exploits.md)
    * [Exploit Examples](/VHL/exploit_practice.md)
 
-4. Reporting
+4. Privilege Escalation
+
+   * [Linux](/VHL/linux_privilege.md)
+   * [Windows](/VHL/windows_privilege.md)
+
+5. Reporting
 
    * [Template](</VHL/Report Template.md>)
 
