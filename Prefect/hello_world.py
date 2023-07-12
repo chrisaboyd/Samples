@@ -16,10 +16,10 @@ def log_platform_info():
 def hello_world():
     logger = get_run_logger()
     log_platform_info()
-    time.sleep(300)
+
 
 
 if __name__ == "__main__":
     hello_world()
-    time.sleep(300)
+
 
