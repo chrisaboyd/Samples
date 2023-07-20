@@ -1,0 +1,11 @@
+prefect
+adlfs
+prefect-azure
+prefect-azure[blob-storage]
+pandas
+aiohttp
+azure-identity
+azure-storage-blob
+azure-keyvault-secrets
+
+

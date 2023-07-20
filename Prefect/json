@@ -1,0 +1,104 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:us-east-2:620123926173:task-definition/stage-prefect-v2-dbt:2",
+    "containerDefinitions": [
+        {
+            "name": "prefect",
+            "image": "artifactory.rtr.cloud/docker/prefect-v2-dbt:latest",
+            "repositoryCredentials": {
+                "credentialsParameter": "arn"
+            },
+            "cpu": 0,
+            "portMappings": [],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "VAULT_ADDR",
+                    "value": "addr"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [
+                {
+                    "name": "VAULT_TOKEN",
+                    "valueFrom": "token"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/stage/ecs",
+                    "awslogs-region": "us-east-2",
+                    "awslogs-stream-prefix": "prefect-v2-dbt/prefect"
+                }
+            }
+        }
+    ],
+    "family": "stage-prefect-v2-dbt",
+    "taskRoleArn": "arn:aws:iam::620123926173:role/stage-ECSTaskRole-data-engineering",
+    "executionRoleArn": "arn:aws:iam::620123926173:role/stage-ECSExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 2,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "ecs.capability.secrets.asm.environment-variables"
+        },
+        {
+            "name": "ecs.capability.private-registry-authentication.secretsmanager"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "512",
+    "memory": "2048",
+    "registeredAt": "2023-06-30T14:58:31.303Z",
+    "registeredBy": "arn:aws:iam::620123926173:user/data-github-action",
+    "tags": [
+        {
+            "key": "project",
+            "value": "dbt"
+        },
+        {
+            "key": "environment",
+            "value": "stage"
+        },
+        {
+            "key": "team",
+            "value": "data-engineering"
+        },
+        {
+            "key": "repository",
+            "value": "prefect-main"
+        },
+        {
+            "key": "managed-by-terraform",
+            "value": "false"
+        }
+    ]
+}

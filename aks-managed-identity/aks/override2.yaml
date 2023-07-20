@@ -1,0 +1,26 @@
+nameOverride: "prefect2-worker-dev-b" # [OPTIONAL] Override the name of the Prefect Agent
+fullnameOverride: "prefect2-worker-dev-b" # Match the nameOverride
+worker: 
+  config:
+    workPool:
+      - pool2_stage
+  cloudApiConfig:
+    accountId: "abcdef-66112244-aabb-dd88-49abcefgasdf"
+    workspaceId: <workspace id here>
+    apiKeySecret:
+      name: sa-api-key # The secret name in cluster
+      key: api_key # The key in the secret
+  extraEnvVars:
+    - name: "PREFECT_LOGGING_ORION_WHEN_MISSING_FLOW"
+      value: "ignore"
+    - name: "PREFECT_LOGGING_LEVEL"
+      value: "INFO"
+  image:
+    prefectTag: "2.10.21-python3.11-kubernetes"
+  tolerations: # Entire Section is Optional
+    - key: "prefect"
+      operator: "Equal"
+      value: "regular"
+      effect: "NoSchedule"
+  nodeSelector: # Entire Section is optional
+    prefect: "regular"
