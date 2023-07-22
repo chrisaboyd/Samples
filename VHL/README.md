@@ -50,7 +50,7 @@ VHL Overview
 
 8. Metasploit
 
-   * [Basic Commands](/VHL/meta_basic.md)
+   * [Basic Commands](/VHL/metasploit_basic.md)
    * [Exploit Commands](/VHL/metaexploit.md)
    * [Meterpreter Basics](/VHL/meterpreter.md)
 
