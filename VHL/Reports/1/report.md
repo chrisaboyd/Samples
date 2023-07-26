@@ -21,7 +21,8 @@ NSLOOKUP could not resolve this locally.
 
 ## Attack Narrative
 
-Started off scanning  
+Started off scanning   
+
 ```bash
 sudo nmap -sS 10.14.1.83
 
