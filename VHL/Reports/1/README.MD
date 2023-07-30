@@ -1,4 +1,4 @@
-# Penetration Testing Report - 83 - John
+# Pentest 1 - 83 - John - 10.14.1.83
 
 ## Table of Contents
 
@@ -8,18 +8,17 @@
 - [Mitigation](#mitigation)
 - [Conclusion](#conclusion)
 
-## Introduction
-The first test involved a box named John, at 10.14.1.83. 
-NSLOOKUP could not resolve this locally. 
+### Introduction
 
-## Testing Environment
+
+### Testing Environment
 
 * Kali Linux
 * Nmap, Searchsploit, Metasploit
 * Methodology
    * Scan, Enumerate Services, Evaluate Vulnerabilities, Attempt to Exploit, Escalate Permissions
 
-## Attack Narrative
+### Attack Narrative
 
 Started off scanning   
 
