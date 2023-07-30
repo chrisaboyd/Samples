@@ -1,6 +1,4 @@
-# Pentest 2 - Steven - 36
-
-IP Address is 10.14.1.36
+# Pentest 2 - Steven - 36 - 10.14.1.36
 
 ### Scanning  
 First we will capture our report to 2/initial
