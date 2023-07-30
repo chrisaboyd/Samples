@@ -1,4 +1,4 @@
-# Pentest 4 - Android - 48 
+# Pentest 4 - Android - 48 - 10.14.1.48
 
 Starting off this test, I wanted to evaluate a tool called autorecon that I was recommended.   
 The framework itself is a shortcut to a lot of steps that are run manually such as nmap / nikto scans, and created a directory structure for findings.  
