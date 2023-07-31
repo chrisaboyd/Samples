@@ -4,55 +4,55 @@ VHL Overview
 
 1. Reconnaissance
 
-   * [Passive](/VHL/passive_recon.md)
-   * [Active](/VHL/active_recon.md)
-   * [OpenVAS](/VHL/OpenVAS.md)
+   * [Passive](/VHL/contents/passive_recon.md)
+   * [Active](/VHL/contents/active_recon.md)
+   * [OpenVAS](/VHL/contents/OpenVAS.md)
 
 2. Exploitation
 
-   * [Exploits 101](/VHL/exploits.md)
-   * [Compiling Linux Kernel Exploits](/VHL/Linux.md)
-   * [Compiling Windows exploits on Linux](/VHL/Windows.md)
-   * [Transferring Exploits](/VHL/transferring_exploits.md)
-   * [Exploit Examples](/VHL/exploit_practice.md)
+   * [Exploits 101](/VHL/contents/exploits.md)
+   * [Compiling Linux Kernel Exploits](/VHL/contents/Linux.md)
+   * [Compiling Windows exploits on Linux](/VHL/contents/Windows.md)
+   * [Transferring Exploits](/VHL/contents/transferring_exploits.md)
+   * [Exploit Examples](/VHL/contents/exploit_practice.md)
 
 3. Privilege Escalation
 
-   * [Linux](/VHL/linux_privilege.md)
-   * [Windows](/VHL/windows_privilege.md)
+   * [Linux](/VHL/contents/linux_privilege.md)
+   * [Windows](/VHL/contents/windows_privilege.md)
 
 4. Web Applications
 
-   * [Local/Remote File Inclusion](/VHL/fileinclusion.md)
-   * [Remote Code Execution](/VHL/remote_code_execution.md)
-   * [Remote Command Execution](/VHL/remote_command_execution.md)
-   * [SQL Injection](/VHL/sql.md)
-   * [Web Shells](/VHL/shells.md)
-   * [File Upload Vuln.](/VHL/file_upload.md)
+   * [Local/Remote File Inclusion](/VHL/contents/fileinclusion.md)
+   * [Remote Code Execution](/VHL/contents/remote_code_execution.md)
+   * [Remote Command Execution](/VHL/contents/remote_command_execution.md)
+   * [SQL Injection](/VHL/contents/sql.md)
+   * [Web Shells](/VHL/contents/shells.md)
+   * [File Upload Vuln.](/VHL/contents/file_upload.md)
    * [XSS](/VHL/xss.md) - Cross-Site Scripting
 
 5.  Password Attacks
 
-   * [Generating Password Lists](/VHL/pw_lists.md)
-   * [Windows Passwords and Hashes](/VHL/windows_pw.md)
-   * [John the Ripper](/VHL/john.md)
+   * [Generating Password Lists](/VHL/contents/pw_lists.md)
+   * [Windows Passwords and Hashes](/VHL/contents/windows_pw.md)
+   * [John the Ripper](/VHL/contents/john.md)
    * Hydra? Hashcat?
-   * [Web Applications Passwords](/VHL/web_pw.md)
+   * [Web Applications Passwords](/VHL/contents/web_pw.md)
 
 6. Networking and Shells
 
-   * [Netcat Shells](/VHL/netcat.md)
-   * [Netcat to Meterpreter](/VHL/nc_to_meterpreter.md)
+   * [Netcat Shells](/VHL/contents/netcat.md)
+   * [Netcat to Meterpreter](/VHL/contents/nc_to_meterpreter.md)
 
 7. Metasploit
 
-   * [Basic Commands](/VHL/metasploit_basic.md)
-   * [Exploit Commands](/VHL/metaexploit.md)
-   * [Meterpreter Basics](/VHL/meterpreter.md)
+   * [Basic Commands](/VHL/contents/metasploit_basic.md)
+   * [Exploit Commands](/VHL/contents/metaexploit.md)
+   * [Meterpreter Basics](/VHL/contents/meterpreter.md)
 
 8. Management Interfaces
 
-   * [BMC and IPMI](/VHL/bmc.md)
+   * [BMC and IPMI](/VHL/contents/bmc.md)
 
 9. Reporting
 
