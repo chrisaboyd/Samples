@@ -8,11 +8,7 @@ VHL Overview
    * [Active](/VHL/active_recon.md)
    * [OpenVAS](/VHL/OpenVAS.md)
 
-2. Resources
-
-   * [BurpSuite](https://portswigger.net/web-security)
-
-3. Exploitation
+2. Exploitation
 
    * [Exploits 101](/VHL/exploits.md)
    * [Compiling Linux Kernel Exploits](/VHL/Linux.md)
@@ -20,12 +16,12 @@ VHL Overview
    * [Transferring Exploits](/VHL/transferring_exploits.md)
    * [Exploit Examples](/VHL/exploit_practice.md)
 
-4. Privilege Escalation
+3. Privilege Escalation
 
    * [Linux](/VHL/linux_privilege.md)
    * [Windows](/VHL/windows_privilege.md)
 
-5. Web Applications
+4. Web Applications
 
    * [Local/Remote File Inclusion](/VHL/fileinclusion.md)
    * [Remote Code Execution](/VHL/remote_code_execution.md)
@@ -35,7 +31,7 @@ VHL Overview
    * [File Upload Vuln.](/VHL/file_upload.md)
    * [XSS](/VHL/xss.md) - Cross-Site Scripting
 
-6. Password Attacks
+5.  Password Attacks
 
    * [Generating Password Lists](/VHL/pw_lists.md)
    * [Windows Passwords and Hashes](/VHL/windows_pw.md)
@@ -43,64 +39,44 @@ VHL Overview
    * Hydra? Hashcat?
    * [Web Applications Passwords](/VHL/web_pw.md)
 
-7. Networking and Shells
+6. Networking and Shells
 
    * [Netcat Shells](/VHL/netcat.md)
    * [Netcat to Meterpreter](/VHL/nc_to_meterpreter.md)
 
-8. Metasploit
+7. Metasploit
 
    * [Basic Commands](/VHL/metasploit_basic.md)
    * [Exploit Commands](/VHL/metaexploit.md)
    * [Meterpreter Basics](/VHL/meterpreter.md)
 
-9. Management Interfaces
+8. Management Interfaces
 
    * [BMC and IPMI](/VHL/bmc.md)
 
-10. Reporting
+9. Reporting
 
    * [Template](</VHL/Report Template.md>)
 
-11. Reports
+10. Reports
 
-    [Report 1](/VHL/Reports/1/report.md)
+  * [Reports](/VHL/Reports/)
 
-    [Report 2](/VHL/Reports/2/report.md)
+11. Resources
 
-    [Report 3](/VHL/Reports/3/report.md)
+   * [BurpSuite](https://portswigger.net/web-security)
+   * [Reverse Shell Cheatsheets](https://hideandsec.sh/books/cheatsheets-82c/page/reverse-shells)
+   * [Spawning a TTY](https://hideandsec.sh/books/cheatsheets-82c/page/spawning-tty-shells)
+   * [Cheatsheets](https://hideandsec.sh/books/cheatsheets-82c)
+   * [EternalBlue](https://medium.com/x4v1s3c/eternalblue-doublepulsar-x86-architecture-and-using-metasploit-4fd65322a801)
+   * [Privilege Escalation](https://www.codelivly.com/linux-privilege-escalation-explained/)
+   * [AutoRecon](https://github.com/Tib3rius/AutoRecon) ***
+   * [Pentesting](https://viperone.gitbook.io/pentest-everything/)
+   * [SMB](https://viperone.gitbook.io/pentest-everything/everything/everything-active-directory/adversary-in-the-middle/smb-relay)
+   * [Shell to Meterpreter](https://docs.metasploit.com/docs/pentesting/metasploit-guide-upgrading-shells-to-meterpreter.html) 
 
-    [Report 4](/VHL/Reports/4/report.md)
 
-    [Report 5](/VHL/Reports/5/report.md)
 
-    [Report 6](/VHL/Reports/6/report.md)
-
-    [Report 7](/VHL/Reports/7/report.md)
-
-    [Report 8](/VHL/Reports/8/report.md)
-
-    [Report 9](/VHL/Reports/9/report.md)
-
-    [Report 10](/VHL/Reports/10/report.md)
-
-    [Report 11](/VHL/Reports/11/report.md)
-
-    [Report 12](/VHL/Reports/12/report.md)
-
-    [Report 13](/VHL/Reports/13/report.md)
-
-    [Report 14](/VHL/Reports/14/report.md)
-
-    [Report 15](/VHL/Reports/15/report.md)
-
-    [Report 16](/VHL/Reports/16/report.md)
-
-    [Report 17](/VHL/Reports/17/report.md)
-
-    [Report 18](/VHL/Reports/18/report.md)
-
-    [Report 19](/VHL/Reports/19/report.md)
 
     
 
