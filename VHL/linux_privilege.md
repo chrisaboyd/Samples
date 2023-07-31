@@ -84,6 +84,9 @@ find / -user root -perm 4000 -print 2>/dev/null
 
 ```bash
 cat /etc/fstab
+# Finding world-writable files
+find / \( -path /proc -o -path /sys -o -path /usr/share \) -prune -o -type f -perm /o=w
+
 # Finding world-writable directories
 find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep -v root
 
