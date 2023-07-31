@@ -1,7 +1,6 @@
 VHL Overview
 
 
-
 1. Reconnaissance
 
    * [Passive](/VHL/contents/passive_recon.md)
@@ -29,14 +28,15 @@ VHL Overview
    * [SQL Injection](/VHL/contents/sql.md)
    * [Web Shells](/VHL/contents/shells.md)
    * [File Upload Vuln.](/VHL/contents/file_upload.md)
-   * [XSS](/VHL/xss.md) - Cross-Site Scripting
+   * [XSS](/VHL/contents/xss.md) - Cross-Site Scripting
 
 5.  Password Attacks
 
    * [Generating Password Lists](/VHL/contents/pw_lists.md)
    * [Windows Passwords and Hashes](/VHL/contents/windows_pw.md)
-   * [John the Ripper](/VHL/contents/john.md)
-   * Hydra? Hashcat?
+   * [John the Ripper](/VHL/contents/john.md)  
+   * [Hydra](/VHL/contents/hydra.md)
+   * [Hashcat](/VHL/contents/hashcat.md)
    * [Web Applications Passwords](/VHL/contents/web_pw.md)
 
 6. Networking and Shells
@@ -60,7 +60,7 @@ VHL Overview
 
 10. Reports
 
-  * [Reports](/VHL/Reports/)
+   * [Reports](/VHL/Reports/)
 
 11. Resources
 
@@ -74,10 +74,3 @@ VHL Overview
    * [Pentesting](https://viperone.gitbook.io/pentest-everything/)
    * [SMB](https://viperone.gitbook.io/pentest-everything/everything/everything-active-directory/adversary-in-the-middle/smb-relay)
    * [Shell to Meterpreter](https://docs.metasploit.com/docs/pentesting/metasploit-guide-upgrading-shells-to-meterpreter.html) 
-
-
-
-
-    
-
-   
