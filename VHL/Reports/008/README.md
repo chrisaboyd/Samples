@@ -218,13 +218,13 @@ msf6 auxiliary(admin/http/joomla_registration_privesc) >
 
 The e-mail fails, but it says that the account / user could still have been created.
 I navigate to the `/administrator/` endpoint, and attempt to login with the newly provisioned user/password:
-![image1](/VHL/REPORTS/008/8_1.png)
-![image2](/VHL/REPORTS/008/8_2.png)
-![image3](/VHL/REPORTS/008/8_3.png)
-![image4](/VHL/REPORTS/008/8_4.png)
-![image5](/VHL/REPORTS/008/8_5.png)
-![image6](/VHL/REPORTS/008/8_6.png)
-![image7](/VHL/REPORTS/008/8_7.png)
+![image1](/VHL/Reports/008/8_1.png)  
+![image2](/VHL/Reports/008/8_2.png)  
+![image3](/VHL/Reports/008/8_3.png)  
+![image4](/VHL/Reports/008/8_4.png)  
+![image5](/VHL/Reports/008/8_5.png)  
+![image6](/VHL/Reports/008/8_6.png)  
+![image7](/VHL/Reports/008/8_7.png)  
 
 ### Exploitation
 Once I was able to obtain a web shell, I first attempted to upload and use `nc`. This was not productive, as I while had permissions to upload `nc` to `/tmp`, I had no execute or sudo permissions to put it anywhere else and use it. Recalling the instructions, I attempted to establish a shell using the web shell.
