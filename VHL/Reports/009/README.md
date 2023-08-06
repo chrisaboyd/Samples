@@ -81,6 +81,9 @@ OS and Service detection performed. Please report any incorrect results at https
 
 Nikto revealed a bunch of interesting information - /admin/ was exposed, there was a /theme directory, /data/ directory that container a user + username and hash, an API key. 
 For example, `http://10.14.1.2/data/users/lucky.xml` led me to the following:
+![image1](/VHL/Reports/009/9_1.png)  
+![image2](/VHL/Reports/009/9_2.png)  
+
 ```xml
 <item>
   <USR>lucky</USR>
