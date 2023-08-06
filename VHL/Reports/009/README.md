@@ -84,17 +84,7 @@ For example, `http://10.14.1.2/data/users/lucky.xml` led me to the following:
 ![image1](/VHL/Reports/009/9_1.png)  
 ![image2](/VHL/Reports/009/9_2.png)  
 
-```xml
-<item>
-  <USR>lucky</USR>
-  <NAME/>
-  <PWD>cbfdac6008f9cab4083784cbd1874f76618d2a97</PWD>
-  <EMAIL>lucky@localhost.local</EMAIL>
-  <HTMLEDITOR>1</HTMLEDITOR>
-  <TIMEZONE/>
-  <LANG>en_US</LANG>
-</item>
-```
+
 I had two separate thoughts to investigate here:
 1. Could I do anything with the API key that I found, and GetSimple
 2. Could I do anything with the user + hash that I found?
