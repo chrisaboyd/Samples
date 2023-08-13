@@ -321,15 +321,18 @@ define('DB_USER', 'techblog');
 define('DB_PASSWORD', 'z8n#DZf@Sa#X!4@tqG');
 ```
 
+![image12](/VHL/Reports/010/images/10_12.png)
+![image13](/VHL/Reports/010/images/10_13.png)
+![image14](/VHL/Reports/010/images/10_14.png)
+![image15](/VHL/Reports/010/images/10_15.png)
+![image16](/VHL/Reports/010/images/10_16.png)
+
 ## Exploitation
 
 ### Initial Shell
 
+![image17](/VHL/Reports/010/images/10_17.png)
 
-
-
-
-https://github.com/rapid7/metasploit-framework/issues/10838
 ```
 ┌──(autorecon)─(kali㉿kali)-[~/tools]
 └─$ searchsploit Linux Kernel 3.10 Privilege Escalation
@@ -354,8 +357,7 @@ Linux Kernel < 4.4.0-83 / < 4.8.0-58 (Ubuntu 14.04/16.04) - Local Privilege Esca
 Linux Kernel < 4.4.0/ < 4.8.0 (Ubuntu 14.04/16.04 / Linux Mint 17/18 / Zorin) - Local Privileg | linux/local/47169.c
 ----------------------------------------------------------------------------------------------- ---------------------------------
 Shellcodes: No Results
-```
-```
+
 ┌──(autorecon)─(kali㉿kali)-[~/tools]
 └─$ gcc -m32 -static -o exploit 50135.c
 In file included from /usr/include/features.h:392,
@@ -366,12 +368,20 @@ In file included from /usr/include/features.h:392,
       |          ^~~~~~~~~~~~~~~~~
 compilation terminated.
 ```
+https://github.com/rapid7/metasploit-framework/issues/10838
+
+First I was trying to search for exploits <= 3.10.0. 
+After a bit of trial and error here, I realize, maybe I needed to search for "PRIVILEGE ESCALATION". 
+After attempting to compile one on kali that was missing `glibc-headers`, I had to do an `apt-get dist upgrade`.  
 
 I struggled a bit here, but I went back through the notes and was reminded two things:
 a) "dirtycow" is not the name of the exploit (which is what I was trying to find in searchsploit)
 b) "Dirty COW" affects a large number of Kernel versions including this one (3.10.0). 
 
-![image17](/VHL/Reports/010/images/10_17.png)
+
+
+
+
 ![image18](/VHL/Reports/010/images/10_18.png)
 ![image19](/VHL/Reports/010/images/10_19.png)
 ![image20](/VHL/Reports/010/images/10_20.png)
