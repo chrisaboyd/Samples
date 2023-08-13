@@ -371,6 +371,11 @@ I struggled a bit here, but I went back through the notes and was reminded two t
 a) "dirtycow" is not the name of the exploit (which is what I was trying to find in searchsploit)
 b) "Dirty COW" affects a large number of Kernel versions including this one (3.10.0). 
 
+![image17](/VHL/Reports/010/10_17.png)
+![image18](/VHL/Reports/010/10_18.png)
+![image19](/VHL/Reports/010/10_19.png)
+![image20](/VHL/Reports/010/10_20.png)
+![image21](/VHL/Reports/010/10_21.png)
 ```
 └─$ searchsploit dirty COW
 ----------------------------------------------------------------------------------------------- ---------------------------------
