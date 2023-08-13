@@ -322,70 +322,43 @@ define('DB_PASSWORD', 'z8n#DZf@Sa#X!4@tqG');
 ```
 
 ![image12](/VHL/Reports/010/images/10_12.png)
+
+Once I was able to get the username and password, I thought, maybe I could use metasploit and one of the vulnerabilities I found there?
+Unfortunately, these all failed to yield any results - while the exploit succeed, I was never returned a shell. I did learn some tips, such as setting `wpcheck false` and `httptimeoutseconds 300`. 
 ![image13](/VHL/Reports/010/images/10_13.png)
 ![image14](/VHL/Reports/010/images/10_14.png)
-![image15](/VHL/Reports/010/images/10_15.png)
-![image16](/VHL/Reports/010/images/10_16.png)
+
+At this point, I thought - well, I have access and knowing that the OSCP doesn't allow any use of metasploit, what other ways could I use to gain a shell? 
+The user that I was using had administrative permissions on the Wordpress site. After digging around the website, I noticed this provided two functions:
+1) The ability to install plugins
+2) The ability to modify themes and pages
+
+https://github.com/rapid7/metasploit-framework/issues/10838
+
 
 ## Exploitation
 
 ### Initial Shell
+First I attempted to install a simple reverse shell zipped plugin which worked before - unfortunately, every attempt returned a "failed to install".
+I switched to attempting to updating the site.php and archive.php pages then.
+First I tested a very simple cmd shell on the `site.php`.  
+Once I was able to determine this was successful, I switched to up ating a [pentestmonkey](/VHL/Reports/010/php-reverse-shell.php) reverse shell.  
+I established a netcat listener on my host, and caught a shell.   
+First I was trying to search for exploits <= 3.10.0.   
+After a bit of trial and error here, I realize, maybe I needed to search for "PRIVILEGE ESCALATION".   
+After attempting to compile one on kali that was missing `glibc-headers`, I had to do an `apt-get dist upgrade`.    
 
+I struggled a bit here, but I went back through the notes and was reminded two things:  
+a) "dirtycow" is not the name of the exploit (which is what I was trying to find in searchsploit)  
+b) "Dirty COW" affects a large number of Kernel versions including this one (3.10.0).   
+
+At this point, I was able to compile Dirty COW, but I missed the `-static` option, and was unable to execute `DirtyCOW` on the target.   
+I re-assesed, and re-compiled DirtyCOW at this point, but then missed the stability by echoing the centisecs to `/proc`. 
+
+![image16](/VHL/Reports/010/images/10_16.png)
 ![image17](/VHL/Reports/010/images/10_17.png)
-
-```
-┌──(autorecon)─(kali㉿kali)-[~/tools]
-└─$ searchsploit Linux Kernel 3.10 Privilege Escalation
------------------------------------------------------------------------------------------------ ---------------------------------
- Exploit Title                                                                                 |  Path
------------------------------------------------------------------------------------------------ ---------------------------------
-Linux Kernel (Solaris 10 / < 5.10 138888-01) - Local Privilege Escalation                      | solaris/local/15962.c
-Linux Kernel 2.6.19 < 5.9 - 'Netfilter Local Privilege Escalation                              | linux/local/50135.c
-Linux Kernel 2.6.x / 3.10.x / 4.14.x (RedHat / Debian / CentOS) (x64) - 'Mutagen Astronomy' Lo | linux_x86-64/local/45516.c
-Linux Kernel 3.10.0-514.21.2.el7.x86_64 / 3.10.0-514.26.1.el7.x86_64 (CentOS 7) - SUID Positio | linux/local/42887.c
-Linux Kernel 3.14-rc1 < 3.15-rc4 (x64) - Raw Mode PTY Echo Race Condition Privilege Escalation | linux_x86-64/local/33516.c
-Linux Kernel 3.4 < 3.13.2 (Ubuntu 13.04/13.10 x64) - 'CONFIG_X86_X32=y' Local Privilege Escala | linux_x86-64/local/31347.c
-Linux Kernel 4.8.0 UDEV < 232 - Local Privilege Escalation                                     | linux/local/41886.c
-Linux Kernel < 3.16.1 - 'Remount FUSE' Local Privilege Escalation                              | linux/local/34923.c
-Linux Kernel < 3.16.39 (Debian 8 x64) - 'inotfiy' Local Privilege Escalation                   | linux_x86-64/local/44302.c
-Linux kernel < 4.10.15 - Race Condition Privilege Escalation                                   | linux/local/43345.c
-Linux Kernel < 4.11.8 - 'mq_notify: double sock_put()' Local Privilege Escalation              | linux/local/45553.c
-Linux Kernel < 4.13.9 (Ubuntu 16.04 / Fedora 27) - Local Privilege Escalation                  | linux/local/45010.c
-Linux Kernel < 4.4.0-116 (Ubuntu 16.04.4) - Local Privilege Escalation                         | linux/local/44298.c
-Linux Kernel < 4.4.0-21 (Ubuntu 16.04 x64) - 'netfilter target_offset' Local Privilege Escalat | linux_x86-64/local/44300.c
-Linux Kernel < 4.4.0-83 / < 4.8.0-58 (Ubuntu 14.04/16.04) - Local Privilege Escalation (KASLR  | linux/local/43418.c
-Linux Kernel < 4.4.0/ < 4.8.0 (Ubuntu 14.04/16.04 / Linux Mint 17/18 / Zorin) - Local Privileg | linux/local/47169.c
------------------------------------------------------------------------------------------------ ---------------------------------
-Shellcodes: No Results
-
-┌──(autorecon)─(kali㉿kali)-[~/tools]
-└─$ gcc -m32 -static -o exploit 50135.c
-In file included from /usr/include/features.h:392,
-                 from /usr/include/err.h:22,
-                 from 50135.c:60:
-/usr/include/features-time64.h:20:10: fatal error: bits/wordsize.h: No such file or directory
-   20 | #include <bits/wordsize.h>
-      |          ^~~~~~~~~~~~~~~~~
-compilation terminated.
-```
-https://github.com/rapid7/metasploit-framework/issues/10838
-
-First I was trying to search for exploits <= 3.10.0. 
-After a bit of trial and error here, I realize, maybe I needed to search for "PRIVILEGE ESCALATION". 
-After attempting to compile one on kali that was missing `glibc-headers`, I had to do an `apt-get dist upgrade`.  
-
-I struggled a bit here, but I went back through the notes and was reminded two things:
-a) "dirtycow" is not the name of the exploit (which is what I was trying to find in searchsploit)
-b) "Dirty COW" affects a large number of Kernel versions including this one (3.10.0). 
-
-
-
-
-
 ![image18](/VHL/Reports/010/images/10_18.png)
-![image19](/VHL/Reports/010/images/10_19.png)
-![image20](/VHL/Reports/010/images/10_20.png)
-![image21](/VHL/Reports/010/images/10_21.png)
+
 ```
 └─$ searchsploit dirty COW
 ----------------------------------------------------------------------------------------------- ---------------------------------
@@ -402,9 +375,22 @@ Linux Kernel 2.6.22 < 3.9 - 'Dirty COW' /proc/self/mem Race Condition (Write Acc
 Shellcodes: No Results
 ```
 
+![image19](/VHL/Reports/010/images/10_19.png)
+![image20](/VHL/Reports/010/images/10_20.png)
+![image21](/VHL/Reports/010/images/10_21.png)
+
+
 Unfortunately, I had to reset the host at this point, as the system became unstable after attempting to exploit.
+On the 3rd attempt, I successfully achieved privilege escalation and retrieved the flag. 
 
 ![image22](/VHL/Reports/010/images/10_22.png)
+
+## Vulnerabilities
+* CVE-2016-5195
+* No CVE Associated - https://www.exploit-db.com/exploits/39558
+* https://wpscan.com/wordpress/472
+
+  
 ## Remediation
 
 In order of accessibility (and enablement of compromise):
