@@ -145,7 +145,32 @@ OS and Service detection performed. Please report any incorrect results at https
 + /wp-content/uploads/: Directory indexing found.
 + /wp-content/uploads/: Wordpress uploads directory is browsable. This may reveal sensitive information.
 + /wp-login.php: Wordpress login found.
+```
+I was able to get to the login page, but I didn't have any user credentials - the defaults were not successful.  
 
+![image1](/VHL/Reports/010/images/10_1.png)
+
+I checked for available exploits to see what I could find - this yielded a long trail of unsuccessful attempts, but I'm including here to document train of thought and progress. 
+![image2](/VHL/Reports/010/images/10_2.png)
+
+Following the hints I was provided, I was able to run `WPscan` and find some available plugins that were being utilized.
+Between `nikto` and `wpscan`, I was able to navigate to `site.php`, and determine I could conduct a file traversal.
+Reviewing the VHL documentation and my notes, the 7.2 chapter yields:   
+```
+Web application configuration files
+The following files are configuration files for popular web applications, such as content management systems. When a target is running any of these CMS systems you can try to include their configuration files as they often contain sensitive information, such as (root) credentials used to access the database.
+
+WordPress: /var/www/html/wp-config.php
+```
+
+![image3](/VHL/Reports/010/images/10_3.png)
+![image4](/VHL/Reports/010/images/10_4.png)
+![image5](/VHL/Reports/010/images/10_5.png)
+![image6](/VHL/Reports/010/images/10_6.png)
+![image7](/VHL/Reports/010/images/10_7.png)
+![image8](/VHL/Reports/010/images/10_8.png)
+
+```
 ┌──(autorecon)─(kali㉿kali)-[~/tools]
 └─$ wpscan --url 10.14.1.3                                                                                                 130 ⨯
 _______________________________________________________________
@@ -255,13 +280,10 @@ Interesting Finding(s):
 [+] Data Sent: 47.321 KB
 [+] Data Received: 365.786 KB
 [+] Memory used: 267.852 MB
-[+] Elapsed time: 00:00:19
-                           
+[+] Elapsed time: 00:00:19                        
 ```
-## Exploitation
 
-### Initial Shell
-
+Reviewing the site-import exploit:  
 ```
 ┌──(autorecon)─(kali㉿kali)-[/usr/…/exploitdb/exploits/php/webapps]
 └─$ cat 39558.txt
@@ -284,17 +306,13 @@ Local File Inclusion == http://localhost/wordpress/wp-content/plugins/site-impor
 ┌──(autorecon)─(kali㉿kali)-[/usr/…/exploitdb/exploits/php/webapps]
 └─$ 
 ```
+This yielded the following:
 
-Coming from the 7.2 chapter:
-```
-Web application configuration files
-The following files are configuration files for popular web applications, such as content management systems. When a target is running any of these CMS systems you can try to include their configuration files as they often contain sensitive information, such as (root) credentials used to access the database.
+![image9](/VHL/Reports/010/images/10_9.png)  
+![image10](/VHL/Reports/010/images/10_10.png)
+![image11](/VHL/Reports/010/images/10_11.png)
 
-WordPress: /var/www/html/wp-config.php
-```
-![image10](/VHL/Reports/010/10_10.png)
-
-This gives us:
+I was able to successfully login with the following:
 ```
 /** MySQL database username */
 define('DB_USER', 'techblog');
@@ -302,6 +320,14 @@ define('DB_USER', 'techblog');
 /** MySQL database password */
 define('DB_PASSWORD', 'z8n#DZf@Sa#X!4@tqG');
 ```
+
+## Exploitation
+
+### Initial Shell
+
+
+
+
 
 https://github.com/rapid7/metasploit-framework/issues/10838
 ```
