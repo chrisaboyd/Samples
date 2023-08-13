@@ -371,11 +371,11 @@ I struggled a bit here, but I went back through the notes and was reminded two t
 a) "dirtycow" is not the name of the exploit (which is what I was trying to find in searchsploit)
 b) "Dirty COW" affects a large number of Kernel versions including this one (3.10.0). 
 
-![image17](/VHL/Reports/010/10_17.png)
-![image18](/VHL/Reports/010/10_18.png)
-![image19](/VHL/Reports/010/10_19.png)
-![image20](/VHL/Reports/010/10_20.png)
-![image21](/VHL/Reports/010/10_21.png)
+![image17](/VHL/Reports/010/images/10_17.png)
+![image18](/VHL/Reports/010/images/10_18.png)
+![image19](/VHL/Reports/010/images/10_19.png)
+![image20](/VHL/Reports/010/images/10_20.png)
+![image21](/VHL/Reports/010/images/10_21.png)
 ```
 └─$ searchsploit dirty COW
 ----------------------------------------------------------------------------------------------- ---------------------------------
@@ -394,7 +394,7 @@ Shellcodes: No Results
 
 Unfortunately, I had to reset the host at this point, as the system became unstable after attempting to exploit.
 
-![image22](/VHL/Reports/010/10_22.png)
+![image22](/VHL/Reports/010/images/10_22.png)
 ## Remediation
 
 In order of accessibility (and enablement of compromise):
