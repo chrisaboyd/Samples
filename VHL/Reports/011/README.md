@@ -4,6 +4,9 @@
 
 ## Scanning and Enumerating
 
+First thing I do on each system is an nmap and nikto scan to see what I get back.
+For this system, I can see that its running ftp, ssh, tcp, and smbd.
+
 ### Nmap scan:
 ```bash
 ┌──(autorecon)─(kali㉿kali)-[~/…/11-backupadmin/results/10.14.1.4/scans]
@@ -137,11 +140,65 @@ OS and Service detection performed. Please report any incorrect results at https
 ```
 
 ## Exploitation
-```
-https://www.exploit-db.com/exploits/40163
-```
+
+### Initial Access
+First I check out the website to see what it's running for a web application.  
+![image2](/VHL/Reports/011/images/11_2.png)
+
+It's running PHP File Vault 0.9 - checking out Google, this is vulnerable to directory traversal - [40163](https://www.exploit-db.com/exploits/40163).
+Testing to see if I can get anything with this, I am able to successfullly access `/etc/passwd`, as well as directories for `/etc/apache` and `/etc/nginx`:
+![image3](/VHL/Reports/011/images/11_3.png)  
+![image1](/VHL/Reports/011/images/11_1.png)
+![image4](/VHL/Reports/011/images/11_4.png)
+
+I also run Feroxbuster at this time to see if I can enumerate directories:  
+![image13](/VHL/Reports/0111/images/11_13.png)
+
+Since I can see that there is an uploads folder, I check if I can reach it: 
+![image5](/VHL/Reports/011/images/11_5.png)  
+
+Knowing it's requiring a password, and that this is using nginx, I expect some sort of password authentication like an `.htpasswd` file somewhere - this is typically found in `/etc/apache/.htpasswd` or `/etc/apache2/.htpasswd` or `/etc/nginx/.htpasswd` (see [here](https://www.interserver.net/tips/kb/apache-htpasswd-authentication-ubuntu/)). 
 
 
+From htpasswd, i get the user + hash
+I pass the hash into hash-identifier, which tells me it's MD5 (which I would have already known as that's just the htpasswd standard) - https://httpd.apache.org/docs/2.4/programs/htpasswd.html
+
+
+![image6](/VHL/Reports/011/images/11_6.png)
+![image7](/VHL/Reports/011/images/11_7.png)
+
+
+I create the hash file, and pass this to john - john cracks it in no time with the password.
+
+![image8](/VHL/Reports/011/images/11_8.png)
+
+With the bassword and username, I am able to successfully ssh as backupuser.
+
+![image9](/VHL/Reports/011/images/11_9.png)  
+
+
+
+### Privilege Escalation
+
+
+From here, I spent quite a bit of time searching through files, checking for Synology exploits, and couldn't find anything. 
+Checking the hints on the VHL page, suggested to find SUID permission based items.
+![image10](/VHL/Reports/011/images/11_10.png)
+
+All of the `amanda` binaries immediately jumped out at me, so first I checked which version was running:
+![image14](/VHL/Reports/011/images/11_14.png)
+Then I checked google for "amanda privilege escalation 3.3.1".  
+This presented [39217](https://www.exploit-db.com/exploits/39217) and [39244](https://www.exploit-db.com/exploits/39244).  
+
+These simply required creating a shell file like follows:  
+```
+#!/bin/sh
+/bin/sh
+```
+
+Then running the amstar restore binary provides a root shell.
+
+![image15](/VHL/Reports/011/images/11_15.png)
 
 ## Identified Vulnerabilities
 * [CVE-2016-10729](https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2016-10729)
@@ -149,3 +206,15 @@ https://www.exploit-db.com/exploits/40163
 * [CVE-2016-5195](https://nvd.nist.gov/vuln/detail/cve-2016-5195)
 
 ## Remediation
+
+The main factors leading to initial access here included:
+- Using a vulnerable web application (PHP File Vault 0.9)
+- Using an insecure password - https://tech.co/password-managers/how-long-hacker-crack-password
+
+The main factor leading to privilege escalation here was:
+- SUID on a vulnerable version of amanda (3.3.1)
+
+Remediation steps would then include:
+1. Disabling / removing PHP File vault.
+2. Setting a much more sufficient password - [this](https://tech.co/password-managers/how-long-hacker-crack-password) article provides a nice chart for the difficulty in cracking various types and lengths of passwords.
+3. Upgrading the amanda installation to a non-vulnerable version. `3.3.3` appears relatively safe - `3.5.1` introduced a new vulnerability (CVE-2022-37704).
