@@ -152,7 +152,7 @@ Testing to see if I can get anything with this, I am able to successfullly acces
 ![image4](/VHL/Reports/011/images/11_4.png)
 
 I also run Feroxbuster at this time to see if I can enumerate directories:  
-![image13](/VHL/Reports/0111/images/11_13.png)
+![image13](/VHL/Reports/011/images/11_13.png)
 
 Since I can see that there is an uploads folder, I check if I can reach it: 
 ![image5](/VHL/Reports/011/images/11_5.png)  
