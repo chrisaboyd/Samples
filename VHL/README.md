@@ -73,4 +73,6 @@ VHL Overview
    * [AutoRecon](https://github.com/Tib3rius/AutoRecon) ***
    * [Pentesting](https://viperone.gitbook.io/pentest-everything/)
    * [SMB](https://viperone.gitbook.io/pentest-everything/everything/everything-active-directory/adversary-in-the-middle/smb-relay)
-   * [Shell to Meterpreter](https://docs.metasploit.com/docs/pentesting/metasploit-guide-upgrading-shells-to-meterpreter.html) 
+   * [Shell to Meterpreter](https://docs.metasploit.com/docs/pentesting/metasploit-guide-upgrading-shells-to-meterpreter.html)
+   * [Privilege Escalation via Capabilities](https://steflan-security.com/linux-privilege-escalation-exploiting-capabilities/)
+   * [Overwriting Files for Escalation](https://book.hacktricks.xyz/linux-hardening/privilege-escalation/payloads-to-execute#overwriting-a-file-to-escalate-privileges)
