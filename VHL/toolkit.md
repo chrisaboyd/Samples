@@ -18,7 +18,10 @@ tar -xvf passwd.tar -C /etc/
 ### Compiling a shell  
 
 ```c
-//gcc -fPIC -shared -o shell.so shell.c -nostartfiles
+/*
+gcc -fPIC -shared -o shell.so shell.c -nostartfiles
+used to LD_PRELOAD shell.so
+*/
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -33,6 +36,7 @@ void _init()
 EOF
 ```
 
+`gcc cowroot.c -o cowroot -pthread`
 ### Cracking Passwords with John  
 
 - `john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt --format:RAW-SHA1`
@@ -58,4 +62,7 @@ EOF
 ### Nmap Scans
 
 - `sudo nmap -vv --reason -Pn -T4 -sV -sC --version-all -A --osscan-guess -p-`
-- 
+
+### File Transferring
+
+- `python3 -m http.server 80`
