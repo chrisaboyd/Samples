@@ -81,12 +81,12 @@ OS and Service detection performed. Please report any incorrect results at https
 
 OS Type: `Linux 2.6.36 (98%)`
 
-| Port | Service | Protocol | Version |
-| -----| ------- | -------- | ------- |
-| 21   | FTP | TCP | vsftpd 3.0.2 |
-| 22  | SSH | TCP | OpenSSH 7.4 (protocol 2.0) |
-| 80   | HTTP | TCP | Apache httpd 2.4.6 ((CentOS) PHP/7.4.30) |
-| 8080   | HTTP | TCP | Apache httpd 2.4.6 ((CentOS) PHP/7.4.30) |
+| Port | Service | Protocol | Version |  
+| -----| ------- | -------- | ------- |  
+| 21 | FTP | TCP | vsftpd 3.0.2 |  
+| 22 | SSH | TCP | OpenSSH 7.4 (protocol 2.0) |  
+| 80 | HTTP | TCP | Apache httpd 2.4.6 ((CentOS) PHP/7.4.30) |  
+| 8080 | HTTP | TCP | Apache httpd 2.4.6 ((CentOS) PHP/7.4.30) |  
 
 ### Nikto
 Because I see two ports running Apache, I ran two separate Nikto scans - one for port 80, and one for 8080.  
@@ -190,11 +190,12 @@ Let's see if any of these have anything interesting?
 
 
 2. http://10.14.1.6:8080/README.md looks like there are some default username and passwords for tiny file manager.  We will note those for now, and continue checking.  
-![image3](/VHL/Reports/012/images/12_3.png)  
-| User | Pass |
-| ---- | ---- | 
-| admin | admin@123 | 
-| user | 12345 |
+![image3](/VHL/Reports/012/images/12_3.png)
+
+| User | Pass |  
+| ---- | ---- |  
+| admin | admin@123 |   
+| user | 12345 |  
 
 I also found the following snippet maybe worth remembering?
 ```
@@ -208,28 +209,28 @@ To enable/disable authentication set `$use_auth` to true or false.
 ```
 
 3. http://10.14.1.6/composer.json yields a json view with some authors, and potenitally a path? Nothing notable that I can tell.
-![image4](/VHL/Reports/012/images/12_4.png)
+![image4](/VHL/Reports/012/images/12_4.png)  
 
 4. http://10.14.1.6/config.php unfortunately yields an empty page with nothing.
 
 5. http://10.14.1.6/common.php?db_file=http://blog.cirt.net/rfiinc.txt looks like it's returning something based on the page displayed. The `?db_file=` makes me think I can possibly use it for something, but not sure what yet - will google.
-![image5](/VHL/Reports/012/images/12_5.png)  
+![image5](/VHL/Reports/012/images/12_5.png)   
 
 6. http://10.14.1.6/INSTALL.txt looks to be the default CODIAD installation steps - I'm guessing this is relevant, but I don't know what yet.
 
-![image6](/VHL/Reports/012/images/12_6.png)
+![image6](/VHL/Reports/012/images/12_6.png)  
 
    Checking on these paths, it looks like I can see / enumerate them:
-![image7](/VHL/Reports/012/images/12_7.png)
-![image8](/VHL/Reports/012/images/12_8.png)
+![image7](/VHL/Reports/012/images/12_7.png)  
+![image8](/VHL/Reports/012/images/12_8.png)  
 
-Out of all of these, none of them had anything particularly interesting, except for the `users.php` which seemed to include either a password, or a hash?
+Out of all of these, none of them had anything particularly interesting, except for the `users.php` which seemed to include either a password, or a hash?  
 ![image9](/VHL/Reports/012/images/12_9.png)
 
-| User | Hash | 
-| ---- | ---- | 
-| admin | 90b9aa7e25f80cf4f64e990b78a9fc5ebd6cecad | 
-| codiad | 2fb65d64bf68081ab054d9006ede204a6edcea79 |
+| User | Hash |  
+| ---- | ---- |  
+| admin | 90b9aa7e25f80cf4f64e990b78a9fc5ebd6cecad |  
+| codiad | 2fb65d64bf68081ab054d9006ede204a6edcea79 | 
 
 Running these through hash-identifier:
 ```
