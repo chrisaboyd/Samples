@@ -171,10 +171,10 @@ Checking Feroxbuster:
 
  
 Checking the first site running on port 80:    
-![image1](/VHL/Reports/012/12_1.png)
+![image1](/VHL/Reports/012/images/12_1.png)
 
 Checking the second page running on 8080:  
-![image2](/VHL/Reports/012/12_2.png)
+![image2](/VHL/Reports/012/images/12_2.png)
 
 There are a couple notable items from the nikto scans, namely:
 - http://10.14.1.6:8080/config.php
@@ -190,7 +190,7 @@ Let's see if any of these have anything interesting?
 
 
 2. http://10.14.1.6:8080/README.md looks like there are some default username and passwords for tiny file manager.  We will note those for now, and continue checking.  
-![image3](/VHL/Reports/012/12_3.png)  
+![image3](/VHL/Reports/012/images/12_3.png)  
 | User | Pass |
 | ---- | ---- | 
 | admin | admin@123 | 
@@ -208,23 +208,23 @@ To enable/disable authentication set `$use_auth` to true or false.
 ```
 
 3. http://10.14.1.6/composer.json yields a json view with some authors, and potenitally a path? Nothing notable that I can tell.
-![image4](/VHL/Reports/012/12_4.png)
+![image4](/VHL/Reports/012/images/12_4.png)
 
 4. http://10.14.1.6/config.php unfortunately yields an empty page with nothing.
 
 5. http://10.14.1.6/common.php?db_file=http://blog.cirt.net/rfiinc.txt looks like it's returning something based on the page displayed. The `?db_file=` makes me think I can possibly use it for something, but not sure what yet - will google.
-![image5](/VHL/Reports/012/12_5.png)  
+![image5](/VHL/Reports/012/images/12_5.png)  
 
 6. http://10.14.1.6/INSTALL.txt looks to be the default CODIAD installation steps - I'm guessing this is relevant, but I don't know what yet.
 
-![image6](/VHL/Reports/012/12_6.png)
+![image6](/VHL/Reports/012/images/12_6.png)
 
    Checking on these paths, it looks like I can see / enumerate them:
-![image7](/VHL/Reports/012/12_7.png)
-![image8](/VHL/Reports/012/12_8.png)
+![image7](/VHL/Reports/012/images/12_7.png)
+![image8](/VHL/Reports/012/images/12_8.png)
 
 Out of all of these, none of them had anything particularly interesting, except for the `users.php` which seemed to include either a password, or a hash?
-![image9](/VHL/Reports/012/12_9.png)
+![image9](/VHL/Reports/012/images/12_9.png)
 
 | User | Hash | 
 | ---- | ---- | 
@@ -253,36 +253,36 @@ Possible Hashs:
 
 Attempting to use the identified credentials `admin:admin` for the CODIAD application was successful.  
 This got me into the code browser for Web01-test project - is there anything I can do from here?
-![image10](/VHL/Reports/012/12_10.png)
+![image10](/VHL/Reports/012/images/12_10.png)
 
 Because I have an interactive code editor, and I'm an administrator for Web01-Test, and seemingly have access to the /workspace directory from earlier...I test out uploading a php reverse shell.
-![image11](/VHL/Reports/012/12_11.png)
+![image11](/VHL/Reports/012/images/12_11.png)
 
 This shows up in the workspace, once uploaded:  
-![image12](/VHL/Reports/012/12_12.png)
+![image12](/VHL/Reports/012/images/12_12.png)
 
 This yields a shell back on my listener:
-![image13](/VHL/Reports/012/12_13.png)
+![image13](/VHL/Reports/012/images/12_13.png)
 
 ### Privilege Escalation
 
 Lets start with some basics?
 I wanted to test out using the Linux Privilege Escalation Checker to see what it would find -
-![image14](/VHL/Reports/012/12_14.png)
+![image14](/VHL/Reports/012/images/12_14.png)
 
 I was able to wget this into `/tmp`, added execute permissions, and ran it - from `/tmp`.
 Unfortunately it would hang at the checking for logins in the audit logs, so no dice.
 
 From here, I decided to go back to available tools - I knew there were still config.php files kept in the directories, so maybe I could check those?
 checking the one from tinyfilemanager, yielded an encrypted password.
-![image15](/VHL/Reports/012/12_15.png)
+![image15](/VHL/Reports/012/images/12_15.png)
 
 Hash-identifier couldn't determine it, but an online hash checker showed it was bcrypt.  
 Passing this hash to john, revealed `qwerty`.
-![image16](/VHL/Reports/012/12_16.png)
+![image16](/VHL/Reports/012/images/12_16.png)
 
 This got me into the tiny file manager portal; will this give me permissions to escalate, or is this a red herring?
-![image17](/VHL/Reports/012/12_17.png)
+![image17](/VHL/Reports/012/images/12_17.png)
 
 After spending a while, I realized this was a red herring, and not what I was looking for.
 I looked back at the notes and the hints - something used for backups and compression. `tar`?
@@ -297,12 +297,12 @@ sh-4.2$
 
 I spent awhile trying to figure out what I was supposed to do this - do I get a shell? Something with suid? It didn't give me permissions directly, but clearly this was relevant.  
 My first inclination was to get `/etc/shadow/` and try to crack it with John.
-![image18](/VHL/Reports/012/12_18.png)
-![image19](/VHL/Reports/012/12_19.png)
-![image20](/VHL/Reports/012/12_20.png)
+![image18](/VHL/Reports/012/images/12_18.png)
+![image19](/VHL/Reports/012/images/12_19.png)
+![image20](/VHL/Reports/012/images/12_20.png)
 
 While this seems technically possible, this was still running after 30 minutes - I assumed this was not what was intended.  
-![image23](/VHL/Reports/012/12_23.png)
+![image23](/VHL/Reports/012/images/12_23.png)
 
 What if instead, I just inserted a user with a password of my choosing and a uid of 0 into passwd and restored it back to `/etc/passwd` with a new user in tow?
 Using `hacker:myhackerpass`:  
@@ -313,8 +313,8 @@ tar -cvf passwd.tar passwd
 tar -xvf passwd.tar -C /etc/
 ```
 
-![image21](/VHL/Reports/012/12_21.png)
-![image22](/VHL/Reports/012/12_22.png)
+![image21](/VHL/Reports/012/images/12_21.png)
+![image22](/VHL/Reports/012/images/12_22.png)
 
 Excellent!
 
