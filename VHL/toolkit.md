@@ -66,3 +66,7 @@ EOF
 ### File Transferring
 
 - `python3 -m http.server 80`
+
+### Wordpress Vulnerability Scans
+
+`wpscan --url 10.x.x.x`
