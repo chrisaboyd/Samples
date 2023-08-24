@@ -254,28 +254,46 @@ Interesting Finding(s):
 Checking `searchsploit` for "perfect survey" I find an exploit:
 ![image1](/VHL/Reports/013/image013_1.png)
 
+![image6](/VHL/Reports/013/images/13_6.png)
 
 ## Exploitation
 
 
 ### Initial Access
 
+
+
 After determining `perfect survey` was vulnerable to a SQL injection attack, and there was indeed MySQL running on the system, I decided to go ahead with this one. 
 Searchsploit yielded some results, but I had trouble working with this due to the default behaviors (although it took me awhile to figure out).
 
-...pause...
+![image2](/VHL/Reports/013/images/13_2.png)
+![image3](/VHL/Reports/013/images/13_3.png)
+![image4](/VHL/Reports/013/images/13_4.png)
+![image5](/VHL/Reports/013/images/13_5.png)
 
 From here, I spent a good hour and a half testing `prefect-survey`; it was indeed vulnerable to SQL Injection, which I was able to perform both manually, and via `php/webapps/50766.py`.
 I was able to begin successfully enumerating the wordpress tables, but it was very slow, and not yielding anything notable at the time. While this was occurring, I tested out the `tatsu` plugin instead.
 
 Googling yielded some promising results - https://github.com/darkpills/CVE-2021-25094-tatsu-preauth-rce.
 I created this locally and tested by setting up a listener - immediately this got me a shell.
+![image7](/VHL/Reports/013/images/13_7.png)
+
+![image8](/VHL/Reports/013/images/13_8.png)
+
+
+
 
 
 ### Privilege Escalation
 
 Once I was able to retrieve a shell, I determined this was on Linux 3.0, and suspected it might be vulnerable to Dirty COW. 
+![image9](/VHL/Reports/013/images/13_9.png)
+
+
 Unfortunately, it did not have the appropriate / necessary kernel modules to properly exploit (as I tested several versions of dirty COW), so proceeded to enumerate the rest of the system.
+
+![image10](/VHL/Reports/013/images/13_10.png)
+
 
 The __only__ thing that particularly stood out to me was the openssl had SUID.
 I've used openssl a lot, so this intrigued me - how can I use this to escalate permissions?
@@ -290,6 +308,8 @@ openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -node
 ```
 
 From here, I switched to `/` to set the serving directory, started a server, and retrieved `/etc/shadow`:  
+![image11](/VHL/Reports/013/images/13_11.png)
+
 ```bash
 cd /
 
@@ -323,6 +343,7 @@ mysql:!!:19145::::::
 ```
 
 I modified the root user hash to one like the preceding example: `myhackerpass` or `$1$mysalt$7DTZJIc9s6z60L6aj0Sui.`
+![image13](/VHL/Reports/013/images/13_12.png)
 
 I then encrypted this modified shadow file and restored it to /etc/shadow:
 ```bash
@@ -332,9 +353,11 @@ cd /
 
 openssl smime -decrypt -in /tmp/shadow.enc -inform DER -inkey /tmp/key.pem -out /etc/shadow
 ```
+![image013](/VHL/Reports/013/images/13_13.png)
+
 
 Lastly, I attempted to su - root, with the modified password I inserted:
-
+![image14](/VHL/Reports/013/images/13_14.png)
 Success!
 
 ## Identified Vulnerabilities
@@ -346,36 +369,15 @@ Success!
 ## Remediation
 
 The main factor(s) leading to initial access included:  
--
+- Vulnerable WordPress Plugins (both `perfect survey` and `tatsu`.
 
 The main factor(s) leading to privilege escalation here were:  
-- 
+- SUID bit on OpenSSL
 
 Remediation steps then include:
-- 
-
-Images:
-
-![image2](/VHL/Reports/013/images/13_2.png)
-![image3](/VHL/Reports/013/images/13_3.png)
-![image4](/VHL/Reports/013/images/13_4.png)
-![image5](/VHL/Reports/013/images/13_5.png)
-![image6](/VHL/Reports/013/images/13_6.png)
-![image7](/VHL/Reports/013/images/13_7.png)
-![image8](/VHL/Reports/013/images/13_8.png)
-![image9](/VHL/Reports/013/images/13_9.png)
-![image10](/VHL/Reports/013/images/13_10.png)
-![image11](/VHL/Reports/013/images/13_11.png)
-![image13](/VHL/Reports/013/images/13_12.png)
-![image013](/VHL/Reports/013/images/13_13.png)
-![image14](/VHL/Reports/013/images/13_14.png)
-![image15](/VHL/Reports/013/images/13_15.png)
-![image16](/VHL/Reports/013/images/13_16.png)
-
-| User | Pass |
-| ---- | ---- | 
-| admin | admin@133 | 
-| user | 13345 |
+- Updating versions on Perfect Survey to a non-affected version (`1.5.2`)
+- Updating version on Tatsu to a non-affected version (`3.3.12`)
+- Removing SUID on `openssl` (`sudo chmod u-s /usr/bin/openssl` or `sudo chmod 0775 /usr/bin/openssl`)
 
 ### Resources
 
