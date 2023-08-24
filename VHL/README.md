@@ -76,3 +76,4 @@ VHL Overview
    * [Shell to Meterpreter](https://docs.metasploit.com/docs/pentesting/metasploit-guide-upgrading-shells-to-meterpreter.html)
    * [Privilege Escalation via Capabilities](https://steflan-security.com/linux-privilege-escalation-exploiting-capabilities/)
    * [Overwriting Files for Escalation](https://book.hacktricks.xyz/linux-hardening/privilege-escalation/payloads-to-execute#overwriting-a-file-to-escalate-privileges)
+   * [Manually Creating /etc/shadow passowrd](https://unix.stackexchange.com/questions/81240/manually-generate-password-for-etc-shadow)
