@@ -383,3 +383,6 @@ Remediation steps then include:
 
 - https://int0x33.medium.com/day-44-linux-capabilities-privilege-escalation-via-openssl-with-selinux-enabled-and-enforced-74d2bec02099
 - https://vulp3cula.gitbook.io/hackers-grimoire/post-exploitation/privesc-linux
+- https://github.com/darkpills/CVE-2021-25094-tatsu-preauth-rce
+- https://gist.github.com/jkullick/03b98b1e44f03986c5d1fc69c092220d
+- https://github.com/Hacker5preme/Exploits/blob/main/README.md
