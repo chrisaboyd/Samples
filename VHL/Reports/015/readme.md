@@ -229,7 +229,7 @@ After a little bit of trial and effort, I decided to upload a simple bash script
 ![image9](/VHL/Reports/015/images/15_9.png)
 ![image10](/VHL/Reports/015/images/15_10.png)
 ![image11](/VHL/Reports/015/images/15_11.png)
-![image15](/VHL/Reports/015/images/15_12.png)
+![image12](/VHL/Reports/015/images/15_12.png)
 ![image13](/VHL/Reports/015/images/15_13.png)
 
 Success!
@@ -249,8 +249,8 @@ At which point I realized...does the target have `gcc` or `g++`? It does...
 ![image14](/VHL/Reports/015/images/15_14.png)
 ![image15](/VHL/Reports/015/images/15_15.png)
 ![image16](/VHL/Reports/015/images/15_16.png)
-![image16](/VHL/Reports/015/images/15_17.png)
-![image16](/VHL/Reports/015/images/15_18.png)
+![image17](/VHL/Reports/015/images/15_17.png)
+![image18](/VHL/Reports/015/images/15_18.png)
 
 Success!
 
