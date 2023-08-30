@@ -229,7 +229,7 @@ After a little bit of trial and effort, I decided to upload a simple bash script
 ![image9](/VHL/Reports/015/images/15_9.png)
 ![image10](/VHL/Reports/015/images/15_10.png)
 ![image11](/VHL/Reports/015/images/15_11.png)
-![image15](/VHL/Reports/015/images/15_15.png)
+![image15](/VHL/Reports/015/images/15_12.png)
 ![image13](/VHL/Reports/015/images/15_13.png)
 
 Success!
