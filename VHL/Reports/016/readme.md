@@ -2,22 +2,7 @@
 
 ## Scanning and Enumerating
 
-![image1](/VHL/Reports/016/images/16_1.png)
-![image2](/VHL/Reports/016/images/16_2.png)
-![image3](/VHL/Reports/016/images/16_3.png)
-![image4](/VHL/Reports/016/images/16_4.png)
-![image5](/VHL/Reports/016/images/16_5.png)
-![image6](/VHL/Reports/016/images/16_6.png)
-![image7](/VHL/Reports/016/images/16_7.png)
-![image8](/VHL/Reports/016/images/16_8.png)
-![image9](/VHL/Reports/016/images/16_9.png)
-![image10](/VHL/Reports/016/images/16_10.png)
-![image11](/VHL/Reports/016/images/16_11.png)
-![image12](/VHL/Reports/016/images/16_12.png)
-![image13](/VHL/Reports/016/images/16_13.png)
-![image14](/VHL/Reports/016/images/16_14.png)
-![image15](/VHL/Reports/016/images/16_15.png)
-![image16](/VHL/Reports/016/images/16_16.png)
+
 ### Nmap
 ```bash
 Nmap scan report for 10.14.1.20
@@ -126,27 +111,72 @@ OS Type: `Linux 2.6.32 (96%)`
 
 ### Initial Access
 
+First I loaded up the webpage, and attempted to test out CVE-2006-5412 that I found from Nikto - there was nothing available here however.
+![image1](/VHL/Reports/016/images/16_1.png)
+
+I then procedeed to dig through some of the other enumerated files - /database ?
+This yielded pretty quick results to get into the CMS system.
+![image2](/VHL/Reports/016/images/16_2.png)
+
+| User | Pass |
+| ---- | ---- | 
+| admin@localhost.local | admin123 | 
+
+I poked around to see if there was anything obvious - I first attempted to upload a reverse shell as the language file, and triggering it by navigating to the page it generated, but this didn't yield any success.
+
+I did have / find [this](https://www.exploit-db.com/exploits/49494) resource available when I was initially researching the services running.
+![image3](/VHL/Reports/016/images/16_3.png)
+
+This got me a shell very quickly. 
+
 ### Privilege Escalation
+
+Once I had a shell, I enumerated the system to see what was vulnerable on the system. 
+`python3.8` had `cap_chown+ep` which means, it has root permissions to change the ownership of items.
+![image4](/VHL/Reports/016/images/16_4.png)
+
+I already had a good idea of what to do here - because I could chown files from root to myself, I could do so with `/etc/shadow` and modify the root password.
+If I wanted to be less obvious, I could do this with `/etc/passwd` and an unassuming user like `nginx` or something, but with the uid set to 0.
+I opted just to update `/etc/shadow` here.
+![image5](/VHL/Reports/016/images/16_5.png)
+
+First I created a salted password:
+![image6](/VHL/Reports/016/images/16_6.png)
+
+Then I updated `/etc/shadow` with vim; this was honestly pretty challenging, because the terminal was interpreting my `i` and delete commands as things like `[^r` and what not.
+I just prepped another root line with the modified password, and closed my eyes while inserting that line, and deleting the original root line that was pushed down.
+
+![image7](/VHL/Reports/016/images/16_7.png)
+![image8](/VHL/Reports/016/images/16_8.png)
+![image9](/VHL/Reports/016/images/16_9.png)
+
+This did the trick, and we got root. 
 
 ## Identified Vulnerabilities
 
-- [CVE]()
-
+- [CVE-2020-35754](https://nvd.nist.gov/vuln/detail/CVE-2020-35754)
 
 ## Remediation
 
 The main factor(s) leading to initial access included:  
--
+- The /database directory was being enumerated, containing a config file with a plain-text password
+- QuickCMS 6.7 has a vulnerability allowing authenticated RCE to gain a shell
 
 The main factor(s) leading to privilege escalation here were:  
-- 
+- CAP_CHOWN on Python3.8 which effectively provides any user with `root` access to any file on the system. 
 
 Remediation steps then include:
-- 
+- Remove unnecessary files and folders from being served by the web server (like /databases).
+- Don't store files containing plain text passwords
+- Use a much more secure password
+- Remove cap_chown capability from Python. 
 
 
+### Resources
 
-| User | Pass |
-| ---- | ---- | 
-| admin | admin@123 | 
-| user | 12345 |
+- https://attackdefense.com/challengedetailsnoauth?cid=1365
+- https://www.exploit-db.com/exploits/49494
+- https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php
+- https://tbhaxor.com/exploiting-linux-capabilities-part-3/
+
+
