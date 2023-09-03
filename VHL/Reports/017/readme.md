@@ -1,11 +1,8 @@
 # Pentest 17 - Tiki - 39 - 10.14.1.39
 
 ## Scanning and Enumerating
-![image1](/VHL/Reports/017/images/17_1.png)
-![image2](/VHL/Reports/017/images/17_2.png)
-![image3](/VHL/Reports/017/images/17_3.png)
-![image4](/VHL/Reports/017/images/17_4.png)
-![image5](/VHL/Reports/017/images/17_5.png)
+
+
 ![image6](/VHL/Reports/017/images/17_6.png)
 ![image7](/VHL/Reports/017/images/17_7.png)
 ![image8](/VHL/Reports/017/images/17_8.png)
@@ -227,6 +224,18 @@ MySQL is exposed, but I can't connect from my host.
 
 ### Initial Access
 
+First I poked at the various sites to try and find what version of Tiki this was running. 
+Nmap and Nikto didn't really report anything amazing - the server on port 8080 had default redirects so I couldn't enumerate anything there.  Checking the Tiki page, there wasn't anything particularly special, except for the `/README` which divulged that this was Tiki Wiki 21.1.
+
+Checking on the internets, and searchsploit, `21.1` in particular is vulnerable to an authentication brute force where enough invalid login attempts will permit a login unauthenticated as the admin user. My first attempt was with a python script to automate this, but after getting nowhere with it, I decided to try my hand at Burpsuite.
+
+![image1](/VHL/Reports/017/images/17_1.png)
+![image2](/VHL/Reports/017/images/17_2.png)
+![image3](/VHL/Reports/017/images/17_3.png)
+![image4](/VHL/Reports/017/images/17_4.png)
+![image5](/VHL/Reports/017/images/17_5.png)
+
+This got me into Tiki Wiki - now what?
 ### Privilege Escalation
 
 ## Identified Vulnerabilities
