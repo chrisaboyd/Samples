@@ -132,6 +132,10 @@ Notable items:
 ```
 ## Exploitation
 
+| User | Pass |
+| ---- | ---- | 
+| admin | nas4free123 | 
+
 ### Initial Access
 
 I already had the password from [Anthony](/VHL/Reports/007/readme.md), which was `admin:nas4free123`. 
@@ -173,14 +177,3 @@ The main factor(s) leading to privilege escalation here were:
 Remediation steps then include:
 - Run as a lesser privileged user
 - Change the password
-
-Images:
-
-![image2](/VHL/Reports/021/images/21_2.png)
-
-
-
-| User | Pass |
-| ---- | ---- | 
-| admin | admin@123 | 
-| user | 12345 |
