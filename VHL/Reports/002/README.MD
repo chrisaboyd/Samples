@@ -47,7 +47,7 @@ So we see FTP and 80 (http) open
 Additionally, we can see it's using "Wing FTP Server"  
 Lets search and see if there is anything in searchsploit.  
 Additionally since it's open on port 80, lets see if there is anything on the page?  
-![Image1](/VHL/Reports/2/2_1.png)
+![Image1](/VHL/Reports/002/2_1.png)
 
 Let's also see if we can determine what OS is being used:
 ```bash
@@ -70,7 +70,7 @@ Wing FTP Server Admin 4.4.5 - Multiple Vulnerabilities                          
 ```
 
 Since we know anonymous ftp is allowed, maybe we can try that?  
-![Image2](/VHL/Reports/2/2_2.png)
+![Image2](/VHL/Reports/002/2_2.png)
 
 So we know that we can get into the server using anonymous login (with no password). 
 Can we do anything with this?   
@@ -121,7 +121,7 @@ It looks like we are getting a page response from one of these, so can we pull a
 10.14.1.36:7466 yields nothing , but 10.14.1.36:5466 gives us the admin page!  
 Lets try admin:admin?   
 Wow, I didn't expect that to work…  
-![Image3](/VHL/Reports/2/2_3.png)
+![Image3](/VHL/Reports/002/2_3.png)
 
 So right now, we have both a metasploit that can take an admin user/password, as well as FTP webpage administrator access.  
 Lets try metasploit first to see where this gets us?  
