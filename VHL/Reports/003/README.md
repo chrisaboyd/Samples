@@ -257,8 +257,8 @@ Finished
 
 Well after a lot of trial and effort, I realized…I reset an administrator password to gain access to the webpage…can I get to the login page and use those credentials?
 
-![Image1](/VHL/Reports/3/3_1.png)
-![Image2](/VHL/Reports/3/3_2.png)
+![Image1](/VHL/Reports/003/3_1.png)
+![Image2](/VHL/Reports/003/3_2.png)
 
 Soo…ssh? Mantis/mantis4testing? Install on this tst server?
 Ok…
