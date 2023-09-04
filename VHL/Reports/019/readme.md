@@ -1,5 +1,5 @@
 
-# Pentest 19 - <Name> - <Box> - <IP Address>
+# Pentest 19 - Natual - 77 - 10.14.1.77
 
 ## Scanning and Enumerating
 
@@ -120,47 +120,83 @@ OS and Service detection performed. Please report any incorrect results at https
 
 ```
 
-OS Type: `Linux 2.6.36 (98%)`
+OS Type: `Linux 2.6.32 (97%)`
 
 | Port | Service | Protocol | Version |
 | -----| ------- | -------- | ------- |
-| 21   | FTP | TCP | vsftpd 3.0.2 |
-| 22  | SSH | TCP | OpenSSH 7.4 (protocol 2.0) |
-| 80   | HTTP | TCP | Apache httpd 2.4.6 ((CentOS) PHP/7.4.30) |
-| 8080   | HTTP | TCP | Apache httpd 2.4.6 ((CentOS) PHP/7.4.30) |
+| 21   | FTP | TCP | vsftpd 2.2.2 |
+| 22  | SSH | TCP | OpenSSH 5.3 (protocol 2.0) |
+| 80   | HTTP | TCP | Apache httpd 2.2.15 ((CentOS)) |
+| 111 | rpcbind | TCP | ??? |
+| 443   | HTTPS | TCP | Apache httpd 2.2.15 ((CentOS)) |
 
 
 Notable items:  
-Anonymous FTP is permitted
-Tiny File Manager on 8080?
+Nothing in particular?
 
 ### Nikto
 ```bash
+└─$ cat tcp_80_http_nikto.txt  
+- Nikto v2.5.0
+---------------------------------------------------------------------------
++ Target IP:          10.14.1.77
++ Target Hostname:    10.14.1.77
++ Target Port:        80
++ Start Time:         2023-08-06 16:37:30 (GMT-4)
+---------------------------------------------------------------------------
++ Server: Apache/2.2.15 (CentOS)
++ /: Server may leak inodes via ETags, header found with file /, inode: 261182, size: 13351, mtime: Tue Oct  3 18:26:06 2017. See: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2003-1418
++ /: The anti-clickjacking X-Frame-Options header is not present. See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
++ /: The X-Content-Type-Options header is not set. This could allow the user agent to render the content of the site in a different fashion to the MIME type. See: https://www.netsparker.com/web-vulnerability-scanner/vulnerabilities/missing-content-type-header/
++ Apache/2.2.15 appears to be outdated (current is at least Apache/2.4.54). Apache 2.2.34 is the EOL for the 2.x branch.
++ OPTIONS: Allowed HTTP Methods: GET, HEAD, POST, OPTIONS, TRACE .
++ /: HTTP TRACE method is active which suggests the host is vulnerable to XST. See: https://owasp.org/www-community/attacks/Cross_Site_Tracing
++ /icons/: Directory indexing found.
++ /icons/README: Apache default file found. See: https://www.vntweb.co.uk/apache-restricting-access-to-iconsreadme/
++ /contact.php?blog_theme=http://blog.cirt.net/rfiinc.txt: Retrieved x-powered-by header: PHP/5.3.3.
++ 8478 requests: 0 error(s) and 9 item(s) reported on remote host
++ End Time:           2023-08-06 17:25:37 (GMT-4) (2887 seconds)
+---------------------------------------------------------------------------
++ 1 host(s) tested
+
+
+- Nikto v2.5.0
+---------------------------------------------------------------------------
++ Target IP:          10.14.1.77
++ Target Hostname:    10.14.1.77
++ Target Port:        443
+---------------------------------------------------------------------------
++ SSL Info:        Subject:  /C=--/ST=SomeState/L=SomeCity/O=SomeOrganization/OU=SomeOrganizationalUnit/CN=natural/emailAddress=root@natural
+                   Ciphers:  ECDHE-RSA-AES256-GCM-SHA384
+                   Issuer:   /C=--/ST=SomeState/L=SomeCity/O=SomeOrganization/OU=SomeOrganizationalUnit/CN=natural/emailAddress=root@natural
++ Start Time:         2023-08-06 16:37:30 (GMT-4)
+---------------------------------------------------------------------------
++ Server: Apache/2.2.15 (CentOS)
++ /: Server may leak inodes via ETags, header found with file /, inode: 261182, size: 13351, mtime: Tue Oct  3 18:26:06 2017. See: http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2003-1418
++ /: The anti-clickjacking X-Frame-Options header is not present. See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
++ /: The site uses TLS and the Strict-Transport-Security HTTP header is not defined. See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
++ /: The X-Content-Type-Options header is not set. This could allow the user agent to render the content of the site in a different fashion to the MIME type. See: https://www.netsparker.com/web-vulnerability-scanner/vulnerabilities/missing-content-type-header/
++ Apache/2.2.15 appears to be outdated (current is at least Apache/2.4.54). Apache 2.2.34 is the EOL for the 2.x branch.
++ Hostname '10.14.1.77' does not match certificate's names: natural. See: https://cwe.mitre.org/data/definitions/297.html
++ OPTIONS: Allowed HTTP Methods: GET, HEAD, POST, OPTIONS, TRACE .
++ /: HTTP TRACE method is active which suggests the host is vulnerable to XST. See: https://owasp.org/www-community/attacks/Cross_Site_Tracing
++ /icons/: Directory indexing found.
++ /icons/README: Apache default file found. See: https://www.vntweb.co.uk/apache-restricting-access-to-iconsreadme/
++ /contact.php?blog_theme=http://blog.cirt.net/rfiinc.txt: Retrieved x-powered-by header: PHP/5.3.3.
 
 ```
 ## Exploitation
 
 ### Initial Access
+Ran the typical nmap + nikto scans to see what was available.
+Nikto didn't really report anything special, and neither did nmap.
+I started just browsing the portal, and see that there is both an `uploads` folder, and a file upload option.
+I tested just uploading my `shell.php` directly, but it looks like mime-types are being blocked.
 
-### Privilege Escalation
+I attempted to fuzz all the mime-types from [this]() list first using BurpSuite, but none of them went through.
+At this point, it became obvious that the site literally tells me it accepts PDF, so I just set `application/pdf` in the header, which was successfully uploaded.
 
-## Identified Vulnerabilities
-
-- [CVE]()
-
-
-## Remediation
-
-The main factor(s) leading to initial access included:  
--
-
-The main factor(s) leading to privilege escalation here were:  
-- 
-
-Remediation steps then include:
-- 
-
-Images:
+I setup my listener, and received a shell from here. 
 ![image1](/VHL/Reports/019/images/19_1.png)
 ![image2](/VHL/Reports/019/images/19_2.png)
 ![image3](/VHL/Reports/019/images/19_3.png)
@@ -172,16 +208,40 @@ Images:
 ![image9](/VHL/Reports/019/images/19_9.png)
 ![image10](/VHL/Reports/019/images/19_10.png)
 ![image11](/VHL/Reports/019/images/19_11.png)
+
+
+### Privilege Escalation
+
+First things first, I get into an executable directory, and begin enumerating the system.
+`linpeas.sh` took a long time to run, and it seems there was a memory leak that caused it to crash, but I did identify an interesting binary named `backdoor` before it did.
+
 ![image12](/VHL/Reports/019/images/19_12.png)
+
+This looks like a `root:root` binary for `vim` with SUID? 
 ![image13](/VHL/Reports/019/images/19_13.png)
 ![image14](/VHL/Reports/019/images/19_14.png)
 ![image15](/VHL/Reports/019/images/19_15.png)
+
+Sure is - it's really frustrating editing using VIM through a remote shell like this, since it takes all input and shows interpreted characters like `['` etc, but
+I was able to successfully insert the same `hacker:myhackerpass` that I've used a number of times now, and gain root permissions. 
 ![image16](/VHL/Reports/019/images/19_16.png)
+![image17](/VHL/Reports/019/images/19_17.png)
 
-| User | Pass |
-| ---- | ---- | 
-| admin | admin@123 | 
-| user | 12345 |
+## Identified Vulnerabilities
 
-mysql -u root -p 
-root  TiKiR00t08@
+- No identified CVE's
+
+
+## Remediation
+
+The main factor(s) leading to initial access included:  
+- The ability to upload a `shell.php`
+- The ability to trigger the shell via `/uploads`
+
+The main factor(s) leading to privilege escalation here were:  
+- A file editor owned as `root:root` and with SUID permissions (meaning any file can be opened and edited as root)
+
+Remediation steps then include:
+- Remove the backdoor binary
+- Randomize file uploads to a randomized UUID
+- Don't allow / expose the upload directory 
