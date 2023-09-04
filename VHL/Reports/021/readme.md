@@ -133,19 +133,29 @@ Notable items:
 ## Exploitation
 
 ### Initial Access
+
 I already had the password from [Anthony](/VHL/Reports/007/readme.md), which was `admin:nas4free123`. 
 Once I connected, I poked around the browser, finding a file uploader AND editor.
+![image1](/VHL/Reports/021/images/21_1.png)
+![image2](/VHL/Reports/021/images/21_2.png)
+![image3](/VHL/Reports/021/images/21_3.png)
+![image4](/VHL/Reports/021/images/21_4.png)
+![image5](/VHL/Reports/021/images/21_5.png)
+
+
 Additionally, based on my scanning results, I could see on 8080 there were files being enumerated in `/var/www/html`.
 I re-used my `shell.php` and triggered this - I got a shell!
 
 ### Privilege Escalation
 There was no privilege escalation here, but I was also not running as root in this case. 
+![image6](/VHL/Reports/021/images/21_6.png)
 I didnt have uname, or wget, to enumerate. Going back and reading the notes, it seems like I just needed to get the `key.txt`? 
 What I noticed interesting, was that the filebrowser had the path in the URL that it was constructing like :
 `?action=list&dir=var%2Fwww%2Fhtml%2Ffiles&order=name&srt=yes`
 
 What if I just checked `/root?`
 
+![image7](/VHL/Reports/021/images/21_7.png)
 Success!
 ## Identified Vulnerabilities
 
@@ -165,22 +175,10 @@ Remediation steps then include:
 - Change the password
 
 Images:
-![image1](/VHL/Reports/021/images/21_1.png)
+
 ![image2](/VHL/Reports/021/images/21_2.png)
-![image3](/VHL/Reports/021/images/21_3.png)
-![image4](/VHL/Reports/021/images/21_4.png)
-![image5](/VHL/Reports/021/images/21_5.png)
-![image6](/VHL/Reports/021/images/21_6.png)
-![image7](/VHL/Reports/021/images/21_7.png)
-![image8](/VHL/Reports/021/images/21_8.png)
-![image9](/VHL/Reports/021/images/21_9.png)
-![image10](/VHL/Reports/021/images/21_10.png)
-![image11](/VHL/Reports/021/images/21_11.png)
-![image12](/VHL/Reports/021/images/21_12.png)
-![image13](/VHL/Reports/021/images/21_13.png)
-![image14](/VHL/Reports/021/images/21_14.png)
-![image15](/VHL/Reports/021/images/21_15.png)
-![image16](/VHL/Reports/021/images/21_16.png)
+
+
 
 | User | Pass |
 | ---- | ---- | 
