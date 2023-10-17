@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, jsonify, session
 
 import csv
+import math
 
 predefined_weapons = []
 
@@ -76,12 +77,12 @@ def monster_hunter_calculator(session):
     
     # Prepare and return the results
     results = {
-        "total_raw": total_raw,
-        "total_element": total_element,
-        "displayed_damage": display_damage,
-        "critical_damage": critical_damage,
-        "average_damage": average_damage_per_hit,
-        "expected_sum_damage": expected_sum_damage_100_attacks
+        "total_raw": math.floor(total_raw),
+        "total_element": math.floor(total_element),
+        "displayed_damage": math.floor(display_damage),
+        "critical_damage": math.floor(critical_damage),
+        "average_damage": math.floor(average_damage_per_hit),
+        "expected_sum_damage": math.floor(expected_sum_damage_100_attacks)
     }
     
     return results
