@@ -7,7 +7,7 @@ import random
 import sys
 from prefect.runner.storage import GitRepository
 from prefect.blocks.system import Secret
-
+from functools import wraps
 
 
 def send_email(msg):
@@ -55,16 +55,27 @@ def wrapped_flow(**kwargs):
     )
 
 
-def send_email_wrapper(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        send_email("This is in the start wrapper")
-        return func(*args, **kwargs)
-    return wrapper
+# def send_email_wrapper(func):
+#     def wrapper(*args, **kwargs):
+#         send_email("This is in the start wrapper")
+#         return func(*args, **kwargs)
+#     return wrapper
+
+def email_with_args(msg, email):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            send_email(msg)
+            # You can add more logic here if needed
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
 
 
 @wrapped_flow()
-@send_email_wrapper
+@email_with_args(
+    msg="This is in the start wrapper",
+    email="abc@prefect.io")
 def hello_flow():
     logger = get_run_logger()
     logger.info("Hello world!")
@@ -79,7 +90,7 @@ def hello_flow():
 
 if __name__ == "__main__":
     # hello_flow()
-    flow.__wrapped__.from_source(
+    flow.from_source(
         source=GitRepository(
             url="https://github.com/chrisaboyd/Samples.git"
         ),
