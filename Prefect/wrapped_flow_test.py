@@ -71,4 +71,14 @@ def hello_flow():
 
 
 if __name__ == "__main__":
-    hello_flow()
+    # hello_flow()
+    flow.from_source(
+        source=GitRepository(
+            url="https://github.com/chrisaboyd/Samples.git"
+        ),
+        entrypoint="Prefect/wrapped_flow_test.py:hello_flow"
+    ).deploy(
+        name=f"decorated_and_wrapped_flow",
+        work_pool_name="dev",
+        build=False
+    )
