@@ -56,6 +56,7 @@ def wrapped_flow(**kwargs):
 
 
 def send_email_wrapper(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         send_email("This is in the start wrapper")
         return func(*args, **kwargs)
@@ -78,7 +79,7 @@ def hello_flow():
 
 if __name__ == "__main__":
     # hello_flow()
-    flow.from_source(
+    flow.__wrapped__.from_source(
         source=GitRepository(
             url="https://github.com/chrisaboyd/Samples.git"
         ),
