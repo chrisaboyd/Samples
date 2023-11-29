@@ -57,7 +57,7 @@ def send_logs(func):
         return func(*args, **kwargs)
     return wrapper
 
-# @send_logs
+@send_logs
 @flow
 def hello_flow():
     logger = get_run_logger()
