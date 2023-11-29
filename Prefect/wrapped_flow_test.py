@@ -6,12 +6,17 @@ from email.mime.multipart import MIMEMultipart
 import random
 import sys
 from prefect.runner.storage import GitRepository
+from prefect.blocks.system import Secret
+
+
 
 def send_email(msg):
 # Email Parameters
     sender_email = "chris.allan.boyd@gmail.com"
     receiver_email = "chris.b@prefect.io"
-    password = os.environ.get('EMAIL_PASSWORD')  # Read password from environment variable
+    password = Secret.load("emailapp").get()
+
+    #password = os.environ.get('EMAIL_PASSWORD')  # Read password from environment variable
 
     # Create the MIME Object
     message = MIMEMultipart()
@@ -50,16 +55,15 @@ def wrapped_flow(**kwargs):
     )
 
 
-def send_logs(func):
+def send_email_wrapper(func):
     def wrapper(*args, **kwargs):
-        print("Sending some logs")
-        print("Sending some logs to stderr", file=sys.stderr)
+        send_email("This is in the start wrapper")
         return func(*args, **kwargs)
     return wrapper
 
 
 @wrapped_flow()
-@send_logs
+@send_email_wrapper
 def hello_flow():
     logger = get_run_logger()
     logger.info("Hello world!")
