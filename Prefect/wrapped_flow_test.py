@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import random
 import sys
+from prefect.runner.storage import GitRepository
 
 def send_email(msg):
 # Email Parameters
@@ -56,8 +57,8 @@ def send_logs(func):
         return func(*args, **kwargs)
     return wrapper
 
-@send_logs
-@wrapped_flow()
+# @send_logs
+@flow
 def hello_flow():
     logger = get_run_logger()
     logger.info("Hello world!")
