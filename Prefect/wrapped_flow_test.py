@@ -66,16 +66,16 @@ def email_with_args(msg, email):
         def wrapper(*args, **kwargs):
             send_email(msg)
             # You can add more logic here if needed
-            return func(*args, **kwargs)
+            result = func(*args, **kwargs)
+            return result
         return wrapper
     return decorator
 
 
-
-@wrapped_flow()
 @email_with_args(
     msg="This is in the start wrapper",
     email="abc@prefect.io")
+@wrapped_flow()
 def hello_flow():
     logger = get_run_logger()
     logger.info("Hello world!")
