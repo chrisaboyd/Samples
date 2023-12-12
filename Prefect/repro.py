@@ -1,8 +1,9 @@
 from prefect import flow, get_run_logger
 from prefect.context import FlowRunContext
+from prefect.runner.storage import GitRepository
 
 @flow(name="test")
-def heartbeat(partial_run_tasks: list[str] | None = None):
+def heartbeat(partial_run_tasks: list[str]):
     flow_run_ctx = FlowRunContext.get()
     partial_run_tasks = flow_run_ctx.parameters.get("partial_run_tasks")
     get_run_logger.info(f"partial_run_tasks: {partial_run_tasks}")
