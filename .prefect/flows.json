@@ -1,4 +1,3 @@
 {
-  "foo": "hello_world.py:foo",
-  "hello-world": "Prefect/hello_world.py:hello_world"
+  "hello-world": "Prefect/Prefect/hello_world.py:hello_world"
 }

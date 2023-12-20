@@ -13,11 +13,11 @@ build: null
 push: null
 
 # pull section allows you to provide instructions for cloning this project in remote locations
-pull:
-- prefect.deployments.steps.git_clone:
-    repository: git@github.com:chrisaboyd/Samples.git
-    branch: main
-    access_token: null
+pull: null
+#- prefect.deployments.steps.git_clone:
+#    repository: git@github.com:chrisaboyd/Samples.git
+#    branch: main
+#    access_token: null
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
@@ -28,8 +28,9 @@ deployments:
     work_queue_name: null
     job_variables: {}
 - name: hello_world_k8s
-  entrypoint: ./Prefect/hello_world.py:hello_world
+  entrypoint: /opt/prefect/flows/hello_world.py:hello_world
   work_pool:
     name: kubernetes
-    work_queue_name: null
-    job_variables: {}
+    work_queue_name: default
+    job_variables:
+      image: chaboy/hello_world:latest

@@ -3,11 +3,12 @@
 **__pycache__**
 
 ## terraform files
-.terraform
-.terraform.*
-.terraform.lock.hcl
-terraform.*
+**/.terraform
+**/.terraform.*
+**/.terraform.lock.hcl
+**/terraform.*
 **.tgz
+**/.auto.tfvars
 Chart.lock
 .chalice
 .chalice.*

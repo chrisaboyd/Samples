@@ -1,5 +1,4 @@
-FROM prefecthq/prefect:2-latest
+FROM prefecthq/prefect:2.11.3-python3.11
 
-COPY logging.yml /root/logging.yml
+COPY hello_world.py /opt/prefect/flows/
 
-ENV PREFECT_LOGGING_SETTINGS_PATH=/root/logging.yml
