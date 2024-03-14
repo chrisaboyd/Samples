@@ -22,6 +22,7 @@ def extract_ips(file_path):
 
 def run_command(ip, user, password, enum_users, enum_shares, dry=False):
     # Replace this with the actual command you want to run
+
     cmd = ["crackmapexec", "smb", ip, "-u", user, "-p", password]
 
     if enum_users:
@@ -37,7 +38,9 @@ def run_command(ip, user, password, enum_users, enum_shares, dry=False):
         return result.stdout.decode('utf-8'), result.stderr.decode('utf-8')
 
 def main():
-    parser = argparse.ArgumentParser(description='Run commands against IP addresses')
+    parser = argparse.ArgumentParser(description='Run comands against a list of IP addresses.')
+    
+    #  python subnet_parser.py --user '' --password '' --users true --shares true --file ./nets.txt
     
     # Set default values for --user and --password to an empty string
     parser.add_argument('--user', type=str, default='', help='User for the command')
@@ -47,8 +50,16 @@ def main():
     parser.add_argument('--shares', type=bool, help='Enumerate Shares boolean')
     parser.add_argument('--file', type=str, required=True, help='File containing IP addresses')
     
+
+
     args = parser.parse_args()
-    
+
+    if not args.password:
+        args.password = '\'\''
+
+    if not args.user:
+        args.user = '\'\''
+
     ips = extract_ips(args.file)
 
     with open('cleaned_ips.out', 'w') as f:
