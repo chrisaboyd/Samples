@@ -46,8 +46,8 @@ def main():
     parser.add_argument('--user', type=str, default='', help='User for the command')
     parser.add_argument('--password', dest='password', type=str, default='', help='Password for the command')
     parser.add_argument('--dry', action='store_true', help='Print the command instead of executing it')
-    parser.add_argument('--users', type=bool, help='Enumerate users boolean')
-    parser.add_argument('--shares', type=bool, help='Enumerate Shares boolean')
+    parser.add_argument('--users', action="store_true", help='Enumerate users boolean')
+    parser.add_argument('--shares', action="store_true", help='Enumerate Shares boolean')
     parser.add_argument('--file', type=str, required=True, help='File containing IP addresses')
     
 
