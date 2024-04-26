@@ -8,6 +8,12 @@ brew install operator-sdk
 
 ### Pre-requisites
 Kubernetes cluster (can be a local one like Minikube or Kind)
+
+```bash 
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-arm64
+sudo install minikube-darwin-arm64 /usr/local/bin/minikube
+```
+
 Go programming environment (most operators are written in Go)
 Access to your Kubernetes API from your development environment
 
