@@ -31,9 +31,10 @@ BLUE2 = (0, 100, 255)
 BLACK = (0,0,0)
 
 BLOCK_SIZE = 20
-SPEED = 20
+SPEED = 200
 
 # Update from SnakeGame to inform us its agent controlled
+
 class SnakeGameAI:
     
     def __init__(self, w=640, h=480):
@@ -51,6 +52,7 @@ class SnakeGameAI:
         # init game state
         self.direction = Direction.RIGHT
         self.head = Point(self.w/2, self.h/2)
+
         self.snake = [self.head, 
                       Point(self.head.x-BLOCK_SIZE, self.head.y),
                       Point(self.head.x-(2*BLOCK_SIZE), self.head.y)]
@@ -67,6 +69,7 @@ class SnakeGameAI:
         if self.food in self.snake:
             self._place_food()
         
+
     # Update the function to take an action instead
     def play_step(self, action):
         self.frame_iteration += 1
@@ -94,7 +97,7 @@ class SnakeGameAI:
         # 3. check if game over
         reward = 0 # eat food += 10, game over -= 10 
         game_over = False
-        if self._is_collision() or self.frame_iteration > 100*len(self.snake): # we need to break if the game is doing nothing
+        if self.is_collision() or self.frame_iteration > 100*len(self.snake): # we need to break if the game is doing nothing
             game_over = True 
             reward = -10 # -10 points for game over
             return reward, game_over, self.score # we updated to return the reward 
@@ -113,7 +116,7 @@ class SnakeGameAI:
         # 6. return game over and score
         return reward, game_over, self.score
     
-    def _is_collision(self, pt=None): # we add in a pointer to calculate danger left / right straight, and replace self.head
+    def is_collision(self, pt=None): # we add in a pointer to calculate danger left / right straight, and replace self.head
         if pt is None:
             pt = self.head
         # hits boundary
