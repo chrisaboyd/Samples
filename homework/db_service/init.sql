@@ -12,6 +12,7 @@ CREATE TABLE users (
 CREATE TABLE messages (
   id SERIAL PRIMARY KEY,
   content TEXT NOT NULL,
+  embedding TEXT,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

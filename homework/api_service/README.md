@@ -1,17 +1,18 @@
 # API Service
 
-This is a FastAPI-based API service that connects to the PostgreSQL database.
+This is a FastAPI-based API service that communicates with the RAG service to retrieve data.
 
 ## Features
 
 - RESTful API built with FastAPI
-- Connects to PostgreSQL database
+- Communicates with the RAG service
 - Endpoints for accessing users, items, and the "hello world" message
+- No direct database connection
 
 ## API Endpoints
 
 - `GET /`: Returns 404 Not Found
-- `POST /api/hello`: Retrieve the "hello world" message from the database (requires message payload)
+- `POST /api/hello`: Retrieve the "hello world" message (requires message payload)
 - `GET /api/users`: Get a list of all users
 - `GET /api/items`: Get a list of all items
 - `GET /api/items/{item_id}`: Get a specific item by ID
@@ -51,10 +52,7 @@ Once the service is running, you can access the interactive API documentation:
 - [FastAPI](https://fastapi.tiangolo.com/) - Modern, fast web framework for building APIs
 - [Uvicorn](https://www.uvicorn.org/) - ASGI server for FastAPI applications
 - [Pydantic](https://docs.pydantic.dev/) - Data validation and settings management
-
-### Database
-- [SQLAlchemy](https://docs.sqlalchemy.org/) - SQL toolkit and ORM
-- [Psycopg2](https://www.psycopg.org/docs/) - PostgreSQL adapter for Python
+- [HTTPX](https://www.python-httpx.org/) - HTTP client for Python
 
 ### Development Tools
 - [Docker](https://docs.docker.com/) - Container Runtime 

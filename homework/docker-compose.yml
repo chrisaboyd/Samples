@@ -11,15 +11,35 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: api_db
-      POSTGRES_USER: api_user
-      POSTGRES_PASSWORD: api_password
+      POSTGRES_DB: ${DB_NAME:-api_db}
+      POSTGRES_USER: ${DB_USER:-api_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-api_password}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U api_user -d api_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-api_user} -d ${DB_NAME:-api_db}"]
       interval: 5s
       timeout: 5s
       retries: 5
+
+  rag:
+    build:
+      context: ./rag_service
+      dockerfile: Dockerfile
+    container_name: rag_service
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-api_user}:${DB_PASSWORD:-api_password}@postgres:5432/${DB_NAME:-api_db}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/health || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   api:
     build:
@@ -29,10 +49,10 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      postgres:
+      rag:
         condition: service_healthy
     environment:
-      DB_CONN_STRING: postgresql://api_user:api_password@postgres:5432/api_db
+      RAG_SERVICE_URL: http://rag:8081
     restart: unless-stopped
 
 volumes:
