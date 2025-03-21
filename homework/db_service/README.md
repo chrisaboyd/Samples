@@ -17,9 +17,19 @@ The database contains the following tables:
 # Start the database service
 docker-compose up -d
 
+[+] Running 4/4
+ ✔ postgres                           Built                                                                                                                                              0.0s 
+ ✔ Network db_service_default         Created                                                                                                                                            0.0s 
+ ✔ Volume "db_service_postgres_data"  Created                                                                                                                                            0.0s 
+ ✔ Container api_postgres             Started                                                                                                                                            0.2s 
+
 # To stop the service
 docker-compose down
 ```
+[+] Running 2/2
+ ✔ Container api_postgres      Removed                                                                                                                                                   0.2s 
+ ✔ Network db_service_default  Removed                                                                                                                                                   0.2s 
+ ```
 
 ### Connecting to the Database
 
@@ -39,10 +49,25 @@ SELECT content FROM messages WHERE content = 'hello world';
 
 ## For API Integration
 
-When building your API server container, you can connect to this database with the following connection string:
-
+When connecting to the database locally, use the connection string:
 ```
 postgresql://api_user:api_password@postgres:5432/api_db
 ```
 
-If your API server is running in a separate Docker container, make sure they are on the same Docker network. 
+If connecting in Kubernetes, this can be stored as a Secret:
+```
+kubectl create secret generic ps_pg_conn key='postgresql://api_user:api_password@postgres:5432/api_db'
+```
+
+Then referenced in the deployment:
+```
+spec:
+  containers:
+  ...
+    env:
+    - name: PS_PG_CONNENCTION_STRING
+      valueFrom:
+        secretKeyRef:
+          name: ps_pg_conn
+          key: key
+```
