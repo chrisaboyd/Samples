@@ -1,8 +1,40 @@
-module "ecr" {
+module "ecr_api_service" {
   source  = "terraform-aws-modules/ecr/aws"
   version = "2.3.1"
 
-  repository_name = local.name
+  repository_name = local.api_service_name
+
+  repository_read_write_access_arns = ["arn:aws:iam::250037329208:user/terraform-dev"]
+
+  repository_lifecycle_policy = jsonencode({
+    rules = [
+      {
+        rulePriority = 1,
+        description  = "Keep last 30 images",
+        selection = {
+          tagStatus     = "tagged",
+          tagPrefixList = ["v"],
+          countType     = "imageCountMoreThan",
+          countNumber   = 30
+        },
+        action = {
+          type = "expire"
+        }
+      }
+    ]
+  })
+
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}
+
+module "ecr_rag_service" {
+  source  = "terraform-aws-modules/ecr/aws"
+  version = "2.3.1"
+
+  repository_name = local.rag_service_name
 
   repository_read_write_access_arns = ["arn:aws:iam::250037329208:user/terraform-dev"]
 

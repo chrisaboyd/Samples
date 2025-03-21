@@ -1,14 +1,26 @@
 output "ecr_arn" {
-  value = module.ecr.repository_arn
+  value = module.ecr_api_service.repository_arn
 }
 output "ecr_url" {
-  value = module.ecr.repository_url
+  value = module.ecr_api_service.repository_url
 }
 output "ecr_name" {
-  value = module.ecr.repository_name
+  value = module.ecr_api_service.repository_name
 }
 output "ecr_registry_id" {
-  value = module.ecr.repository_registry_id
+  value = module.ecr_api_service.repository_registry_id
+}
+output "ecr_rag_service_name" {
+  value = module.ecr_rag_service.repository_name
+}
+output "ecr_rag_service_arn" {
+  value = module.ecr_rag_service.repository_arn
+}
+output "ecr_rag_service_registry_id" {
+  value = module.ecr_rag_service.repository_registry_id
+}
+output "ecr_rag_service_url" {
+  value = module.ecr_rag_service.repository_url
 }
 # output "redis_primary_cache_endpoint" {
 #   value = module.redis.redis_primary_cache_endpoint
