@@ -11,10 +11,10 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: api_db
-      POSTGRES_USER: api_user
-      POSTGRES_PASSWORD: api_password
-      DB_CONN_STRING: postgresql://api_user:api_password@postgres:5432/api_db
+      POSTGRES_DB: ${DB_NAME:-api_db}
+      POSTGRES_USER: ${DB_USER:-api_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-api_password}
+      DATABASE_URL: postgresql://${DB_USER:-api_user}:${DB_PASSWORD:-api_password}@postgres:5432/${DB_NAME:-api_db}
     restart: unless-stopped
 
 volumes:
