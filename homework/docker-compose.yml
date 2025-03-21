@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     build:
-      context: .
+      context: ./db_service
       dockerfile: Dockerfile
     container_name: api_postgres
     ports:
@@ -14,6 +14,24 @@ services:
       POSTGRES_DB: api_db
       POSTGRES_USER: api_user
       POSTGRES_PASSWORD: api_password
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U api_user -d api_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./api_service
+      dockerfile: Dockerfile
+    container_name: api_service
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
       DB_CONN_STRING: postgresql://api_user:api_password@postgres:5432/api_db
     restart: unless-stopped
 

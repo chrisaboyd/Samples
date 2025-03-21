@@ -24,16 +24,16 @@ CREATE TABLE items (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert initial data
+-- User Table
 INSERT INTO users (username, email) VALUES
-  ('user1', 'user1@example.com'),
-  ('user2', 'user2@example.com');
+  ('cboyd', 'cboyd@ps.com'),
+  ('jdoe', 'jdoe@ps.com');
 
--- Insert "hello world" message that will be returned to the API server
+-- Messages Table
 INSERT INTO messages (content) VALUES ('hello world');
 
--- Insert some example items
+-- Items Table
 INSERT INTO items (name, description, price) VALUES
-  ('Item 1', 'Description for item 1', 19.99),
-  ('Item 2', 'Description for item 2', 29.99),
-  ('Item 3', 'Description for item 3', 39.99); 
+  ('Toilet Paper', '4-Ply, not John Wayne Wild West', 19.99),
+  ('Dog Food', 'Purina, 100% Organic', 29.99),
+  ('Headphone', 'Sony MDR-ZX110, Noise Cancelling', 39.99); 

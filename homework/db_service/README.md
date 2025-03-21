@@ -71,3 +71,17 @@ spec:
           name: ps_pg_conn
           key: key
 ```
+
+## Technology Documentation
+
+### Database
+- [PostgreSQL](https://www.postgresql.org/docs/) - Official PostgreSQL documentation
+- [PostgreSQL Docker Image](https://hub.docker.com/_/postgres) - Docker Hub for PostgreSQL
+
+### Container Tools
+- [Docker](https://docs.docker.com/) - Docker platform documentation
+- [Docker Compose](https://docs.docker.com/compose/) - Tool for defining multi-container applications
+
+### Kubernetes (Optional)
+- [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/) - Managing sensitive information
+- [Kubernetes Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) - Managing deployments

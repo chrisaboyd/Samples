@@ -1,24 +1,40 @@
 #!/bin/bash
 
+# Check if docker-compose.yml exists
+if [ ! -f "docker-compose.yml" ]; then
+    echo "docker-compose.yml not found"
+    exit 1
+fi
+
+# Check if docker-compose is installed
+if ! command -v docker-compose &> /dev/null; then
+    echo "docker-compose could not be found"
+    exit 1
+fi
+
 case "$1" in
   start)
-    echo "Starting docker-compose services..."
-    echo "Starting db_service..."
-    docker-compose up -d -f db_service/docker-compose.yml
+    # Check if services are already running
+    if docker-compose ps | grep -q "Up"; then
+        echo "Services are already running"
+        exit 0
+    fi
 
-    echo "Starting api_service..."
-    docker-compose up -d -f api_service/docker-compose.yml
+    echo "Starting docker-compose services..."
+    docker-compose up -d
+    echo "API is running at http://localhost:8080/api"
+    echo "Docs are available at http://localhost:8080/api/docs"
+
     ;;
   stop)
     echo "Stopping docker-compose services..."
-    docker-compose down -f db_service/docker-compose.yml
-    docker-compose down -f api_service/docker-compose.yml
+    docker-compose down
     ;;
   test)
-    echo "Sending test POST request to localhost:8080..."
-    curl -X POST http://localhost:8080 \
+    echo "Sending test POST request to localhost:8080/api/hello..."
+    curl -X POST http://localhost:8080/api/hello \
       -H "Content-Type: application/json" \
-      -d '{"message":"Hello from test"}'
+      -d '{"message":"LGTM!"}'
     ;;
   *)
     echo "Usage: $0 {start|stop|test}"
