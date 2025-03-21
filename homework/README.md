@@ -107,6 +107,7 @@ Sending test POST request to localhost:8080/api/hello...
 {"message":"hello world","received":"LGTM!","via_rag":true}%    
 ```
 
+
 ## Reference Docs
 
 ### API Service

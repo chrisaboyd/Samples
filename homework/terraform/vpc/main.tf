@@ -4,6 +4,10 @@ module "network" {
   source                = "../modules/network"
 }
 
+module "ecr" {
+  source = "../modules/ecr"
+}
+
 #module "postgres" {
 #  db_instance_name     = var.db_instance_name
 #  db_subnet_group_name = var.db_subnet_group_name

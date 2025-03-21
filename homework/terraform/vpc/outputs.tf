@@ -1,3 +1,15 @@
+output "ecr_arn" {
+  value = module.ecr.repository_arn
+}
+output "ecr_url" {
+  value = module.ecr.repository_url
+}
+output "ecr_name" {
+  value = module.ecr.repository_name
+}
+output "ecr_registry_id" {
+  value = module.ecr.repository_registry_id
+}
 # output "redis_primary_cache_endpoint" {
 #   value = module.redis.redis_primary_cache_endpoint
 # }
