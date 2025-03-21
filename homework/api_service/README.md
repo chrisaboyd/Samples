@@ -25,6 +25,7 @@ This is a FastAPI-based API service that communicates with the RAG service to re
 ```bash
 curl -X POST http://localhost:8080/api/hello \
   -H "Content-Type: application/json" \
+  -u "admin:password" \
   -d '{"message": "any message"}'
 ```
 

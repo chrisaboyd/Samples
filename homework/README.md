@@ -83,25 +83,14 @@ export API_PASSWORD=mypassword
 ./pool.sh start
 ```
 
-When making requests, include the Basic Authentication credentials:
-```bash
-curl -X POST http://localhost:8080/api/hello \
-  -H "Content-Type: application/json" \
-  -u "admin:password" \
-  -d '{"message":"test"}'
-```
-
 ## API Endpoints
 
-- `GET /`: Returns 404 Not Found
-- `POST /api/hello`: Retrieve the "hello world" message from the database (requires message payload)
-- `GET /api/users`: Get a list of all users
-- `GET /api/items`: Get a list of all items
-- `GET /api/items/{item_id}`: Get a specific item by ID
-- `GET /api/health`: Health check endpoint
+With the API service running, API docs can be accessed:
 
+- Swagger UI: `http://localhost:8080/docs`
+- ReDoc: `http://localhost:8080/redoc`
 
-### Hello Endpoint
+### Testing the Endpoint
 
 ```bash
 curl http://localhost:8080/api/hello \
@@ -110,6 +99,12 @@ curl http://localhost:8080/api/hello \
   -d '{"message": "LGTM!"}'
 
 {"message":"hello world","received":"LGTM!","via_rag":true}   
+```
+
+```
+❯ ./pool.sh test
+Sending test POST request to localhost:8080/api/hello...
+{"message":"hello world","received":"LGTM!","via_rag":true}%    
 ```
 
 ## Reference Docs
