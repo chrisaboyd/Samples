@@ -1,9 +1,11 @@
-from fastapi import FastAPI, HTTPException, status, Request
+from fastapi import FastAPI, HTTPException, status, Request, Depends, Security
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 import httpx
 import os
 import logging
 import time
+import secrets
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -14,10 +16,30 @@ RAG_SERVICE_URL = os.getenv("RAG_SERVICE_URL", "http://rag:8081")
 if not RAG_SERVICE_URL:
     raise Exception("RAG_SERVICE_URL is not set")
 
+app = FastAPI(title="API Service")
+
+# Security setup
+security = HTTPBasic()
+
+# Hardcoded credentials (in a real app, use a better storage method)
+API_USERNAME = os.getenv("API_USERNAME", "admin")
+API_PASSWORD = os.getenv("API_PASSWORD", "password")
+
+def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
+    """Verify the username and password."""
+    correct_username = secrets.compare_digest(credentials.username, API_USERNAME)
+    correct_password = secrets.compare_digest(credentials.password, API_PASSWORD)
+    
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
 class MessagePayload(BaseModel):
     message: str
-
-app = FastAPI(title="API Service")
 
 # Middleware to log requests
 @app.middleware("http")
@@ -35,7 +57,7 @@ def read_root():
 
 
 @app.post("/api/hello")
-async def get_hello_world(payload: MessagePayload):
+async def get_hello_world(payload: MessagePayload, username: str = Depends(verify_credentials)):
     """Get the 'hello world' message via the RAG service - requires a message payload"""
     logger.info(f"Hello endpoint accessed with message: {payload.message}")
     async with httpx.AsyncClient() as client:
@@ -61,7 +83,7 @@ async def get_hello_world(payload: MessagePayload):
 
 
 @app.get("/api/users")
-async def get_users(skip: int = 0, limit: int = 100):
+async def get_users(skip: int = 0, limit: int = 100, username: str = Depends(verify_credentials)):
     """Get a list of users via the RAG service"""
     async with httpx.AsyncClient() as client:
         try:
@@ -80,7 +102,7 @@ async def get_users(skip: int = 0, limit: int = 100):
 
 
 @app.get("/api/items")
-async def get_items(skip: int = 0, limit: int = 100):
+async def get_items(skip: int = 0, limit: int = 100, username: str = Depends(verify_credentials)):
     """Get a list of items via the RAG service"""
     async with httpx.AsyncClient() as client:
         try:
@@ -99,7 +121,7 @@ async def get_items(skip: int = 0, limit: int = 100):
 
 
 @app.get("/api/items/{item_id}")
-async def get_item(item_id: int):
+async def get_item(item_id: int, username: str = Depends(verify_credentials)):
     """Get a specific item by ID via the RAG service"""
     async with httpx.AsyncClient() as client:
         try:

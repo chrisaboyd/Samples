@@ -1,6 +1,8 @@
 # RAG Service
 
 This is a Retrieval Augmented Generation (RAG) service that sits between the API service and the database, serving as an intermediary that handles data retrieval, processing, and vector-based search.
+For the sake of this demonstration application, it is rudimentary database retrieval.
+In a real, production environment, this would be much more robust, likely with [FAISS](https://github.com/facebookresearch/faiss) or other vector search and retrieval.
 
 ## Features
 
@@ -22,25 +24,11 @@ This is a Retrieval Augmented Generation (RAG) service that sits between the API
 You can run this service using Docker Compose:
 
 ```bash
-# From the root directory (where the main docker-compose.yml is located)
+# From the root directory (../)
 docker-compose up -d
 ```
 
 The RAG service will be available internally at `http://rag:8081` and externally at `http://localhost:8081`.
-
-## Development
-
-To run the service locally for development:
-
-1. Install the requirements:
-```bash
-pip install -r requirements.txt
-```
-
-2. Start the service:
-```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8081
-```
 
 ## Technology Stack
 

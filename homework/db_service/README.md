@@ -81,7 +81,3 @@ spec:
 ### Container Tools
 - [Docker](https://docs.docker.com/) - Docker platform documentation
 - [Docker Compose](https://docs.docker.com/compose/) - Tool for defining multi-container applications
-
-### Kubernetes (Optional)
-- [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/) - Managing sensitive information
-- [Kubernetes Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) - Managing deployments

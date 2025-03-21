@@ -48,7 +48,7 @@ See the [db_service README](db_service/README.md) for more details.
 
 ## Getting Started
 
-To run all services together:
+To run all services together with default settings for the database and basic auth:
 
 ```bash
 # Start all services
@@ -70,6 +70,27 @@ Once running:
 - Database is accessible at `localhost:5432`
 - Interactive API documentation is available at `http://localhost:8080/docs`
 
+### Authentication
+
+The API is secured with HTTP Basic Authentication:
+- Default username: `admin`
+- Default password: `password`
+
+You can override these by setting environment variables:
+```bash
+export API_USERNAME=myusername
+export API_PASSWORD=mypassword
+./pool.sh start
+```
+
+When making requests, include the Basic Authentication credentials:
+```bash
+curl -X POST http://localhost:8080/api/hello \
+  -H "Content-Type: application/json" \
+  -u "admin:password" \
+  -d '{"message":"test"}'
+```
+
 ## API Endpoints
 
 - `GET /`: Returns 404 Not Found
@@ -85,9 +106,10 @@ Once running:
 ```bash
 curl http://localhost:8080/api/hello \
   -H "Content-Type: application/json" \
+  -u "admin:password" \
   -d '{"message": "LGTM!"}'
 
-{"message":"hello world","received":"LGTM!"}%   
+{"message":"hello world","received":"LGTM!","via_rag":true}   
 ```
 
 ## Reference Docs

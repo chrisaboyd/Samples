@@ -53,6 +53,8 @@ services:
         condition: service_healthy
     environment:
       RAG_SERVICE_URL: http://rag:8081
+      API_USERNAME: ${API_USERNAME:-admin}
+      API_PASSWORD: ${API_PASSWORD:-password}
     restart: unless-stopped
 
 volumes:

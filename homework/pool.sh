@@ -15,21 +15,11 @@ if ! command -v docker-compose &> /dev/null; then
 fi
 
 # Check and set fallback database environment variables if not already set
-if [ -z "$DB_NAME" ]; then
-    export DB_NAME="api_db"
-fi
-
-if [ -z "$DB_USER" ]; then
-    export DB_USER="api_user"
-fi
-
-if [ -z "$DB_PASSWORD" ]; then
-    export DB_PASSWORD="api_password"
-fi
-
-echo "DB_NAME: $DB_NAME"
-echo "DB_USER: $DB_USER"
-
+export DB_NAME=${DB_NAME:-"api_db"}
+export DB_USER=${DB_USER:-"api_user"}
+export DB_PASSWORD=${DB_PASSWORD:-"api_password"}
+export API_USERNAME=${API_USERNAME:-"admin"}
+export API_PASSWORD=${API_PASSWORD:-"password"}
 
 case "$1" in
   start)
@@ -43,11 +33,13 @@ case "$1" in
     docker-compose up -d
     echo "API is running at http://localhost:8080/api"
     echo "Docs are available at http://localhost:8080/api/docs"
+    echo "API is secured with Basic Auth - Username: $API_USERNAME, Password: [hidden]"
 
     ;;
   stop)
     echo "Stopping docker-compose services..."
     docker-compose down -v
+    echo "Removed all containers and volumes"
     ;;
   restart)
     echo "Restarting services..."
@@ -55,11 +47,13 @@ case "$1" in
     docker-compose up -d
     echo "API is running at http://localhost:8080/api"
     echo "Docs are available at http://localhost:8080/api/docs"
+    echo "API is secured with Basic Auth - Username: $API_USERNAME, Password: [hidden]"
     ;;
   test)
     echo "Sending test POST request to localhost:8080/api/hello..."
     curl -X POST http://localhost:8080/api/hello \
       -H "Content-Type: application/json" \
+      -u "$API_USERNAME:$API_PASSWORD" \
       -d '{"message":"LGTM!"}'
     ;;
   *)
