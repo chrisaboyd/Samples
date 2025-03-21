@@ -1,0 +1,5 @@
+locals {
+  tags = {
+    Terraform = "true"
+  }
+}

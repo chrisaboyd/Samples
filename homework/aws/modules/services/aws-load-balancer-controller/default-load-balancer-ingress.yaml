@@ -1,0 +1,52 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: default-backend
+  namespace: kube-system
+  labels:
+    app: default-backend
+spec:
+  containers:
+    - name: nginx
+      image: nginx:alpine  # Minimal NGINX image
+      ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: default-backend
+  namespace: kube-system
+  labels:
+    app: default-backend
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: default-backend
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backend-ingress
+  namespace: kube-system
+  annotations:
+    alb.ingress.kubernetes.io/group.name: "my-shared-alb-group"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: "alb"
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: default-backend
+                port:
+                  number: 80
+---

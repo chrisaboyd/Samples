@@ -1,0 +1,4 @@
+serviceAccount:
+  name: aws-load-balancer-controller
+  create: true
+replicaCount: 1

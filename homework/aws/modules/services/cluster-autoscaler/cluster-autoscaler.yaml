@@ -1,0 +1,12 @@
+autoDiscovery:
+  enabled: true
+cloudProvider: aws
+awsRegion: us-east-1
+extraVolumes:
+  - name: ssl-certs
+    hostPath:
+      path: /etc/ssl/certs/ca-bundle.crt
+rbac:
+  serviceAccount:
+    name: cluster-autoscaler
+    create: true
