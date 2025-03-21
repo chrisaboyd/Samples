@@ -3,11 +3,16 @@
 case "$1" in
   start)
     echo "Starting docker-compose services..."
-    docker-compose up -d
+    echo "Starting db_service..."
+    docker-compose up -d -f db_service/docker-compose.yml
+
+    echo "Starting api_service..."
+    docker-compose up -d -f api_service/docker-compose.yml
     ;;
   stop)
     echo "Stopping docker-compose services..."
-    docker-compose down
+    docker-compose down -f db_service/docker-compose.yml
+    docker-compose down -f api_service/docker-compose.yml
     ;;
   test)
     echo "Sending test POST request to localhost:8080..."
