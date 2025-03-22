@@ -35,13 +35,13 @@ spec:
               key: connection_string
         livenessProbe:
           httpGet:
-            path: /health
+            path: /rag/health
             port: 8081
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /health
+            path: /rag/health
             port: 8081
           initialDelaySeconds: 5
           periodSeconds: 5

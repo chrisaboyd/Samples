@@ -47,9 +47,9 @@ async def log_requests(request: Request, call_next):
 
 @app.get("/")
 def read_root():
-    """Return a status message for the root route"""
-    logger.info("Root endpoint accessed")
-    return {"status": "RAG Service is running", "embeddings_enabled": USE_EMBEDDINGS}
+    """Return 404 for the root route"""
+    logger.info("Root endpoint accessed, returning 404")
+    raise HTTPException(status_code=404, detail="Not found")
 
 
 @app.post("/rag/message", response_model=schemas.MessageResponse)
@@ -102,10 +102,10 @@ def get_item(item_id: int, db: Session = Depends(get_db)):
     return item
 
 
-@app.get("/health")
-def health_check():
+@app.get("/rag/health")
+def rag_health_check():
     """Check the health of the RAG service"""
     return {
         "status": "OK",
         "embeddings_enabled": USE_EMBEDDINGS
-    } 
+    }
