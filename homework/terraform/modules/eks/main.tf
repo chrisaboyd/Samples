@@ -1,7 +1,7 @@
 module "eks" {
   version         = "20.33.1"
   source          = "terraform-aws-modules/eks/aws"
-  cluster_name    = "platform-dev-eks"
+  cluster_name    = "eks-dev"
   cluster_version = "1.31"
 
   cluster_addons = {
@@ -21,7 +21,7 @@ module "eks" {
   cluster_endpoint_public_access = true
 
   vpc_id     = var.vpc_id
-  subnet_ids = var.subnet_ids # Need to be able to pass dynamically
+  subnet_ids = var.subnet_ids
 
   access_entries = {
     # One access entry with a policy associated

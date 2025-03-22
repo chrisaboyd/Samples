@@ -54,4 +54,11 @@ build_and_push() {
 build_and_push "API" "${API_ECR_URL}" "${PROJECT_ROOT}/api_service"
 build_and_push "RAG" "${RAG_ECR_URL}" "${PROJECT_ROOT}/rag_service"
 
+
+# Retrieve and set KUBECONFIG
+aws eks update-kubeconfig --profile default --kubeconfig ~/.kube/contexts/eks-dev --name eks-dev
+
+# Apply Kustomize
+kubectl apply -k k8s/kustomize
+
 echo "=== All operations completed successfully ==="

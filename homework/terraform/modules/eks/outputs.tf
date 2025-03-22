@@ -1,7 +1,3 @@
-output "amazon_managed_service_prometheus_iam_role_arn" {
-  value       = module.amazon_managed_service_prometheus_irsa_role.iam_role_arn
-  description = "IAM Role ARN for Amazon Managed Service for Prometheus"
-}
 output "cluster" {
   sensitive = true
   value = {
@@ -43,7 +39,7 @@ output "access_entries" {
   value = module.eks.access_entries
 }
 output "kubeconfig_string" {
-  value = "aws eks update-kubeconfig --profile <profile> --kubeconfig ~/.kube/contexts/platform-dev-eks --name ${module.eks.cluster_name}"
+  value = "aws eks update-kubeconfig --profile default --kubeconfig ~/.kube/contexts/eks-dev --name ${module.eks.cluster_name}"
 }
 output "cluster_version" {
   value = module.eks.cluster_version
