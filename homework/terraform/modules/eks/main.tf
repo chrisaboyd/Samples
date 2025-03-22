@@ -58,7 +58,7 @@ module "eks" {
       desired_size   = 2
       instance_types = [var.node_size]
       capacity_type  = var.capacity_type
-      ami_type       = "AL2_x86_64"  # For x86_64 instances like t3.medium
+      ami_type       = "AL2_x86_64" # For x86_64 instances like t3.medium
     }
   }
 
@@ -77,7 +77,7 @@ module "eks" {
   tags = {
     Name                                = "eks-dev"
     "k8s.io/cluster-autoscaler/enabled" = "TRUE"
-    "k8s.io/cluster-autoscaler/ps" = "owned"
+    "k8s.io/cluster-autoscaler/ps"      = "owned"
   }
 }
 resource "aws_autoscaling_schedule" "scale_down_night" {

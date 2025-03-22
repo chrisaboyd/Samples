@@ -5,7 +5,7 @@ module "ecr" {
   repository_name = var.repository_name
 
   repository_read_write_access_arns = ["arn:aws:iam::250037329208:user/terraform-dev"]
-  repository_image_tag_mutability        = "MUTABLE"
+  repository_image_tag_mutability   = "MUTABLE"
 
   repository_lifecycle_policy = jsonencode({
     rules = [
