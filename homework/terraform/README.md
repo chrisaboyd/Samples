@@ -1,6 +1,24 @@
 # AWS infrastructure as code
 
-Directory to host AWS infrastructure as code
+Directory to host AWS IaC
+
+Core configuration is located under `main`.
+Deploys the following:
+
+- VPC
+- EKS
+- Cluster Services
+- (Optional) RDS
+
+A Postgres Stateful Set was chosen to deploy in-cluster for this exercise simply to minimize footprint and cloud costs.  
+RDS can be equally utilized, with the connection string provided to the services.
+
+Cloud Architecture:
+![Cloud Diagram](../imgs/cloud_diagram.png)
+
+
+App Architecture:
+![Application Diagram](../imgs/app_diagram.png)
 
 Create an AWS Profile:
 
@@ -19,16 +37,7 @@ Default output format [None]: json
 }
 ```
 
-Navigate to ./vpc to deploy:
+Deploy via init wrapper script:
 ```bash
-cd vpc
-terraform init
-terraform plan -out ps.out
-
-Saved the plan to: ps.out
-
-To perform exactly these actions, run the following command to apply:
-    terraform apply "ps.out"
-
-terraform apply "ps.out"
+./init.sh
 ```
