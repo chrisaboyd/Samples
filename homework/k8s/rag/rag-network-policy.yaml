@@ -24,4 +24,4 @@ spec:
           kubernetes.io/metadata.name: kube-system
     ports:
     - protocol: TCP
-      port: 8081 
+      port: 8081

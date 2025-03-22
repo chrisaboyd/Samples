@@ -37,4 +37,4 @@ INSERT INTO messages (content) VALUES ('hello world');
 INSERT INTO items (name, description, price) VALUES
   ('Toilet Paper', '4-Ply, not John Wayne Wild West', 19.99),
   ('Dog Food', 'Purina, 100% Organic', 29.99),
-  ('Headphone', 'Sony MDR-ZX110, Noise Cancelling', 39.99); 
+  ('Headphone', 'Sony MDR-ZX110, Noise Cancelling', 39.99);

@@ -86,4 +86,4 @@ spec:
     name: postgres
   selector:
     app: postgres
-  type: ClusterIP 
+  type: ClusterIP

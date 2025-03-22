@@ -47,4 +47,4 @@ The API will be available at `http://localhost:8080/api`.
 - [HTTPX](https://www.python-httpx.org/) - HTTP client for Python
 
 ### Development Tools
-- [Docker](https://docs.docker.com/) - Container Runtime 
+- [Docker](https://docs.docker.com/) - Container Runtime

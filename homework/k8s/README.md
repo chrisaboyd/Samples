@@ -85,4 +85,4 @@ Max replicas: 10
 
 Once deployed, the API service will be accessible through the Ingress at:
 - `/api/*` - API endpoints
-- `/docs` - API documentation 
+- `/docs` - API documentation

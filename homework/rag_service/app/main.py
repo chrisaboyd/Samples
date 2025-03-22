@@ -1,11 +1,13 @@
-from fastapi import FastAPI, Depends, HTTPException, Request
-from sqlalchemy.orm import Session
-from . import models, schemas, database
-from typing import List
-import numpy as np
 import json
 import logging
 import time
+from typing import List
+
+import numpy as np
+from fastapi import Depends, FastAPI, HTTPException, Request
+from sqlalchemy.orm import Session
+
+from . import database, models, schemas
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -19,13 +21,15 @@ app = FastAPI(title="RAG Service")
 # Initialize the embedding model with a fallback
 try:
     from sentence_transformers import SentenceTransformer
-    model = SentenceTransformer('all-MiniLM-L6-v2')
+
+    model = SentenceTransformer("all-MiniLM-L6-v2")
     USE_EMBEDDINGS = True
     logger.info("Successfully loaded SentenceTransformer model")
 except Exception as e:
     logger.error(f"Failed to load SentenceTransformer model: {e}")
     USE_EMBEDDINGS = False
     model = None
+
 
 # Dependency to get the database session
 def get_db():
@@ -35,13 +39,16 @@ def get_db():
     finally:
         db.close()
 
+
 # Middleware to log requests
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.time()
     response = await call_next(request)
     process_time = time.time() - start_time
-    logger.info(f"RAG service received request: {request.method} {request.url.path} - Took {process_time:.4f}s")
+    logger.info(
+        f"RAG service received request: {request.method} {request.url.path} - Took {process_time:.4f}s"
+    )
     return response
 
 
@@ -58,11 +65,13 @@ def retrieve_message(query: schemas.MessageQuery, db: Session = Depends(get_db))
     logger.info(f"Message retrieval requested with query: {query.query}")
     # For simplicity, we're just returning the "hello world" message directly
     # In a real RAG system, you would use embeddings and vector similarity search
-    message = db.query(models.Message).filter(models.Message.content == "hello world").first()
-    
+    message = (
+        db.query(models.Message).filter(models.Message.content == "hello world").first()
+    )
+
     if not message:
         raise HTTPException(status_code=404, detail="Message not found")
-    
+
     # If we have embeddings enabled, we would do semantic search here
     # For now, we're just returning a fixed message
     similarity_score = 1.0
@@ -72,8 +81,12 @@ def retrieve_message(query: schemas.MessageQuery, db: Session = Depends(get_db))
         # 1. Encode the query to get embeddings
         # 2. Compare with stored embeddings
         # 3. Return the closest match
-    
-    return {"content": message.content, "similarity_score": similarity_score, "rag_processed": True}
+
+    return {
+        "content": message.content,
+        "similarity_score": similarity_score,
+        "rag_processed": True,
+    }
 
 
 @app.get("/rag/users", response_model=List[schemas.User])
@@ -105,7 +118,4 @@ def get_item(item_id: int, db: Session = Depends(get_db)):
 @app.get("/rag/health")
 def rag_health_check():
     """Check the health of the RAG service"""
-    return {
-        "status": "OK",
-        "embeddings_enabled": USE_EMBEDDINGS
-    }
+    return {"status": "OK", "embeddings_enabled": USE_EMBEDDINGS}

@@ -12,14 +12,14 @@ data:
       email VARCHAR(100) UNIQUE NOT NULL,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
-    
+
     -- Create messages table
     CREATE TABLE IF NOT EXISTS messages (
       id SERIAL PRIMARY KEY,
       content TEXT NOT NULL,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
-    
+
     -- Create items table
     CREATE TABLE IF NOT EXISTS items (
       id SERIAL PRIMARY KEY,
@@ -28,19 +28,19 @@ data:
       price NUMERIC(10, 2),
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
-    
+
     -- Insert sample data
     INSERT INTO messages (content) VALUES ('hello world') ON CONFLICT DO NOTHING;
-    
+
     -- Insert sample users
-    INSERT INTO users (username, email) VALUES 
+    INSERT INTO users (username, email) VALUES
       ('user1', 'user1@example.com'),
       ('user2', 'user2@example.com')
     ON CONFLICT DO NOTHING;
-    
+
     -- Insert sample items
-    INSERT INTO items (name, description, price) VALUES 
+    INSERT INTO items (name, description, price) VALUES
       ('Item 1', 'Description for item 1', 19.99),
       ('Item 2', 'Description for item 2', 29.99),
       ('Item 3', 'Description for item 3', 39.99)
-    ON CONFLICT DO NOTHING; 
+    ON CONFLICT DO NOTHING;

@@ -42,4 +42,4 @@ The RAG service will be available internally at `http://rag:8081` and externally
 - [Psycopg2](https://www.psycopg.org/docs/) - PostgreSQL adapter for Python
 
 ### Development Tools
-- [Docker](https://docs.docker.com/) - Containerization platform 
+- [Docker](https://docs.docker.com/) - Containerization platform

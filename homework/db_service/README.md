@@ -18,17 +18,17 @@ The database contains the following tables:
 docker-compose up -d
 
 [+] Running 4/4
- ✔ postgres                           Built                                                                                                                                              0.0s 
- ✔ Network db_service_default         Created                                                                                                                                            0.0s 
- ✔ Volume "db_service_postgres_data"  Created                                                                                                                                            0.0s 
- ✔ Container api_postgres             Started                                                                                                                                            0.2s 
+ ✔ postgres                           Built                                                                                                                                              0.0s
+ ✔ Network db_service_default         Created                                                                                                                                            0.0s
+ ✔ Volume "db_service_postgres_data"  Created                                                                                                                                            0.0s
+ ✔ Container api_postgres             Started                                                                                                                                            0.2s
 
 # To stop the service
 docker-compose down
 ```
 [+] Running 2/2
- ✔ Container api_postgres      Removed                                                                                                                                                   0.2s 
- ✔ Network db_service_default  Removed                                                                                                                                                   0.2s 
+ ✔ Container api_postgres      Removed                                                                                                                                                   0.2s
+ ✔ Network db_service_default  Removed                                                                                                                                                   0.2s
  ```
 
 ### Connecting to the Database

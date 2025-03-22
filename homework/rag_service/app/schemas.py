@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
 
 
 class MessageQuery(BaseModel):
@@ -43,4 +44,4 @@ class Item(ItemBase):
 class RAGResponse(BaseModel):
     result: Any
     source_documents: Optional[List[Dict[str, Any]]] = None
-    rag_processed: bool = True 
+    rag_processed: bool = True

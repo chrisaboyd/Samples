@@ -14,9 +14,7 @@ The application follows this flow:
 - **RAG Service** handles data retrieval and processing
 - **Database Service** stores and provides data
 
-```
-Client → API Service → RAG Service → Database
-```
+![Architecture Diagram](imgs/docker_compose_diagram.png)
 
 ## Services
 
@@ -98,13 +96,13 @@ curl http://localhost:8080/api/hello \
   -u "admin:password" \
   -d '{"message": "LGTM!"}'
 
-{"message":"hello world","received":"LGTM!","via_rag":true}   
+{"message":"hello world","received":"LGTM!","via_rag":true}
 ```
 
 ```
 ❯ ./pool.sh test
 Sending test POST request to localhost:8080/api/hello...
-{"message":"hello world","received":"LGTM!","via_rag":true}%    
+{"message":"hello world","received":"LGTM!","via_rag":true}%
 ```
 
 
@@ -133,5 +131,3 @@ Sending test POST request to localhost:8080/api/hello...
   - *Purpose*: Enables consistent deployment of all services in isolated environments, ensuring the application works consistently across different development and production environments
 - [Docker Compose](https://docs.docker.com/compose/) - Multi-container orchestration tool
   - *Purpose*: Manages the configuration, networking, and dependencies between services, allowing the entire three-tier application to be defined declaratively and launched with a single command
-
-

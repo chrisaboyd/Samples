@@ -39,13 +39,13 @@ build_and_push() {
   local service_name=$1
   local image_url=$2
   local service_dir=$3
-  
+
   echo "=== Building and pushing ${service_name} image ==="
   cd "${service_dir}"
-  
+
   echo "Building image..."
   docker buildx build --platform linux/amd64 -t ${image_url}:latest .
-  
+
   echo "Pushing image to ECR..."
   docker push ${image_url}:latest
 }

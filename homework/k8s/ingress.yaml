@@ -29,4 +29,4 @@ spec:
           service:
             name: api-service
             port:
-              number: 8080 
+              number: 8080

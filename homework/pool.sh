@@ -1,6 +1,6 @@
 #!/bin/bash
 # set -e
-# set -x 
+# set -x
 
 # Check if docker-compose.yml exists
 if [ ! -f "docker-compose.yml" ]; then

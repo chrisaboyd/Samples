@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, Text, Numeric, DateTime, Float, ForeignKey
-from sqlalchemy.sql import func
+from sqlalchemy import (Column, DateTime, Float, ForeignKey, Integer, Numeric,
+                        String, Text)
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+
 from .database import Base
 
 
@@ -28,4 +30,4 @@ class Item(Base):
     name = Column(String(100), nullable=False)
     description = Column(Text)
     price = Column(Numeric(10, 2))
-    created_at = Column(DateTime, default=func.now(), nullable=False) 
+    created_at = Column(DateTime, default=func.now(), nullable=False)

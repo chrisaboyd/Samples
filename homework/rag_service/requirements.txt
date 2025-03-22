@@ -6,4 +6,4 @@ pydantic==2.3.0
 httpx==0.25.0
 huggingface-hub==0.16.4
 sentence-transformers==2.2.2
-numpy==1.24.3 
+numpy==1.24.3
