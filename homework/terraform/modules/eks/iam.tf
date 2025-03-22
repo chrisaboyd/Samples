@@ -17,22 +17,6 @@ module "amazon_fluent_bit_cloudwatch_irsa_role" {
 
   tags = local.tags
 }
-# Create IAM Role for Managed Service for Prometheus EKS Deployment
-module "amazon_managed_service_prometheus_irsa_role" {
-  source                                          = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version                                         = "5.52.2"
-  role_name                                       = "amazon-managed-service-prometheus"
-  attach_amazon_managed_service_prometheus_policy = true
-
-  oidc_providers = {
-    ex = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["prometheus:amp-ingest"]
-    }
-  }
-
-  tags = local.tags
-}
 # Create IAM Role for Cluster Autoscaler EKS Deployment
 module "cluster_autoscaler_irsa_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"

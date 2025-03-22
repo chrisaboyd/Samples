@@ -39,7 +39,6 @@ module "eks" {
 module "cluster_services" {
  account_id                                     = var.account_id
  amazon_fluent_bit_cloudwatch_role_arn          = module.eks.amazon_fluent_bit_cloudwatch_role_arn
- amazon_managed_service_prometheus_iam_role_arn = module.eks.amazon_managed_service_prometheus_iam_role_arn
  cluster_autoscaler_iam_role_arn                = module.eks.cluster_autoscaler_iam_role_arn
  cluster_name                                   = module.eks.cluster_name
  external_secrets_iam_role_arn                  = module.eks.external_secrets_iam_role_arn
