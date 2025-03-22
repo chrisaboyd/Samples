@@ -6,6 +6,7 @@ resources:
   - api/hpa.yaml
   - rag/rag-deployment.yaml
   - rag/hpa.yaml
+  - rag/rag-network-policy.yaml
   - postgres/postgres-config.yaml
   - postgres/postgres-secret.yaml
   - postgres/postgres-statefulset.yaml

@@ -21,7 +21,7 @@ app = FastAPI(title="API Service")
 # Security setup
 security = HTTPBasic()
 
-# Hardcoded credentials (in a real app, use a better storage method)
+# Hardcoded credentials (in a real app, use a secret manager or secret provider class)
 API_USERNAME = os.getenv("API_USERNAME", "admin")
 API_PASSWORD = os.getenv("API_PASSWORD", "password")
 
