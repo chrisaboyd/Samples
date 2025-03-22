@@ -1,7 +1,7 @@
 module "eks" {
   version         = "20.33.1"
   source          = "terraform-aws-modules/eks/aws"
-  cluster_name    = "platform-dev-self-managed"
+  cluster_name    = "platform-dev-eks"
   cluster_version = "1.31"
 
   cluster_addons = {
@@ -28,20 +28,7 @@ module "eks" {
     # For SSO Users to have cluster admin access
     admin_user = {
       kubernetes_groups = ["eks-admins"]
-      principal_arn     = "arn:aws:iam::779846805466:role/aws-reserved/sso.amazonaws.com/us-east-2/AWSReservedSSO_AdministratorAccess_0feac0d02054ab4a"
-      policy_associations = {
-        standard = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = {
-            type = "cluster"
-          }
-        }
-      }
-    }
-    # For Terraform Service Account to have cluster admin access
-    terraform_service_account = {
-      kubernetes_groups = ["eks-admins"]
-      principal_arn     = "arn:aws:iam::779846805466:role/tfc-administration"
+      principal_arn     = "arn:aws:iam::250037329208:user/terraform-dev"
       policy_associations = {
         standard = {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
@@ -65,7 +52,7 @@ module "eks" {
   }
 
   eks_managed_node_groups = {
-    self_managed = {
+    eks-dev = {
       min_size       = 1
       max_size       = 1
       desired_size   = 1
@@ -73,25 +60,8 @@ module "eks" {
       capacity_type  = var.capacity_type
     }
   }
-  cluster_security_group_additional_rules = {
-    eks_cluster_istio_rule = {
-      description = "Allow Istio to communicate w/ the control plane"
-      from_port   = 15017
-      to_port     = 15017
-      protocol    = "tcp"
-      type        = "ingress"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  }
+
   node_security_group_additional_rules = {
-    eks_node_istio_rule = {
-      source_cluster_security_group = true
-      description                   = "Allow Istio to communicate w/ the nodes"
-      from_port                     = 15017
-      to_port                       = 15017
-      protocol                      = "tcp"
-      type                          = "ingress"
-    }
 
     eks_node_http_rule = {
       source_cluster_security_group = true
@@ -104,7 +74,7 @@ module "eks" {
   }
 
   tags = {
-    Name                                = "self-managed-eks-on-ec2"
+    Name                                = "eks-dev"
     "k8s.io/cluster-autoscaler/enabled" = "TRUE"
     "k8s.io/cluster-autoscaler/ps" = "owned"
   }
@@ -117,5 +87,5 @@ resource "aws_autoscaling_schedule" "scale_down_night" {
   recurrence            = "0 23 * * *" # Scale down at 6:00 PM EST (00:00 UTC)
   time_zone             = "UTC"
 
-  autoscaling_group_name = module.eks.eks_managed_node_groups["self_managed"].node_group_autoscaling_group_names[0]
+  autoscaling_group_name = module.eks.eks_managed_node_groups["eks-dev"].node_group_autoscaling_group_names[0]
 }

@@ -43,7 +43,7 @@ output "access_entries" {
   value = module.eks.access_entries
 }
 output "kubeconfig_string" {
-  value = "aws eks update-kubeconfig --profile <profile> --kubeconfig ~/.kube/contexts/platform-dev-self-managed --name ${module.eks.cluster_name}"
+  value = "aws eks update-kubeconfig --profile <profile> --kubeconfig ~/.kube/contexts/platform-dev-eks --name ${module.eks.cluster_name}"
 }
 output "cluster_version" {
   value = module.eks.cluster_version

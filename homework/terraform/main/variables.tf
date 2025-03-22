@@ -63,3 +63,8 @@ variable "vpc_name" {
   description = "VPC name to deploy resources to when network is brought by user"
   type        = string
 }
+variable "environment" {
+  description = "Environment name (e.g. dev, staging, prod)"
+  type        = string
+  default     = "dev"
+}

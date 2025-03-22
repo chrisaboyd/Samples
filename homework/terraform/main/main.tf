@@ -4,8 +4,18 @@ module "network" {
   source                = "../modules/network"
 }
 
-module "ecr" {
+module "api_ecr" {
   source = "../modules/ecr"
+  repository_name   = "api-ecr-${var.environment}"
+  environment   = var.environment
+  region   = var.region
+}
+
+module "rag_ecr" {
+  source = "../modules/ecr"
+  repository_name   = "rag-ecr-${var.environment}"
+  environment   = var.environment
+  region   = var.region
 }
 
 #module "postgres" {
@@ -17,22 +27,22 @@ module "ecr" {
 #  vpc_cidr_block = var.create_network ? module.network[0].vpc_cidr_block : var.vpc_cidr
 #}
 
-#module "eks" {
-#  capacity_type = var.capacity_type
-#  node_size     = var.node_size
-#  source        = "../modules/eks"
-#  subnet_ids = var.create_network ? module.network[0].private_subnet_ids : var.subnet_ids
-#  vpc_id     = var.create_network ? module.network[0].vpc_id : var.vpc_id
-#  vpc_name   = var.create_network ? module.network[0].vpc_name : var.vpc_name
-#}
+module "eks" {
+ capacity_type = var.capacity_type
+ node_size     = var.node_size
+ source        = "../modules/eks"
+ subnet_ids = var.create_network ? module.network[0].private_subnet_ids : var.subnet_ids
+ vpc_id     = var.create_network ? module.network[0].vpc_id : var.vpc_id
+ vpc_name   = var.create_network ? module.network[0].vpc_name : var.vpc_name
+}
 
-#module "cluster_services" {
-#  account_id                                     = var.account_id
-#  amazon_fluent_bit_cloudwatch_role_arn          = module.eks.amazon_fluent_bit_cloudwatch_role_arn
-#  amazon_managed_service_prometheus_iam_role_arn = module.eks.amazon_managed_service_prometheus_iam_role_arn
-#  cluster_autoscaler_iam_role_arn                = module.eks.cluster_autoscaler_iam_role_arn
-#  cluster_name                                   = module.eks.cluster_name
-#  external_secrets_iam_role_arn                  = module.eks.external_secrets_iam_role_arn
-#  load_balancer_controller_iam_role_arn          = module.eks.load_balancer_controller_iam_role_arn
-#  source                                         = "../modules/services"
-#}
+module "cluster_services" {
+ account_id                                     = var.account_id
+ amazon_fluent_bit_cloudwatch_role_arn          = module.eks.amazon_fluent_bit_cloudwatch_role_arn
+ amazon_managed_service_prometheus_iam_role_arn = module.eks.amazon_managed_service_prometheus_iam_role_arn
+ cluster_autoscaler_iam_role_arn                = module.eks.cluster_autoscaler_iam_role_arn
+ cluster_name                                   = module.eks.cluster_name
+ external_secrets_iam_role_arn                  = module.eks.external_secrets_iam_role_arn
+ load_balancer_controller_iam_role_arn          = module.eks.load_balancer_controller_iam_role_arn
+ source                                         = "../modules/services"
+}
