@@ -1,39 +1,39 @@
 module "network" {
-  count                 = var.create_network ? 1 : 0
-  vpc_cidr              = var.vpc_cidr
-  source                = "../modules/network"
+  vpc_cidr = var.vpc_cidr
+  source   = "../modules/network"
+  vpc_name = var.vpc_name
 }
 
 module "api_ecr" {
-  source = "../modules/ecr"
-  repository_name   = "api-ecr-${var.environment}"
-  environment   = var.environment
-  region   = var.region
+  source          = "../modules/ecr"
+  repository_name = "api-ecr-${var.environment}"
+  environment     = var.environment
+  region          = var.region
 }
 
 module "rag_ecr" {
-  source = "../modules/ecr"
-  repository_name   = "rag-ecr-${var.environment}"
-  environment   = var.environment
-  region   = var.region
+  source          = "../modules/ecr"
+  repository_name = "rag-ecr-${var.environment}"
+  environment     = var.environment
+  region          = var.region
 }
 
 #module "postgres" {
 #  db_instance_name     = var.db_instance_name
 #  db_subnet_group_name = var.db_subnet_group_name
 #  source               = "../modules/postgres"
-#  subnet_ids     = var.create_network ? module.network[0].private_subnet_ids : var.subnet_ids
-#  vpc_id         = var.create_network ? module.network[0].vpc_id : var.vpc_id
-#  vpc_cidr_block = var.create_network ? module.network[0].vpc_cidr_block : var.vpc_cidr
+#  subnet_ids           = module.network.private_subnet_ids
+#  vpc_id               = module.network.vpc_id
+#  vpc_cidr_block       = module.network.vpc_cidr_block
 #}
 
 module "eks" {
- capacity_type = var.capacity_type
- node_size     = var.node_size
- source        = "../modules/eks"
- subnet_ids = var.create_network ? module.network[0].private_subnet_ids : var.subnet_ids
- vpc_id     = var.create_network ? module.network[0].vpc_id : var.vpc_id
- vpc_name   = var.create_network ? module.network[0].vpc_name : var.vpc_name
+  capacity_type = var.capacity_type
+  node_size     = var.node_size
+  source        = "../modules/eks"
+  subnet_ids    = module.network.private_subnet_ids
+  vpc_id        = module.network.vpc_id
+  vpc_name      = module.network.vpc_name
 }
 
 module "cluster_services" {

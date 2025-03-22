@@ -53,11 +53,12 @@ module "eks" {
 
   eks_managed_node_groups = {
     eks-dev = {
-      min_size       = 1
-      max_size       = 1
-      desired_size   = 1
+      min_size       = 2
+      max_size       = 2
+      desired_size   = 2
       instance_types = [var.node_size]
       capacity_type  = var.capacity_type
+      ami_type       = "AL2_x86_64"  # For x86_64 instances like t3.medium
     }
   }
 

@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-scripts
+  namespace: default
+data:
+  init.sql: |
+    -- Create user table
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      username VARCHAR(50) UNIQUE NOT NULL,
+      email VARCHAR(100) UNIQUE NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+    
+    -- Create messages table
+    CREATE TABLE IF NOT EXISTS messages (
+      id SERIAL PRIMARY KEY,
+      content TEXT NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+    
+    -- Create items table
+    CREATE TABLE IF NOT EXISTS items (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      description TEXT,
+      price NUMERIC(10, 2),
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+    
+    -- Insert sample data
+    INSERT INTO messages (content) VALUES ('hello world') ON CONFLICT DO NOTHING;
+    
+    -- Insert sample users
+    INSERT INTO users (username, email) VALUES 
+      ('user1', 'user1@example.com'),
+      ('user2', 'user2@example.com')
+    ON CONFLICT DO NOTHING;
+    
+    -- Insert sample items
+    INSERT INTO items (name, description, price) VALUES 
+      ('Item 1', 'Description for item 1', 19.99),
+      ('Item 2', 'Description for item 2', 29.99),
+      ('Item 3', 'Description for item 3', 39.99)
+    ON CONFLICT DO NOTHING; 

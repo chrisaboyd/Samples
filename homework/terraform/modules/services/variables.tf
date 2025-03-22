@@ -1,12 +1,3 @@
-variable "adfs_auth_enabled" {
-  default     = false
-  description = "Enable ADFS Authentication vs WorkOS"
-  type        = bool
-}
-variable "amazon_managed_service_prometheus_iam_role_arn" {
-  description = "IAM Role ARN for Amazon Managed Service for Prometheus - Passed by EKS Module"
-  type        = string
-}
 variable "cluster_name" {
   description = "EKS Cluster Name - Passed by EKS Module"
   type        = string

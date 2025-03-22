@@ -1,13 +1,15 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: api-service-hpa
+  name: rag-service-hpa
   namespace: default
+  annotations:
+    metric-config.pods.prometheus.io/memory_usage_bytes: sum(container_memory_working_set_bytes{namespace="default",pod=~"^rag-service-.*$",container="rag-service"})
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: api-service
+    name: rag-service
   minReplicas: 1
   maxReplicas: 1
   metrics:
@@ -16,27 +18,27 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
+        averageUtilization: 65
   - type: Resource
     resource:
       name: memory
       target:
         type: Utilization
-        averageUtilization: 80
+        averageUtilization: 75
   behavior:
     scaleDown:
-      stabilizationWindowSeconds: 300
+      stabilizationWindowSeconds: 600
       policies:
       - type: Percent
-        value: 50
-        periodSeconds: 60
+        value: 20
+        periodSeconds: 120
     scaleUp:
       stabilizationWindowSeconds: 0
       policies:
       - type: Percent
-        value: 100
+        value: 200
         periodSeconds: 30
       - type: Pods
-        value: 4
+        value: 5
         periodSeconds: 30
-      selectPolicy: Max
+      selectPolicy: Max 

@@ -3,9 +3,12 @@ kind: Kustomization
 
 resources:
   - api/api-deployment.yaml
+  - api/hpa.yaml
   - rag/rag-deployment.yaml
-  - hpa.yaml
+  - rag/hpa.yaml
+  - postgres/postgres-config.yaml
+  - postgres/postgres-secret.yaml
+  - postgres/postgres-statefulset.yaml
   - ingress.yaml
-  - secrets.yaml
 
 namespace: default 

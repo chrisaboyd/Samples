@@ -4,8 +4,14 @@ metadata:
   name: api-ingress
   namespace: default
   annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/group.name: "my-shared-alb-group"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/healthcheck-path: "/api/health"
+    # Optional - if you're having subnet discovery issues
+    # alb.ingress.kubernetes.io/subnets: subnet-abc123,subnet-def456
 spec:
   rules:
   - http:

@@ -45,7 +45,15 @@ kubectl apply -f ingress.yaml
 
 Option 2: Using kustomize:
 ```bash
-kubectl apply -k ./
+❯ kubectl apply -k .
+secret/app-credentials created
+service/api-service created
+service/rag-service created
+deployment.apps/api-service created
+deployment.apps/rag-service created
+horizontalpodautoscaler.autoscaling/api-service-hpa created
+horizontalpodautoscaler.autoscaling/rag-service-hpa created
+ingress.networking.k8s.io/api-ingress created
 ```
 
 ### 3. Verify deployment

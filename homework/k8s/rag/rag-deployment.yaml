@@ -31,8 +31,8 @@ spec:
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
-              name: app-credentials
-              key: DATABASE_URL
+              name: postgres-credentials
+              key: connection_string
         livenessProbe:
           httpGet:
             path: /health

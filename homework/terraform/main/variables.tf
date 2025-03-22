@@ -24,7 +24,7 @@ variable "db_subnet_group_name" {
   default     = "ps_rds_subnet_group"
 }
 variable "node_size" {
-  default     = "a1.medium"
+  default     = "t3.medium"
   description = "Node size for EKS Nodes"
   type        = string
 }
@@ -59,7 +59,7 @@ variable "vpc_id" {
   type        = string
 }
 variable "vpc_name" {
-  default     = null
+  default     = "vpc-dev"
   description = "VPC name to deploy resources to when network is brought by user"
   type        = string
 }
