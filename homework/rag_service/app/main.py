@@ -118,4 +118,4 @@ def get_item(item_id: int, db: Session = Depends(get_db)):
 @app.get("/rag/health")
 def rag_health_check():
     """Check the health of the RAG service"""
-    return {"status": "OK", "embeddings_enabled": USE_EMBEDDINGS}
+    return {"rag_status": "OK", "embeddings_enabled": USE_EMBEDDINGS}

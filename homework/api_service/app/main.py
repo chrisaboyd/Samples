@@ -174,16 +174,5 @@ async def get_item(item_id: int, username: str = Depends(verify_credentials)):
 
 @app.get("/api/health")
 async def health_check():
-    """Check the health of the API and RAG service"""
-    async with httpx.AsyncClient() as client:
-        try:
-            api_status = "OK"
-            logger.info(
-                f"Making health check request to RAG service: {RAG_SERVICE_URL}/health"
-            )
-            response = await client.get(f"{RAG_SERVICE_URL}/health", timeout=5.0)
-            response.raise_for_status()
-            rag_status = response.json().get("status", "Unknown")
-            return {"api_status": api_status, "rag_status": rag_status}
-        except:
-            return {"api_status": api_status, "rag_status": "Unavailable"}
+    """Check the health of the API service"""
+    return {"api_status": "OK"}
