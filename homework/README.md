@@ -63,8 +63,8 @@ To run all services together with default settings for the database and basic au
 ```
 
 Once running:
-- API is accessible at `http://localhost:8080`
-- RAG service is accessible at `http://localhost:8081`
+- API is accessible at `http://localhost:8080/api`
+- RAG service is accessible at `http://localhost:8081/rag`
 - Database is accessible at `localhost:5432`
 - Interactive API documentation is available at `http://localhost:8080/docs`
 
@@ -80,13 +80,6 @@ export API_USERNAME=myusername
 export API_PASSWORD=mypassword
 ./pool.sh start
 ```
-
-## API Endpoints
-
-With the API service running, API docs can be accessed:
-
-- Swagger UI: `http://localhost:8080/docs`
-- ReDoc: `http://localhost:8080/redoc`
 
 ### Testing the Endpoint
 
@@ -105,6 +98,31 @@ Sending test POST request to localhost:8080/api/hello...
 {"message":"hello world","received":"LGTM!","via_rag":true}%
 ```
 
+Checking the container logs:
+```
+## API Service
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+INFO:app.main:Hello endpoint accessed with message: LGTM!
+INFO:app.main:Making request to RAG service: http://rag:8081/rag/message
+INFO:httpx:HTTP Request: POST http://rag:8081/rag/message "HTTP/1.1 200 OK"
+INFO:app.main:Received response from RAG: {'content': 'hello world', 'similarity_score': 1.0, 'rag_processed': True}
+INFO:app.main:API service received request: POST /api/hello - Took 0.0362s
+INFO:     192.168.65.1:60755 - "POST /api/hello HTTP/1.1" 200 OK
+
+
+## RAG Service
+INFO:app.main:Message retrieval requested with query: LGTM!
+INFO:app.main:Query embeddings would be used here: LGTM!
+INFO:app.main:RAG service received request: POST /rag/message - Took 0.0043s
+INFO:     172.18.0.4:56200 - "POST /rag/message HTTP/1.1" 200 OK
+INFO:app.main:RAG service received request: GET /health - Took 0.0006s
+INFO:     127.0.0.1:57130 - "GET /health HTTP/1.1" 200 OK
+INFO:app.main:RAG service received request: GET /health - Took 0.0004s
+INFO:     127.0.0.1:48366 - "GET /health HTTP/1.1" 200 OK
+```
 
 ## Reference Docs
 
