@@ -78,9 +78,13 @@ def retrieve_message(query: schemas.MessageQuery, db: Session = Depends(get_db))
     if USE_EMBEDDINGS and model:
         logger.info(f"Query embeddings would be used here: {query.query}")
         # In a real implementation, we would:
-        # 1. Encode the query to get embeddings
-        # 2. Compare with stored embeddings
+        # 1. Encode the query to get embeddings, e.g. [0.2, 0.5, -0.3, 0.1, ...]
+        # 2. Compare with stored embeddings like:
+        #   "Hello world"              [0.2, 0.5, -0.3, 0.1, ...]
+        #   "This  message is amazing" [0.1, 0.4, -0.2, 0.2, ...]
+        #   "RAG systems are powerful" [0.3, 0.6, -0.4, 0.3, ...]
         # 3. Return the closest match
+        # 4. Calculate similarity score based on cosine distance (-1 to 1)
 
     return {
         "content": message.content,
