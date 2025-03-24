@@ -149,3 +149,19 @@ INFO:     127.0.0.1:48366 - "GET /health HTTP/1.1" 200 OK
   - *Purpose*: Enables consistent deployment of all services in isolated environments, ensuring the application works consistently across different development and production environments
 - [Docker Compose](https://docs.docker.com/compose/) - Multi-container orchestration tool
   - *Purpose*: Manages the configuration, networking, and dependencies between services, allowing the entire three-tier application to be defined declaratively and launched with a single command
+
+
+### Extra Notes
+
+Why Python?  
+Why FastAPI?  
+
+Python dominates in ML/AI with significant libraries and adoption. HuggingFace, Pytorch, Tensorflow, etc. 
+FastAPI allows quick development with minimal boilerplate. Self-documenting via OpenAPI.
+Async support for conccurent requests
+SQLAlchemy ORM support 
+PostgreSQL offers [pgvector](https://github.com/pgvector/pgvector) extension  support
+
+Downsides:
+Go or Rust would be significantly faster, and more resource effecient.
+They do not have as robust ML/AI integrations or adoption however
