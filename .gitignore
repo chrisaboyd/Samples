@@ -19,3 +19,6 @@ pref_exporter.py
 this
 eks_wepapp/
 OpenAI/openai
+
+# NLP python venv
+nlp/nlp/**
