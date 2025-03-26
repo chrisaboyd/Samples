@@ -100,29 +100,36 @@ def preprocess_tweets_chunk(tweets, chunk_size=1000) -> list[str]:
         
         # Step 1: Remove special characters and convert to lowercase for the entire chunk
         cleaned_chunk = [
-            re.sub(r'^RT[\s]+', '', tweet)  # Remove RT
+            # Remove RT
+            re.sub(r'^RT[\s]+', '', tweet)
             for tweet in chunk
         ]
         cleaned_chunk = [
-            re.sub(r'https?:\/\/\S+', '', tweet)  # Remove URLs
+            # Remove URLs
+            re.sub(r'https?:\/\/\S+', '', tweet)
             for tweet in cleaned_chunk
         ]
         cleaned_chunk = [
-            re.sub(r'#', '', tweet)  # Remove hashtags
+            # Remove hashtags
+            re.sub(r'#', '', tweet)
             for tweet in cleaned_chunk
         ]
-        cleaned_chunk = [tweet.lower() for tweet in cleaned_chunk]  # Convert to lowercase
+        cleaned_chunk = [
+            # Convert to lowercase
+            tweet.lower()
+            for tweet in cleaned_chunk
+        ]
         
-        # Step 2: Tokenize the entire chunk
+        # Tokenize the chunk
         tokenized_chunk = [tokenizer.tokenize(tweet) for tweet in cleaned_chunk]
         
-        # Step 3: Remove stopwords and punctuation for the entire chunk
+        # Remove stopwords and punctuation
         cleaned_tokens_chunk = [
             [word for word in tokens if word not in stopwords_list and word not in string.punctuation]
             for tokens in tokenized_chunk
         ]
         
-        # Step 4: Stem words for the entire chunk
+        # Stem words
         stemmed_chunk = [
             [stemmer.stem(word) for word in tokens]
             for tokens in cleaned_tokens_chunk
@@ -130,7 +137,7 @@ def preprocess_tweets_chunk(tweets, chunk_size=1000) -> list[str]:
         
         preprocessed_tweets.extend(stemmed_chunk)
         
-        # Optional: Print progress for large datasets
+        # Print progress for large datasets
         if len(tweets) > chunk_size:
             print(f"Processed {min(i + chunk_size, len(tweets))}/{len(tweets)} tweets")
     
