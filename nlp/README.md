@@ -12,12 +12,6 @@ The code performs several key preprocessing steps on Twitter data:
 5. Removes URLs, hashtags, and retweet markers
 6. Visualizes the distribution of positive and negative tweets
 
-## Key Features
-
-- **Efficient Processing**: Processes tweets in chunks to optimize memory usage and performance
-- **Progress Tracking**: Shows progress for large datasets
-- **Modular Design**: Each preprocessing step is clearly separated and can be modified independently
-
 ## Prerequisites
 
 - Python 3.x
@@ -93,27 +87,12 @@ The script will:
    - "happiness" → "happi"
    - Uses Porter Stemmer algorithm
 
-## Performance Considerations
-
-The code processes tweets in chunks (default: 1000 tweets per chunk) to:
-- Optimize memory usage
-- Provide progress updates for large datasets
-- Allow for better resource management
-- Make the processing more efficient
-
-You can adjust the chunk size based on your available memory and dataset size:
-```python
-preprocessed_tweets = preprocess_tweets_chunk(tweets, chunk_size=500)  # Smaller chunks
-preprocessed_tweets = preprocess_tweets_chunk(tweets, chunk_size=2000)  # Larger chunks
-```
-
 ## Example Output
 
 The script will show:
 - Number of positive and negative tweets
 - Sample tweets before preprocessing
 - Distribution visualization
-- Progress updates during preprocessing
 - Preprocessed versions of sample tweets
 
 ## Learning Resources
