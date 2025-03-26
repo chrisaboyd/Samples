@@ -7,6 +7,8 @@ import random
 import os
 import re
 import string   
+import numpy as np
+
 
 
 def download_nltk_datasets() -> None:
@@ -144,6 +146,25 @@ def preprocess_tweets_chunk(tweets, chunk_size=1000) -> list[str]:
     return preprocessed_tweets
 
 
+def build_freqs(tweets: list, ys) -> dict:
+    """Build frequencies.
+    """
+    # Convert np array to list since zip needs an iterable.
+    # The squeeze is necessary or the list ends up with one element.
+    # Also note that this is just a NOP if ys is already a list.
+    yslist = np.squeeze(ys).tolist()
+    # Start with an empty dictionary and populate it by looping over all tweets
+    # and over all processed words in each tweet.
+    freqs = {}
+    for y, tweet in zip(yslist, tweets):
+        for word in preprocess_tweets_chunk(tweet):
+            pair = (word, y)
+            if pair in freqs:
+                freqs[pair] += 1
+            else:
+                freqs[pair] = 1    
+    return freqs
+
 def main():
 
     # Download required datasets
@@ -151,7 +172,7 @@ def main():
     
     # Load and analyze tweets
     positive_tweets, negative_tweets = load_twitter_data()
-    
+    all_tweets = positive_tweets + negative_tweets
     # Display sample tweets
     display_sample_tweets(positive_tweets, 'positive')
     
@@ -159,18 +180,18 @@ def main():
     #plot_tweet_distribution(positive_tweets, negative_tweets)
 
     # Process tweets in chunks
-    print("\nPreprocessing positive tweets...")
-    preprocessed_positive_tweets = preprocess_tweets_chunk(positive_tweets)
-    
-    print("\nPreprocessing negative tweets...")
-    preprocessed_negative_tweets = preprocess_tweets_chunk(negative_tweets)
+    # print("\nPreprocessing positive tweets...")
+    # all_processed_tweets = preprocess_tweets_chunk(all_tweets)
 
-    print("\nSample preprocessed positive tweet:")
+    labels = np.append(np.ones((len(positive_tweets))), np.zeros((len(negative_tweets))))
 
-    print(preprocessed_positive_tweets[0])
-    print("\nSample preprocessed negative tweet:")
+    freqs = build_freqs(all_tweets, labels)
 
-    print(preprocessed_negative_tweets[0])
+    # check data type
+    print(f'type(freqs) = {type(freqs)}')
+
+    # check length of the dictionary
+    print(f'len(freqs) = {len(freqs)}')
 
 
 if __name__ == "__main__":
