@@ -9,7 +9,7 @@ import re
 import string   
 
 
-def download_nltk_datasets():
+def download_nltk_datasets() -> None:
     """
     Download required NLTK datasets if they are not already present.
     Downloads twitter_samples and stopwords datasets.
@@ -25,12 +25,9 @@ def download_nltk_datasets():
             print(f"{dataset} dataset already exists at {dataset_path}")
 
 
-def load_twitter_data():
+def load_twitter_data() -> tuple[list[str], list[str]]:
     """
     Load positive and negative tweets from the NLTK twitter samples.
-    
-    Returns:
-        tuple: (positive_tweets, negative_tweets)
     """
     positive_tweets = twitter_samples.strings('positive_tweets.json')
     negative_tweets = twitter_samples.strings('negative_tweets.json')
@@ -41,27 +38,18 @@ def load_twitter_data():
     return positive_tweets, negative_tweets
 
 
-def display_sample_tweets(tweets, label, count=5):
+def display_sample_tweets(tweets: list[str], label: str, count: int = 5) -> None:
     """
     Display a sample of tweets with their label.
-    
-    Args:
-        tweets (list): List of tweets to display
-        label (str): Label for the tweets (e.g., 'positive')
-        count (int): Number of tweets to display
     """
     print(f"\nFirst {count} {label} tweets:")
     for tweet in tweets[:count]:
         print(tweet)
 
 
-def plot_tweet_distribution(positive_tweets, negative_tweets):
+def plot_tweet_distribution(positive_tweets: list[str], negative_tweets: list[str]) -> None:
     """
     Create and display a pie chart showing the distribution of positive and negative tweets.
-    
-    Args:
-        positive_tweets (list): List of positive tweets
-        negative_tweets (list): List of negative tweets
     """
     plt.figure(figsize=(5, 5))
     
@@ -78,7 +66,7 @@ def plot_tweet_distribution(positive_tweets, negative_tweets):
     plt.show()
 
 
-def remove_stopwords(tweet_tokens):
+def remove_stopwords(tweet_tokens) -> list[str]:
     """
     Remove stopwords from a list of tweet tokens.
     """
@@ -88,54 +76,69 @@ def remove_stopwords(tweet_tokens):
     return cleaned_tokens
 
 
-def stem_words(tweet_tokens):
+def stem_words(tweet_tokens) -> list[str]:
     """
     Stem words in a list of tweet tokens.
     """
     stemmer = PorterStemmer()
     stemmed_tokens = [stemmer.stem(word) for word in tweet_tokens]
     return stemmed_tokens
-
-
-def preprocess_tweet(tweet):
-    """
-    Preprocess a tweet by tokenizing it, removing stopwords, and stemming the words.
     
-    Args: 
-        tweet (str): The tweet to preprocess
-        
-    Returns:
-        str: The preprocessed tweet
+
+def preprocess_tweets_chunk(tweets, chunk_size=1000) -> list[str]:
     """
-
-    # remove old style retweet text "RT"
-    tweet = re.sub(r'^RT[\s]+', '', tweet)
-
-    # remove hyperlinks
-    tweet = re.sub(r'https?:\/\/\S+', '', tweet)
-
-    # remove hashtags
-    tweet = re.sub(r'#', '', tweet)
-
-    # convert to lowercase
-    tweet = tweet.lower()
-
-    # tokenize tweet
+    Preprocess a chunk of tweets efficiently by applying each step to the entire chunk.
+    """
+    preprocessed_tweets = []
     tokenizer = TweetTokenizer(preserve_case=False, strip_handles=True, reduce_len=True)
-    tweet_tokens = tokenizer.tokenize(tweet)
-
-    # remove stopwords
-    cleaned_tokens = remove_stopwords(tweet_tokens)
-
-    # stem words
-    stemmed_tokens = stem_words(cleaned_tokens)
-
-    return stemmed_tokens
+    stemmer = PorterStemmer()
+    stopwords_list = stopwords.words('english')
     
+    # Process tweets in chunks
+    for i in range(0, len(tweets), chunk_size):
+        chunk = tweets[i:i + chunk_size]
+        
+        # Step 1: Remove special characters and convert to lowercase for the entire chunk
+        cleaned_chunk = [
+            re.sub(r'^RT[\s]+', '', tweet)  # Remove RT
+            for tweet in chunk
+        ]
+        cleaned_chunk = [
+            re.sub(r'https?:\/\/\S+', '', tweet)  # Remove URLs
+            for tweet in cleaned_chunk
+        ]
+        cleaned_chunk = [
+            re.sub(r'#', '', tweet)  # Remove hashtags
+            for tweet in cleaned_chunk
+        ]
+        cleaned_chunk = [tweet.lower() for tweet in cleaned_chunk]  # Convert to lowercase
+        
+        # Step 2: Tokenize the entire chunk
+        tokenized_chunk = [tokenizer.tokenize(tweet) for tweet in cleaned_chunk]
+        
+        # Step 3: Remove stopwords and punctuation for the entire chunk
+        cleaned_tokens_chunk = [
+            [word for word in tokens if word not in stopwords_list and word not in string.punctuation]
+            for tokens in tokenized_chunk
+        ]
+        
+        # Step 4: Stem words for the entire chunk
+        stemmed_chunk = [
+            [stemmer.stem(word) for word in tokens]
+            for tokens in cleaned_tokens_chunk
+        ]
+        
+        preprocessed_tweets.extend(stemmed_chunk)
+        
+        # Optional: Print progress for large datasets
+        if len(tweets) > chunk_size:
+            print(f"Processed {min(i + chunk_size, len(tweets))}/{len(tweets)} tweets")
+    
+    return preprocessed_tweets
 
 
 def main():
-    """Main function to run the tweet analysis pipeline."""
+
     # Download required datasets
     download_nltk_datasets()
     
@@ -148,11 +151,19 @@ def main():
     # Visualize tweet distribution
     #plot_tweet_distribution(positive_tweets, negative_tweets)
 
-    preprocessed_positive_tweets = [preprocess_tweet(tweet) for tweet in positive_tweets]
-    preprocessed_negative_tweets = [preprocess_tweet(tweet) for tweet in negative_tweets]
+    # Process tweets in chunks
+    print("\nPreprocessing positive tweets...")
+    preprocessed_positive_tweets = preprocess_tweets_chunk(positive_tweets)
+    
+    print("\nPreprocessing negative tweets...")
+    preprocessed_negative_tweets = preprocess_tweets_chunk(negative_tweets)
 
-    print (preprocessed_positive_tweets[0])
-    print (preprocessed_negative_tweets[0])
+    print("\nSample preprocessed positive tweet:")
+
+    print(preprocessed_positive_tweets[0])
+    print("\nSample preprocessed negative tweet:")
+
+    print(preprocessed_negative_tweets[0])
 
 
 if __name__ == "__main__":
