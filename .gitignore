@@ -22,3 +22,9 @@ OpenAI/openai
 
 # NLP python venv
 nlp/nlp/**
+
+#  Options TRading
+trading_bot.log
+
+## Sensitive files
+**/.env

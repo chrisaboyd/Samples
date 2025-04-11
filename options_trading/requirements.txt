@@ -1,0 +1,5 @@
+python-dotenv 
+pandas 
+discord
+discord.py
+requests
