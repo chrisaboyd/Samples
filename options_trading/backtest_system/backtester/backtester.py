@@ -25,114 +25,112 @@ class Backtester:
         self.portfolio = Portfolio(initial_capital, commission)
         self.results = None
     
-    def run(self, start_date=None, end_date=None):
-        """
-        Run backtest between specified dates.
+    def run(self):
+        print("\n=== Starting Backtest Execution ===")
         
-        Args:
-            start_date (str, optional): Start date in 'YYYY-MM-DD' format
-            end_date (str, optional): End date in 'YYYY-MM-DD' format
-            
-        Returns:
-            dict: Backtest results
-        """
         # Generate trading signals
+        print("Generating signals...")
         self.strategy.generate_signals()
         
-        # Get tickers
+        # Get tickers and date range
         tickers = self.market_data.get_tickers()
+        all_dates = self.market_data.get_price_data(tickers[0]).index
+        print(f"Processing {len(all_dates)} timestamps from {all_dates[0]} to {all_dates[-1]}")
         
-        # Slice market data if dates are specified
-        if start_date is not None or end_date is not None:
-            market_data = self.market_data.slice_dates(start_date, end_date)
-        else:
-            market_data = self.market_data
-        
-        # Get consolidated dates across all tickers
-        all_dates = set()
+        # Debug ALL signals before processing
         for ticker in tickers:
-            dates = market_data.get_price_data(ticker).index
-            all_dates.update(dates)
-        all_dates = sorted(all_dates)
+            signals = self.strategy.get_signals(ticker)
+            non_zero_signals = signals[(signals['buy_signal'] > 0) | (signals['sell_signal'] > 0)]
+            print(f"\nAll generated signals for {ticker}:")
+            print(f"Total signals found: {len(non_zero_signals)}")
+            if len(non_zero_signals) > 0:
+                print(non_zero_signals[['buy_signal', 'sell_signal', 'entry_price', 'stop_loss', 'profit_target']])
         
-        # Iterate through each date
-        for date in all_dates:
-            # Check if we need to close any positions based on stop loss/take profit
-            self.portfolio.check_stop_loss_take_profit(date, market_data)
-            
-            # Process signals for each ticker
+        # Initialize portfolio
+        self.portfolio.current_capital = self.initial_capital
+        print(f"\nStarting backtest with initial capital: ${self.initial_capital:,.2f}")
+        
+        # Iterate through each timestamp
+        for current_time in all_dates:
+            # Process new signals
             for ticker in tickers:
                 try:
-                    # Get signals and price data
                     signals = self.strategy.get_signals(ticker)
-                    price = market_data.get_price_data(ticker)
                     
-                    if date not in signals.index or date not in price.index:
+                    # Check if we have any signals at all
+                    if signals is None:
+                        print(f"Warning: No signals DataFrame found for {ticker}")
+                        continue
+                        
+                    # Check if current_time exists in signals
+                    if current_time not in signals.index:
                         continue
                     
-                    # Get current price and signals
-                    current_price = price.loc[date]
-                    if isinstance(current_price, pd.Series):
-                        current_price = current_price.iloc[0]
-                    current_price = float(current_price)
+                    current_signals = signals.loc[current_time]
                     
-                    current_signals = signals.loc[date]
+                    # Only debug non-zero signals
+                    if current_signals.get('buy_signal', 0) > 0 or current_signals.get('sell_signal', 0) > 0:
+                        print(f"\nFound active signal for {ticker} at {current_time}:")
+                        print(f"Buy signal: {current_signals.get('buy_signal', 0)}")
+                        print(f"Sell signal: {current_signals.get('sell_signal', 0)}")
+                        print(f"Entry price: {current_signals.get('entry_price', 0)}")
+                        print(f"Stop loss: {current_signals.get('stop_loss', 0)}")
+                        print(f"Profit target: {current_signals.get('profit_target', 0)}")
                     
-                    # Extract buy/sell signals as scalar values
-                    buy_signal = current_signals.get('buy_signal', 0)
-                    if isinstance(buy_signal, pd.Series):
-                        buy_signal = buy_signal.iloc[0]
-                    buy_signal = float(buy_signal)
-                    
-                    sell_signal = current_signals.get('sell_signal', 0)
-                    if isinstance(sell_signal, pd.Series):
-                        sell_signal = sell_signal.iloc[0]
-                    sell_signal = float(sell_signal)
-                    
-                    # Process buy signal
-                    if buy_signal > 0 and ticker not in self.portfolio.open_positions:
-                        # Calculate position size (10% of portfolio)
-                        position_size = self.portfolio.current_capital * 0.1
-                        
-                        # Calculate stop loss and take profit levels
-                        stop_loss = current_price * (1 - self.strategy.parameters['stop_loss_pct'] / 100)
-                        take_profit = current_price * (1 + self.strategy.parameters['take_profit_pct'] / 100)
-                        
-                        # Open long position
-                        self.portfolio.buy(ticker, date, current_price, amount=position_size,
-                                          stop_loss=stop_loss, take_profit=take_profit)
-                    
-                    # Process sell signal
-                    if sell_signal > 0 and ticker in self.portfolio.open_positions:
-                        position = self.portfolio.open_positions[ticker]
-                        if position.direction == 1:  # Long position
-                            self.portfolio.sell(ticker, date, current_price, reason='SIGNAL')
-                    
+                    # Process buy signals
+                    if current_signals.get('buy_signal', 0) > 0:
+                        try:
+                            entry_price = float(current_signals['entry_price'])
+                            stop_loss = float(current_signals['stop_loss'])
+                            risk_per_share = abs(entry_price - stop_loss)
+                            risk_amount = self.portfolio.current_capital * 0.02
+                            
+                            print("\nCalculating position size:")
+                            print(f"Entry price: ${entry_price:.2f}")
+                            print(f"Stop loss: ${stop_loss:.2f}")
+                            print(f"Risk per share: ${risk_per_share:.2f}")
+                            print(f"Risk amount: ${risk_amount:.2f}")
+                            
+                            if risk_per_share > 0:
+                                num_shares = int(risk_amount / risk_per_share)
+                                if num_shares > 0:
+                                    print(f"Opening long position: {num_shares} shares at ${entry_price:.2f}")
+                                    self.portfolio.buy(ticker, current_time, entry_price, 
+                                                    stop_loss=stop_loss, 
+                                                    take_profit=float(current_signals['profit_target']))
+                        except Exception as e:
+                            print(f"Error processing buy signal: {str(e)}")
+                            
+                    # Process sell signals
+                    elif current_signals.get('sell_signal', 0) > 0:
+                        try:
+                            entry_price = float(current_signals['entry_price'])
+                            stop_loss = float(current_signals['stop_loss'])
+                            risk_per_share = abs(entry_price - stop_loss)
+                            risk_amount = self.portfolio.current_capital * 0.02
+                            
+                            if risk_per_share > 0:
+                                num_shares = int(risk_amount / risk_per_share)
+                                if num_shares > 0:
+                                    print(f"Opening short position: {num_shares} shares at ${entry_price:.2f}")
+                                    self.portfolio.sell(ticker, current_time, entry_price,
+                                                    stop_loss=stop_loss,
+                                                    take_profit=float(current_signals['profit_target']))
+                        except Exception as e:
+                            print(f"Error processing sell signal: {str(e)}")
+                            
                 except Exception as e:
-                    print(f"Error processing ticker {ticker} on {date}: {e}")
-                    continue
+                    print(f"Error processing {ticker}: {str(e)}")
             
-            # Update equity curve
-            self.portfolio.update_equity_curve(date, market_data)
-        
-        # Close any remaining positions at the end
-        last_date = all_dates[-1] if all_dates else None
-        for ticker in list(self.portfolio.open_positions.keys()):
+            # Update equity curve with market_data
             try:
-                if ticker in self.portfolio.open_positions:
-                    last_price = market_data.get_price_data(ticker).loc[last_date]
-                    if isinstance(last_price, pd.Series):
-                        last_price = last_price.iloc[0]
-                    last_price = float(last_price)
-                    
-                    position = self.portfolio.open_positions[ticker]
-                    
-                    if position.direction == 1:  # Long position
-                        self.portfolio.sell(ticker, last_date, last_price, reason='END_OF_BACKTEST')
-                    else:  # Short position
-                        self.portfolio.cover(ticker, last_date, last_price, reason='END_OF_BACKTEST')
+                self.portfolio.update_equity_curve(current_time, self.market_data)
             except Exception as e:
-                print(f"Error closing position for {ticker} at end of backtest: {e}")
+                print(f"Error updating equity curve: {str(e)}")
+
+        print("\n=== Backtest Complete ===")
+        print(f"Final capital: ${self.portfolio.current_capital:,.2f}")
+        print(f"Total trades executed: {len(self.portfolio.trades_history)}")
         
         # Calculate performance metrics
         self.calculate_performance()
@@ -148,7 +146,7 @@ class Backtester:
         trades = self.portfolio.get_trades_summary()
         
         # Convert trades history to DataFrame for analysis
-        trades_history = pd.DataFrame(self.portfolio.trades_history)
+        trades_history = pd.DataFrame(self.portfolio.trades_history) if self.portfolio.trades_history else pd.DataFrame()
         
         # Calculate basic metrics
         initial_capital = self.initial_capital
@@ -156,17 +154,41 @@ class Backtester:
         
         total_return = (final_capital - initial_capital) / initial_capital * 100
         
-        # Calculate daily returns
-        daily_returns = equity.pct_change().dropna()
-        
-        # Calculate Sharpe ratio (assuming 0% risk-free rate)
-        sharpe_ratio = np.sqrt(252) * daily_returns.mean() / daily_returns.std() if len(daily_returns) > 1 else 0
-        
-        # Calculate maximum drawdown
-        cumulative_returns = (1 + daily_returns).cumprod()
-        running_max = cumulative_returns.cummax()
-        drawdown = (cumulative_returns / running_max - 1) * 100
-        max_drawdown = drawdown.min() if not drawdown.empty else 0
+        # Calculate daily returns - ensure we're working with numeric values
+        if not equity.empty:
+            # Make sure we have a clean Series of numeric values
+            equity_numeric = pd.to_numeric(equity, errors='coerce')
+            daily_returns = equity_numeric.pct_change().dropna()
+            
+            # Calculate Sharpe ratio (assuming 0% risk-free rate)
+            if len(daily_returns) > 1:
+                # Ensure values are numeric before calculating statistics
+                try:
+                    mean_return = daily_returns.mean()
+                    std_return = daily_returns.std()
+                    if std_return > 0:
+                        sharpe_ratio = np.sqrt(252) * mean_return / std_return
+                    else:
+                        sharpe_ratio = 0
+                except Exception:
+                    print("Warning: Could not calculate Sharpe ratio, setting to 0")
+                    sharpe_ratio = 0
+            else:
+                sharpe_ratio = 0
+            
+            # Calculate maximum drawdown
+            try:
+                cumulative_returns = (1 + daily_returns).cumprod()
+                running_max = cumulative_returns.cummax()
+                drawdown = (cumulative_returns / running_max - 1) * 100
+                max_drawdown = drawdown.min() if not drawdown.empty else 0
+            except Exception:
+                print("Warning: Could not calculate maximum drawdown, setting to 0")
+                max_drawdown = 0
+        else:
+            daily_returns = pd.Series()
+            sharpe_ratio = 0
+            max_drawdown = 0
         
         # Calculate trade statistics
         if not trades.empty:
@@ -182,12 +204,12 @@ class Backtester:
             avg_win = winning_trades['pnl'].mean() if not winning_trades.empty else 0
             avg_loss = losing_trades['pnl'].mean() if not losing_trades.empty else 0
             
-            avg_win_loss_ratio = abs(avg_win / avg_loss) if avg_loss != 0 else float('inf')
+            avg_win_loss_ratio = abs(avg_win / avg_loss) if avg_loss != 0 and not np.isnan(avg_loss) else float('inf')
             
             gross_profit = winning_trades['pnl'].sum() if not winning_trades.empty else 0
             gross_loss = losing_trades['pnl'].sum() if not losing_trades.empty else 0
             
-            profit_factor = abs(gross_profit / gross_loss) if gross_loss != 0 else float('inf')
+            profit_factor = abs(gross_profit / gross_loss) if gross_loss != 0 and not np.isnan(gross_loss) else float('inf')
         else:
             num_trades = 0
             win_rate = 0
@@ -211,4 +233,8 @@ class Backtester:
             'daily_returns': daily_returns
         }
 
-
+    def generate_signals(self):
+        """
+        This method should be implemented by strategy classes, not the backtester.
+        """
+        raise NotImplementedError("This method should be implemented by strategy classes.")

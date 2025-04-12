@@ -114,115 +114,57 @@ class Portfolio:
         self.equity_curve = pd.Series(initial_capital)
         self.trades_history = []
     
-    def buy(self, ticker, date, price, quantity=None, amount=None, stop_loss=None, take_profit=None):
+    def buy(self, ticker, timestamp, price, stop_loss=None, take_profit=None):
         """
-        Open a long position.
-        
-        Args:
-            ticker (str): Ticker symbol
-            date: Trade date/time
-            price (float): Entry price
-            quantity (float, optional): Number of shares to buy
-            amount (float, optional): USD amount to invest (alternative to quantity)
-            stop_loss (float, optional): Stop loss price
-            take_profit (float, optional): Take profit price
-            
-        Returns:
-            Position: The newly created position
+        Execute a buy order
         """
-        # Calculate quantity if amount is specified
-        if quantity is None and amount is not None:
-            quantity = amount / price
+        if self.current_capital <= 0:
+            return
             
-        # Check for sufficient capital
-        cost = price * quantity
-        commission_cost = cost * self.commission
-        total_cost = cost + commission_cost
+        # Calculate position value (price * num_shares)
+        position_value = price * self.current_position_size
         
-        if total_cost > self.current_capital:
-            # Adjust quantity to match available capital
-            quantity = self.current_capital / (price * (1 + self.commission))
-            cost = price * quantity
-            commission_cost = cost * self.commission
-            total_cost = cost + commission_cost
+        if position_value > self.current_capital:
+            return
             
-        # Create new position
-        position = Position(ticker, date, price, quantity, direction=1)
-        
-        # Store stop loss and take profit levels
-        position.stop_loss = stop_loss
-        position.take_profit = take_profit
+        self.open_positions[ticker] = Position(
+            ticker=ticker,
+            entry_time=timestamp,
+            entry_price=price,
+            size=self.current_position_size,
+            direction=1,  # 1 for long
+            stop_loss=stop_loss,
+            take_profit=take_profit
+        )
         
         # Update capital
-        self.current_capital -= total_cost
+        self.current_capital -= position_value
         
-        # Add to positions
-        self.positions.append(position)
-        self.open_positions[ticker] = position
-        
-        # Log trade
-        trade_info = {
-            'date': date,
-            'ticker': ticker,
-            'action': 'BUY',
-            'price': price,
-            'quantity': quantity,
-            'cost': cost,
-            'commission': commission_cost,
-            'capital_after': self.current_capital
-        }
-        self.trades_history.append(trade_info)
-        
-        return position
-    
-    def sell(self, ticker, date, price, reason=None):
+    def sell(self, ticker, timestamp, price, stop_loss=None, take_profit=None):
         """
-        Close a long position.
-        
-        Args:
-            ticker (str): Ticker symbol
-            date: Trade date/time
-            price (float): Exit price
-            reason (str, optional): Reason for selling
-            
-        Returns:
-            float: Realized P&L
+        Execute a sell order (short position)
         """
-        if ticker not in self.open_positions:
-            return 0.0
+        if self.current_capital <= 0:
+            return
             
-        position = self.open_positions[ticker]
+        # Calculate position value
+        position_value = price * self.current_position_size
         
-        # Calculate proceeds and commission
-        proceeds = price * position.quantity
-        commission_cost = proceeds * self.commission
-        net_proceeds = proceeds - commission_cost
-        
-        # Close position and calculate P&L
-        pnl = position.close_position(date, price, reason)
+        if position_value > self.current_capital:
+            return
+            
+        self.open_positions[ticker] = Position(
+            ticker=ticker,
+            entry_time=timestamp,
+            entry_price=price,
+            size=self.current_position_size,
+            direction=-1,  # -1 for short
+            stop_loss=stop_loss,
+            take_profit=take_profit
+        )
         
         # Update capital
-        self.current_capital += net_proceeds
-        
-        # Move to closed positions
-        self.closed_positions.append(position)
-        del self.open_positions[ticker]
-        
-        # Log trade
-        trade_info = {
-            'date': date,
-            'ticker': ticker,
-            'action': 'SELL',
-            'price': price,
-            'quantity': position.quantity,
-            'proceeds': proceeds,
-            'commission': commission_cost,
-            'pnl': pnl,
-            'capital_after': self.current_capital
-        }
-        self.trades_history.append(trade_info)
-        
-        return pnl
+        self.current_capital -= position_value
     
     def short(self, ticker, date, price, quantity=None, amount=None, stop_loss=None, take_profit=None):
         """
@@ -344,26 +286,59 @@ class Portfolio:
     
     def update_equity_curve(self, date, market_data):
         """
-        Update the equity curve with current portfolio value.
+        Update equity curve for the given date.
         
         Args:
-            date: Current date/time
+            date (datetime): Current date
             market_data (MarketData): Market data object
         """
-        portfolio_value = self.current_capital
+        # Calculate total value of open positions
+        positions_value = 0.0
         
-        # Add value of open positions
         for ticker, position in self.open_positions.items():
             try:
-                current_price = market_data.get_price_data(ticker).loc[date]
-                position_value = position.calculate_unrealized_pnl(current_price) + \
-                                (position.entry_price * position.quantity)
-                portfolio_value += position_value
-            except (KeyError, ValueError):
-                # If price data is not available for this date
-                pass
+                # Get current price for the ticker
+                price_data = market_data.get_price_data(ticker)
+                
+                if date in price_data.index:
+                    price = price_data.loc[date]
+                    
+                    # Handle different price data formats
+                    if isinstance(price, pd.Series):
+                        if 'Close' in price:
+                            price = price['Close']
+                        else:
+                            price = price.iloc[0]
+                    elif isinstance(price, pd.DataFrame):
+                        if 'Close' in price.columns:
+                            price = price['Close'].iloc[0]
+                        else:
+                            price = price.iloc[0, 0]
+                    
+                    # Convert to float
+                    price = float(price)
+                    
+                    # Calculate position value
+                    if position.direction == 1:  # Long position
+                        value = position.quantity * price
+                    else:  # Short position
+                        value = position.quantity * (2 * position.entry_price - price)
+                    
+                    positions_value += value
+                else:
+                    # Use last known value if date not in price data
+                    positions_value += position.current_value
+                    
+            except Exception as e:
+                print(f"Error updating position value for {ticker} on {date}: {e}")
+                # Use last known value
+                positions_value += position.current_value
         
-        self.equity_curve[date] = portfolio_value
+        # Total portfolio value is cash plus positions
+        total_value = self.current_capital + positions_value
+        
+        # Update equity curve
+        self.equity_curve[date] = total_value
     
     def check_stop_loss_take_profit(self, date, market_data):
         """

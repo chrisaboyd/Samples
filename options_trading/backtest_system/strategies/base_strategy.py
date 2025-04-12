@@ -16,7 +16,12 @@ class BaseStrategy:
         """
         self.market_data = market_data
         self.signals = {}
-        self.parameters = {}
+        self.parameters = {
+            'timeframe': 'D',  # Default to daily timeframe
+            'intraday': False,  # Whether strategy requires intraday data
+            'market_open_time': '09:30',  # Market open time
+            'market_close_time': '16:00', # Market close time
+        }
         
     def set_parameters(self, **kwargs):
         """
@@ -24,6 +29,10 @@ class BaseStrategy:
         
         Args:
             **kwargs: Key-value pairs of parameters
+                timeframe: str, data frequency ('1min', '5min', '15min', 'H', 'D', etc.)
+                intraday: bool, whether strategy requires intraday data
+                market_open_time: str, market open time (HH:MM)
+                market_close_time: str, market close time (HH:MM)
         """
         self.parameters.update(kwargs)
         return self
@@ -96,4 +105,42 @@ class BaseStrategy:
         ax.grid(True)
         
         return ax
+
+    def is_valid_trading_time(self, timestamp):
+        """
+        Check if current time is valid for trading.
+        
+        Args:
+            timestamp (pd.Timestamp): Current timestamp
+            
+        Returns:
+            bool: Whether trading is allowed
+        """
+        # If not intraday, always return True
+        if not self.parameters.get('intraday', False):
+            return True
+            
+        current_time = timestamp.time()
+        market_open = pd.to_datetime(self.parameters['market_open_time']).time()
+        market_close = pd.to_datetime(self.parameters['market_close_time']).time()
+        
+        return market_open <= current_time <= market_close
+    
+    def get_timeframe(self):
+        """
+        Get strategy timeframe.
+        
+        Returns:
+            str: Timeframe specification
+        """
+        return self.parameters.get('timeframe', 'D')
+    
+    def is_intraday(self):
+        """
+        Check if strategy is intraday.
+        
+        Returns:
+            bool: Whether strategy operates on intraday data
+        """
+        return self.parameters.get('intraday', False)
 

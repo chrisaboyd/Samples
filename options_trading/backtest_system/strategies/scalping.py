@@ -4,109 +4,203 @@ from strategies.base_strategy import BaseStrategy
 
 class ScalpingStrategy(BaseStrategy):
     """
-    Simple scalping strategy implementation.
-    Uses short-term price movements for quick profits.
+    Intraday scalping strategy implementation with added momentum confirmation via MACD.
+    Uses volume spikes, price action, and MACD for quick profits with strict risk management.
     """
     
     def __init__(self, market_data):
-        """
-        Initialize with market data.
-        
-        Args:
-            market_data (MarketData): Market data object
-        """
         super().__init__(market_data)
-        
-        # Default parameters
-        self.parameters = {
-            'ema_short': 5,        # Short-term EMA period (reduced from 9)
-            'ema_long': 15,        # Long-term EMA period (reduced from 21)
-            'rsi_period': 14,      # RSI calculation period
-            'rsi_overbought': 65,  # RSI overbought threshold (reduced from 70)
-            'rsi_oversold': 35,    # RSI oversold threshold (increased from 30)
-            'stop_loss_pct': 0.5,  # Stop loss percentage
-            'take_profit_pct': 1.0 # Take profit percentage
-        }
+        self.parameters.update({
+            'timeframe': '1min',           # Use 1-minute data
+            'intraday': True,              # This is an intraday strategy
+            'market_open_time': '09:30',
+            'market_close_time': '16:00',
+            
+            # Scalping-specific parameters – tuned for intraday signals
+            'price_movement_threshold': 0.0005,  # 0.05% price movement (more sensitive)
+            'volume_ma_period': 3,               # Very short moving average for volume
+            'volume_threshold': 1.5,             # 50% above average volume
+            'atr_period': 5,                     # Shorter ATR window for intraday volatility
+            'atr_multiplier': 1.0,               # Use full ATR for stop loss calculations
+            'min_profit_target': 0.001,          # 0.1% minimum profit target (can be refined)
+            'max_hold_time': 3,                  # Maximum hold time in minutes
+            'min_volume': 5000,                  # Lower volume threshold for signal validity
+            'volatility_threshold': 0.002,       # ATR must be below 0.2% of price
+            
+            # MACD parameters for added momentum confirmation:
+            'macd_fast': 5,
+            'macd_slow': 13,
+            'macd_signal': 5,
+            
+            # Time filters – can be adjusted based on further testing:
+            'morning_wait_minutes': 5,           # Short wait after market open
+            'avoid_lunch': False,                # Disabled for testing; enable later if needed
+            'lunch_start': '12:00',
+            'lunch_end': '13:00'
+        })
     
-    def calculate_indicators(self, price_data):
+    def calculate_indicators(self, price_data, volume_data):
         """
         Calculate technical indicators for the strategy.
         
         Args:
-            price_data (pd.Series): Price data series
+            price_data (pd.Series): Minute-by-minute price data.
+            volume_data (pd.Series): Minute-by-minute volume data.
             
         Returns:
-            pd.DataFrame: DataFrame with calculated indicators
+            pd.DataFrame: DataFrame with calculated indicators.
         """
         df = pd.DataFrame(index=price_data.index)
         df['price'] = price_data
+        df['volume'] = volume_data
         
-        # Calculate EMAs
-        df['ema_short'] = price_data.ewm(span=self.parameters['ema_short'], adjust=False).mean()
-        df['ema_long'] = price_data.ewm(span=self.parameters['ema_long'], adjust=False).mean()
+        # Calculate price change (percentage)
+        df['price_change'] = df['price'].pct_change()
         
-        # Calculate RSI
-        delta = price_data.diff()
-        gain = (delta.where(delta > 0, 0)).fillna(0)
-        loss = (-delta.where(delta < 0, 0)).fillna(0)
+        # Volume indicators
+        df['volume_ma'] = df['volume'].rolling(window=self.parameters['volume_ma_period']).mean()
+        df['volume_ratio'] = df['volume'] / df['volume_ma']
         
-        avg_gain = gain.rolling(window=self.parameters['rsi_period']).mean()
-        avg_loss = loss.rolling(window=self.parameters['rsi_period']).mean()
+        # ATR for volatility (using a simple high-low approach)
+        high_low = df['price'].rolling(window=2).max() - df['price'].rolling(window=2).min()
+        df['atr'] = high_low.rolling(window=self.parameters['atr_period']).mean()
         
-        rs = avg_gain / avg_loss
-        df['rsi'] = 100 - (100 / (1 + rs))
+        # MACD Calculation
+        fast_span = self.parameters['macd_fast']
+        slow_span = self.parameters['macd_slow']
+        signal_span = self.parameters['macd_signal']
+        
+        df['ema_fast'] = df['price'].ewm(span=fast_span, adjust=False).mean()
+        df['ema_slow'] = df['price'].ewm(span=slow_span, adjust=False).mean()
+        df['macd'] = df['ema_fast'] - df['ema_slow']
+        df['macd_signal'] = df['macd'].ewm(span=signal_span, adjust=False).mean()
+        df['macd_hist'] = df['macd'] - df['macd_signal']
         
         return df
+    
+    def is_valid_trading_time(self, timestamp):
+        """
+        Check if the timestamp is within valid trading hours.
         
+        Args:
+            timestamp (pd.Timestamp): Time to check.
+            
+        Returns:
+            bool: Whether the time is valid for trading.
+        """
+        if not isinstance(timestamp, pd.Timestamp):
+            timestamp = pd.Timestamp(timestamp)
+        current_time = timestamp.time()
+        market_open = pd.to_datetime(self.parameters['market_open_time']).time()
+        market_close = pd.to_datetime(self.parameters['market_close_time']).time()
+        return market_open <= current_time <= market_close
+    
+    def validate_data_frequency(self, data):
+        """
+        Validate that the incoming data is 1-minute frequency.
+        
+        Args:
+            data (pd.DataFrame/Series): Data to validate.
+            
+        Returns:
+            bool: Whether the data frequency is correct.
+        """
+        if len(data) < 2:
+            return True
+        time_diff = pd.Series(data.index[1:]) - pd.Series(data.index[:-1])
+        median_diff = time_diff.median()
+        # Allow for minor variation (between 55 and 65 seconds)
+        is_one_minute = pd.Timedelta(seconds=55) <= median_diff <= pd.Timedelta(seconds=65)
+        if not is_one_minute:
+            print(f"Warning: Data frequency appears to be {median_diff}, not 1-minute as required")
+        return is_one_minute
+    
     def generate_signals(self):
         """
-        Generate buy/sell signals based on EMA crossover and RSI.
+        Generate buy/sell signals based on price action, volume, and MACD momentum.
         
         Returns:
-            dict: Dictionary with tickers as keys and signal DataFrames as values
+            dict: Dictionary with tickers as keys and signal DataFrames as values.
         """
         tickers = self.market_data.get_tickers()
         self.signals = {}
         
         for ticker in tickers:
             price_data = self.market_data.get_price_data(ticker)
-            indicators = self.calculate_indicators(price_data)
+            volume_data = self.market_data.get_volume(ticker)
             
-            # Initialize signal columns
+            if price_data.empty or volume_data.empty:
+                continue
+            
+            # Validate that we're using 1-minute data.
+            if not self.validate_data_frequency(price_data):
+                print(f"Warning: {ticker} data may not be suitable for a scalping strategy")
+            
+            indicators = self.calculate_indicators(price_data, volume_data)
+            
+            # Initialize signal columns.
             indicators['buy_signal'] = 0
             indicators['sell_signal'] = 0
             
-            # EMA crossover (buy when short crosses above long)
-            ema_cross_above = (indicators['ema_short'] > indicators['ema_long']) & \
-                              (indicators['ema_short'].shift(1) <= indicators['ema_long'].shift(1))
-            
-            # EMA crossover (sell when short crosses below long)
-            ema_cross_below = (indicators['ema_short'] < indicators['ema_long']) & \
-                              (indicators['ema_short'].shift(1) >= indicators['ema_long'].shift(1))
-            
-            # RSI conditions
-            rsi_oversold = indicators['rsi'] < self.parameters['rsi_oversold']
-            rsi_overbought = indicators['rsi'] > self.parameters['rsi_overbought']
-            
-            # Print debugging information
-            print(f"\nSignal conditions for {ticker}:")
-            print(f"EMA cross above: {ema_cross_above.sum()} occurrences")
-            print(f"EMA cross below: {ema_cross_below.sum()} occurrences")
-            print(f"RSI oversold: {rsi_oversold.sum()} occurrences")
-            print(f"RSI overbought: {rsi_overbought.sum()} occurrences")
-            
-            # Buy signal: EMA cross above OR RSI oversold (changed from AND to OR)
-            buy_condition = ema_cross_above | rsi_oversold
-            indicators.loc[buy_condition, 'buy_signal'] = 1
-            
-            # Sell signal: EMA cross below OR RSI overbought
-            sell_condition = ema_cross_below | rsi_overbought
-            indicators.loc[sell_condition, 'sell_signal'] = 1
-            
-            print(f"Total buy signals: {indicators['buy_signal'].sum()}")
-            print(f"Total sell signals: {indicators['sell_signal'].sum()}")
+            for i in range(len(indicators)):
+                timestamp = indicators.index[i]
+                
+                # Skip timestamps outside of valid trading hours.
+                if not self.is_valid_trading_time(timestamp):
+                    continue
+                
+                price_movement = abs(indicators['price_change'].iloc[i]) > self.parameters['price_movement_threshold']
+                volume_spike = indicators['volume_ratio'].iloc[i] > self.parameters['volume_threshold']
+                sufficient_volume = indicators['volume'].iloc[i] > self.parameters['min_volume']
+                
+                atr_value = indicators['atr'].iloc[i]
+                price = indicators['price'].iloc[i]
+                volatility_ok = (atr_value / price) < self.parameters['volatility_threshold']
+                
+                # MACD confirmation conditions:
+                macd_confirmation_buy = indicators['macd'].iloc[i] > indicators['macd_signal'].iloc[i]
+                macd_confirmation_sell = indicators['macd'].iloc[i] < indicators['macd_signal'].iloc[i]
+                
+                # Debug information (optional):
+                if price_movement and volume_spike and sufficient_volume:
+                    print(f"\nPotential signal at {timestamp}:")
+                    print(f"  Price change: {indicators['price_change'].iloc[i]:.4f}")
+                    print(f"  Volume ratio: {indicators['volume_ratio'].iloc[i]:.2f}")
+                    print(f"  Volume: {indicators['volume'].iloc[i]:.0f}")
+                    print(f"  ATR: {atr_value:.4f}")
+                    print(f"  Price: {price:.2f}")
+                    print(f"  MACD: {indicators['macd'].iloc[i]:.4f}, Signal: {indicators['macd_signal'].iloc[i]:.4f}")
+                
+                # Generate buy signal:
+                if (price_movement and volume_spike and sufficient_volume and volatility_ok and 
+                    indicators['price_change'].iloc[i] > 0 and macd_confirmation_buy):
+                    indicators.iloc[i, indicators.columns.get_loc('buy_signal')] = 1
+                    print(f"\nBUY SIGNAL GENERATED at {timestamp}:")
+                    print(f"  Price change: {indicators['price_change'].iloc[i]:.4f}")
+                    print(f"  Volume ratio: {indicators['volume_ratio'].iloc[i]:.2f}")
+                    print(f"  Volume: {indicators['volume'].iloc[i]:.0f}")
+                    print(f"  ATR: {atr_value:.4f}")
+                    print(f"  Price: {price:.2f}")
+                    print(f"  MACD: {indicators['macd'].iloc[i]:.4f}, Signal: {indicators['macd_signal'].iloc[i]:.4f}")
+                
+                # Generate sell signal:
+                if (price_movement and volume_spike and sufficient_volume and volatility_ok and 
+                    indicators['price_change'].iloc[i] < 0 and macd_confirmation_sell):
+                    indicators.iloc[i, indicators.columns.get_loc('sell_signal')] = 1
+                    print(f"\nSELL SIGNAL GENERATED at {timestamp}:")
+                    print(f"  Price change: {indicators['price_change'].iloc[i]:.4f}")
+                    print(f"  Volume ratio: {indicators['volume_ratio'].iloc[i]:.2f}")
+                    print(f"  Volume: {indicators['volume'].iloc[i]:.0f}")
+                    print(f"  ATR: {atr_value:.4f}")
+                    print(f"  Price: {price:.2f}")
+                    print(f"  MACD: {indicators['macd'].iloc[i]:.4f}, Signal: {indicators['macd_signal'].iloc[i]:.4f}")
             
             self.signals[ticker] = indicators
-            
+            print(f"\nSignal summary for {ticker}:")
+            print(f"Total buy signals: {indicators['buy_signal'].sum()}")
+            print(f"Total sell signals: {indicators['sell_signal'].sum()}")
+            print(f"Average volume: {indicators['volume'].mean():.0f}")
+            print(f"Number of volume spikes: {(indicators['volume_ratio'] > self.parameters['volume_threshold']).sum()}")
+            print(f"Average ATR: {indicators['atr'].mean():.4f}")
+        
         return self.signals
-
