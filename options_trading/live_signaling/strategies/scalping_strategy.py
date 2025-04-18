@@ -1,70 +1,108 @@
+from datetime import datetime, time
 import pandas as pd
+import numpy as np
 from .base_strategy import LiveStrategy
 
-class LiveScalpingStrategy(LiveStrategy):
+class LiveORB_EMA_Strategy(LiveStrategy):
+    """
+    ORB + EMA Pullback Strategy
+
+    - Compute 15m Opening Range (ORB)
+    - Track 3 EMAs (10, 35, 100)
+    - Detect breakout of ORB high/low
+    - On pullback to the 35‑EMA (medium) with at least 2 EMAs aligned in trend,
+      generate entry signal.
+    - Profit target: either daily high/low or half the ORB range width.
+    """
     def __init__(self):
-        super().__init__("Scalping")
+        super().__init__("ORB_EMA")
         self.parameters.update({
-            'price_movement_threshold': 0.0005,
-            'volume_ma_period': 3,
-            'volume_threshold': 1.5,
-            'min_volume': 5000,
-            'macd_fast': 5,
-            'macd_slow': 13,
-            'macd_signal': 5
+            'market_open_time': time(9, 30),
+            'market_close_time': time(16, 0),
+            'opening_range_duration': 15,
+            'tolerance': 0.001,
+            'ema_short': 10,
+            'ema_mid': 35,
+            'ema_long': 100,
+            'pullback_to_mid': True,
+            'profit_target_pct_orb': 0.5,  # half ORB range
         })
-        
-    def calculate_indicators(self, data: pd.DataFrame) -> pd.DataFrame:
-        df = data.copy()
-        
-        # Calculate price change
-        df['price_change'] = df['close'].pct_change()
-        
-        # Volume indicators
-        df['volume_ma'] = df['volume'].rolling(
-            window=self.parameters['volume_ma_period']).mean()
-        df['volume_ratio'] = df['volume'] / df['volume_ma']
-        
-        # MACD
-        df['ema_fast'] = df['close'].ewm(
-            span=self.parameters['macd_fast'], adjust=False).mean()
-        df['ema_slow'] = df['close'].ewm(
-            span=self.parameters['macd_slow'], adjust=False).mean()
-        df['macd'] = df['ema_fast'] - df['ema_slow']
-        df['macd_signal'] = df['macd'].ewm(
-            span=self.parameters['macd_signal'], adjust=False).mean()
-        
-        return df
-        
-    def generate_signal(self, ticker: str, current_data: pd.DataFrame) -> dict:
-        if ticker not in self.data_buffer:
+        # State
+        self.orb = {}            # ticker -> dict(high, low)
+        self.flags = {}          # ticker -> dict(break_long, break_short, taken)
+
+    def generate_signal(self, ticker: str, data: pd.DataFrame) -> dict:
+        now = datetime.now().time()
+        open_t = self.parameters['market_open_time']
+        end_orb = (datetime.combine(datetime.today(), open_t)
+                   + pd.Timedelta(minutes=self.parameters['opening_range_duration'])).time()
+
+        # initialize
+        if ticker not in self.orb:
+            self.orb[ticker] = {}
+            self.flags[ticker] = {'break_long': False, 'break_short': False, 'taken': False}
+
+        bars = data.copy()
+        # During ORB period: record high/low
+        if now <= end_orb:
+            h = bars['high'].max()
+            l = bars['low'].min()
+            self.orb[ticker].update({'high': h, 'low': l})
             return {'signal': None}
-            
-        # Calculate indicators
-        indicators = self.calculate_indicators(current_data)
-        latest = indicators.iloc[-1]
-        
-        price_movement = abs(latest['price_change']) > self.parameters['price_movement_threshold']
-        volume_spike = latest['volume_ratio'] > self.parameters['volume_threshold']
-        sufficient_volume = latest['volume'] > self.parameters['min_volume']
-        
-        if price_movement and volume_spike and sufficient_volume:
-            if (latest['price_change'] > 0 and 
-                latest['macd'] > latest['macd_signal']):
-                return {
-                    'signal': 'buy',
-                    'entry_price': float(latest['close']),
-                    'volume_ratio': float(latest['volume_ratio']),
-                    'price_change': float(latest['price_change'])
-                }
-                
-            if (latest['price_change'] < 0 and 
-                latest['macd'] < latest['macd_signal']):
-                return {
-                    'signal': 'sell',
-                    'entry_price': float(latest['close']),
-                    'volume_ratio': float(latest['volume_ratio']),
-                    'price_change': float(latest['price_change'])
-                }
-                
-        return {'signal': None} 
+
+        # After ORB
+        orb_h, orb_l = self.orb[ticker].get('high'), self.orb[ticker].get('low')
+        if orb_h is None or orb_l is None:
+            return {'signal': None}
+        flags = self.flags[ticker]
+        price = bars['close'].iloc[-1]
+        high = bars['high'].iloc[-1]
+        low  = bars['low'].iloc[-1]
+        rng = orb_h - orb_l
+
+        # compute EMAs
+        bars['ema_s'] = bars['close'].ewm(span=self.parameters['ema_short'], adjust=False).mean()
+        bars['ema_m'] = bars['close'].ewm(span=self.parameters['ema_mid'], adjust=False).mean()
+        bars['ema_l'] = bars['close'].ewm(span=self.parameters['ema_long'], adjust=False).mean()
+        ema_s = bars['ema_s'].iloc[-1]
+        ema_m = bars['ema_m'].iloc[-1]
+        ema_l = bars['ema_l'].iloc[-1]
+
+        # detect breakout
+        if not flags['break_long'] and high > orb_h:
+            flags['break_long'] = True
+        if not flags['break_short'] and low < orb_l:
+            flags['break_short'] = True
+
+        # only one trade per day
+        if flags['taken']:
+            return {'signal': None}
+
+        tol = self.parameters['tolerance']
+        # Long entry criteria
+        if flags['break_long']:
+            # pullback to mid EMA
+            if abs(price - ema_m) <= tol * price:
+                # EMAs aligned: at least two rising (s>m>l)
+                aligned = (ema_s > ema_m and ema_m > ema_l) or (ema_s > ema_l and ema_m > ema_l)
+                if aligned:
+                    # determine targets and stops based on ORB width
+                    sl = price - 0.25 * rng   # stop at 1/4 ORB width below entry
+                    pt = max(bars['high'].max(), price + self.parameters['profit_target_pct_orb'] * rng)
+                    flags['taken'] = True
+                    return {'signal': 'buy', 'entry_price': float(price),
+                            'stop_loss': float(sl), 'profit_target': float(pt)}
+                            'stop_loss':float(sl), 'profit_target':float(pt)}
+        # Short entry criteria
+        if flags['break_short']:
+            if abs(price - ema_m) <= tol * price:
+                aligned = (ema_s < ema_m and ema_m < ema_l) or (ema_s < ema_l and ema_m < ema_l)
+                if aligned:
+                    dt_low = data['low'].min()
+                    pt = min(dt_low, price - self.parameters['profit_target_pct_orb'] * rng)
+                    sl = ema_m
+                    flags['taken'] = True
+                    return {'signal': 'sell', 'entry_price':float(price),
+                            'stop_loss':float(sl), 'profit_target':float(pt)}
+
+        return {'signal': None}

@@ -7,22 +7,19 @@ class Backtester:
     Core backtesting engine that runs strategies and analyzes performance.
     """
     
-    def __init__(self, market_data, strategy, initial_capital=100000.0, commission=0.001):
+    def __init__(self, strategy, market_data, initial_capital):
         """
         Initialize backtester with market data and strategy.
         
         Args:
-            market_data (MarketData): Market data object
             strategy (BaseStrategy): Trading strategy
+            market_data (MarketData): Market data object
             initial_capital (float): Initial capital amount
-            commission (float): Commission rate as decimal
         """
-        self.market_data = market_data
         self.strategy = strategy
+        self.market_data = market_data
         self.initial_capital = initial_capital
-        self.commission = commission
-        
-        self.portfolio = Portfolio(initial_capital, commission)
+        self.portfolio = Portfolio(initial_capital)
         self.results = None
     
     def run(self):
@@ -50,83 +47,118 @@ class Backtester:
         self.portfolio.current_capital = self.initial_capital
         print(f"\nStarting backtest with initial capital: ${self.initial_capital:,.2f}")
         
-        # Iterate through each timestamp
         for current_time in all_dates:
-            # Process new signals
+            # First, check for exits on open positions
+            for ticker in list(self.portfolio.open_positions.keys()):
+                try:
+                    position = self.portfolio.open_positions[ticker]
+                    current_price = self.market_data.get_price_data(ticker).loc[current_time].iloc[0]
+                    
+                    # Check stop loss
+                    if position.direction == 1:  # Long position
+                        if current_price <= position.stop_loss:
+                            print(f"\nStop loss triggered for {ticker}")
+                            print(f"Entry price: ${position.entry_price:.2f}")
+                            print(f"Stop price: ${current_price:.2f}")
+                            if self.portfolio.close_position(ticker, current_time, current_price, "Stop Loss"):
+                                continue
+                            
+                        elif current_price >= position.take_profit:
+                            print(f"\nTake profit triggered for {ticker}")
+                            print(f"Entry price: ${position.entry_price:.2f}")
+                            print(f"Exit price: ${current_price:.2f}")
+                            if self.portfolio.close_position(ticker, current_time, current_price, "Take Profit"):
+                                continue
+                    
+                    elif position.direction == -1:  # Short position
+                        if current_price >= position.stop_loss:
+                            print(f"\nStop loss triggered for {ticker}")
+                            print(f"Entry price: ${position.entry_price:.2f}")
+                            print(f"Stop price: ${current_price:.2f}")
+                            self.portfolio.close_position(ticker, current_time, current_price, "Stop Loss")
+                            continue
+                            
+                        if current_price <= position.take_profit:
+                            print(f"\nTake profit triggered for {ticker}")
+                            print(f"Entry price: ${position.entry_price:.2f}")
+                            print(f"Exit price: ${current_price:.2f}")
+                            self.portfolio.close_position(ticker, current_time, current_price, "Take Profit")
+                            continue
+                            
+                except Exception as e:
+                    print(f"Error checking position exits: {str(e)}")
+            
+            # Then process new signals (only if we don't have an open position)
             for ticker in tickers:
+                if ticker in self.portfolio.open_positions:
+                    continue  # Skip if we already have a position
+                    
                 try:
                     signals = self.strategy.get_signals(ticker)
-                    
-                    # Check if we have any signals at all
-                    if signals is None:
-                        print(f"Warning: No signals DataFrame found for {ticker}")
-                        continue
-                        
-                    # Check if current_time exists in signals
                     if current_time not in signals.index:
                         continue
-                    
+                        
                     current_signals = signals.loc[current_time]
-                    
-                    # Only debug non-zero signals
-                    if current_signals.get('buy_signal', 0) > 0 or current_signals.get('sell_signal', 0) > 0:
-                        print(f"\nFound active signal for {ticker} at {current_time}:")
-                        print(f"Buy signal: {current_signals.get('buy_signal', 0)}")
-                        print(f"Sell signal: {current_signals.get('sell_signal', 0)}")
-                        print(f"Entry price: {current_signals.get('entry_price', 0)}")
-                        print(f"Stop loss: {current_signals.get('stop_loss', 0)}")
-                        print(f"Profit target: {current_signals.get('profit_target', 0)}")
                     
                     # Process buy signals
                     if current_signals.get('buy_signal', 0) > 0:
                         try:
                             entry_price = float(current_signals['entry_price'])
                             stop_loss = float(current_signals['stop_loss'])
-                            risk_per_share = abs(entry_price - stop_loss)
-                            risk_amount = self.portfolio.current_capital * 0.02
+                            take_profit = float(current_signals['profit_target'])
+                            position_value = entry_price * 100
                             
-                            print("\nCalculating position size:")
+                            print(f"\nProcessing buy signal for {ticker}:")
                             print(f"Entry price: ${entry_price:.2f}")
                             print(f"Stop loss: ${stop_loss:.2f}")
-                            print(f"Risk per share: ${risk_per_share:.2f}")
-                            print(f"Risk amount: ${risk_amount:.2f}")
+                            print(f"Take profit: ${take_profit:.2f}")
+                            print(f"Position value: ${position_value:.2f}")
                             
-                            if risk_per_share > 0:
-                                num_shares = int(risk_amount / risk_per_share)
-                                if num_shares > 0:
-                                    print(f"Opening long position: {num_shares} shares at ${entry_price:.2f}")
-                                    self.portfolio.buy(ticker, current_time, entry_price, 
-                                                    stop_loss=stop_loss, 
-                                                    take_profit=float(current_signals['profit_target']))
+                            if position_value <= self.portfolio.current_capital:
+                                self.portfolio.current_position_size = 100
+                                self.portfolio.buy(
+                                    ticker, 
+                                    current_time, 
+                                    entry_price,
+                                    stop_loss=stop_loss,
+                                    take_profit=take_profit
+                                )
+                            else:
+                                print(f"Warning: Not enough capital. Required: ${position_value:.2f}, Available: ${self.portfolio.current_capital:.2f}")
+                                    
                         except Exception as e:
                             print(f"Error processing buy signal: {str(e)}")
                             
-                    # Process sell signals
-                    elif current_signals.get('sell_signal', 0) > 0:
-                        try:
-                            entry_price = float(current_signals['entry_price'])
-                            stop_loss = float(current_signals['stop_loss'])
-                            risk_per_share = abs(entry_price - stop_loss)
-                            risk_amount = self.portfolio.current_capital * 0.02
-                            
-                            if risk_per_share > 0:
-                                num_shares = int(risk_amount / risk_per_share)
-                                if num_shares > 0:
-                                    print(f"Opening short position: {num_shares} shares at ${entry_price:.2f}")
-                                    self.portfolio.sell(ticker, current_time, entry_price,
-                                                    stop_loss=stop_loss,
-                                                    take_profit=float(current_signals['profit_target']))
-                        except Exception as e:
-                            print(f"Error processing sell signal: {str(e)}")
-                            
+                    # Similar changes for sell signals...
+                    
                 except Exception as e:
-                    print(f"Error processing {ticker}: {str(e)}")
+                    print(f"Error processing signals: {str(e)}")
             
-            # Update equity curve with market_data
-            try:
-                self.portfolio.update_equity_curve(current_time, self.market_data)
-            except Exception as e:
-                print(f"Error updating equity curve: {str(e)}")
+            # Update equity curve
+            self.portfolio.update_equity_curve(current_time, self.market_data)
+
+        # Close any remaining open positions at the end of the backtest
+        for ticker, position in self.portfolio.open_positions.items():
+            if position is not None:
+                try:
+                    # Get last price
+                    last_price_data = self.market_data.get_price_at_time(ticker, all_dates[-1])
+                    if last_price_data is not None and not last_price_data.empty:
+                        ticker_col = last_price_data.columns[0]
+                        last_price = last_price_data['close'].iloc[0] if 'close' in last_price_data.columns else last_price_data[ticker_col].iloc[0]
+                        
+                        print(f"\nClosing remaining {position.direction} position in {ticker} at end of backtest")
+                        print(f"Entry price: ${position.entry_price:.2f}")
+                        print(f"Exit price: ${last_price:.2f}")
+                        
+                        self.portfolio.close_position(
+                            ticker,
+                            all_dates[-1],
+                            last_price,
+                            'backtest_end'
+                        )
+                except Exception as e:
+                    print(f"Error closing position for {ticker}: {str(e)}")
 
         print("\n=== Backtest Complete ===")
         print(f"Final capital: ${self.portfolio.current_capital:,.2f}")

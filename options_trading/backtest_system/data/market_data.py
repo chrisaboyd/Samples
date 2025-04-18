@@ -127,3 +127,27 @@ class MarketData:
         else:
             return MarketData(self.data.loc[start_date:end_date])
 
+    def get_price_at_time(self, ticker, timestamp):
+        """
+        Get the price data for a specific ticker at a specific timestamp.
+        
+        Args:
+            ticker (str): Symbol of the asset
+            timestamp (pd.Timestamp): Time to get price data for
+            
+        Returns:
+            pd.DataFrame: Price data for the given timestamp
+        """
+        try:
+            # Get all price data for the ticker
+            price_data = self.get_price_data(ticker)
+            
+            # Check if timestamp exists exactly in the index
+            if timestamp in price_data.index:
+                return price_data.loc[[timestamp]]
+            
+            # If timestamp not found, return None
+            return None
+        except Exception as e:
+            print(f"Error getting price at time {timestamp} for {ticker}: {str(e)}")
+            return None

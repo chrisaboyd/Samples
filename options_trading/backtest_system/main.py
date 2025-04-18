@@ -68,7 +68,11 @@ def run_backtest(tickers,
         strategy.set_parameters(**strategy_params)
     
     # 3. Create and run backtester
-    backtester = Backtester(market_data, strategy, initial_capital, commission)
+    backtester = Backtester(
+        strategy=strategy,
+        market_data=market_data,
+        initial_capital=initial_capital
+    )
     results = backtester.run()
     
     # 4. Return results
@@ -76,7 +80,7 @@ def run_backtest(tickers,
 
 def analyze_results(results, market_data, strategy, tickers):
     """
-    Analyze and visualize backtest results.
+    Analyze and visualize backtest results with proper timezone handling.
     
     Args:
         results (dict): Backtest results
@@ -84,31 +88,35 @@ def analyze_results(results, market_data, strategy, tickers):
         strategy (BaseStrategy): Strategy used in backtest
         tickers (list): List of ticker symbols
     """
-    # Convert timezone-aware timestamps to timezone-naive for consistent plotting
-    def convert_tz_aware_series(series):
-        if not isinstance(series, pd.Series):
-            return series
-        
-        if hasattr(series.index, 'tz') and series.index.tz is not None:
-            return pd.Series(series.values, index=series.index.tz_localize(None))
-        return series
+    # Helper function to convert timezone-aware datetimes to naive
+    def strip_tz(dt_index):
+        if hasattr(dt_index, 'tz') and dt_index.tz is not None:
+            return dt_index.tz_localize(None)
+        return dt_index
     
     # Convert timezone-aware DataFrames
     if 'trades' in results and not results['trades'].empty:
-        if hasattr(results['trades'].index, 'tz') and results['trades'].index.tz is not None:
-            results['trades'].index = results['trades'].index.tz_localize(None)
+        results['trades'].index = strip_tz(results['trades'].index)
         
-        # Convert datetime columns if they exist and are tz-aware
+        # Convert datetime columns if they exist
         for col in ['entry_date', 'exit_date']:
-            if col in results['trades'].columns:
-                if hasattr(results['trades'][col].dt, 'tz') and results['trades'][col].dt.tz is not None:
-                    results['trades'][col] = results['trades'][col].dt.tz_localize(None)
+            if col in results['trades'].columns and pd.api.types.is_datetime64_dtype(results['trades'][col]):
+                # Approach for Series of datetimes
+                try:
+                    if hasattr(results['trades'][col].dt, 'tz') and results['trades'][col].dt.tz is not None:
+                        results['trades'][col] = pd.DatetimeIndex(results['trades'][col]).tz_localize(None)
+                except:
+                    # Alternative approach if the above fails
+                    results['trades'][col] = results['trades'][col].apply(
+                        lambda x: x.replace(tzinfo=None) if hasattr(x, 'tzinfo') and x.tzinfo is not None else x
+                    )
     
     # Convert series data
-    if 'equity_curve' in results:
-        results['equity_curve'] = convert_tz_aware_series(results['equity_curve'])
-    if 'daily_returns' in results:
-        results['daily_returns'] = convert_tz_aware_series(results['daily_returns'])
+    if 'equity_curve' in results and isinstance(results['equity_curve'], pd.Series):
+        results['equity_curve'].index = strip_tz(results['equity_curve'].index)
+        
+    if 'daily_returns' in results and isinstance(results['daily_returns'], pd.Series):
+        results['daily_returns'].index = strip_tz(results['daily_returns'].index)
     
     # Print performance summary first
     print("\n===== PERFORMANCE SUMMARY =====")
@@ -123,7 +131,7 @@ def analyze_results(results, market_data, strategy, tickers):
     print(f"Profit Factor: {results['profit_factor']:.2f}")
     
     # Display enhanced trade statistics before plots
-    if not results['trades'].empty:
+    if 'trades' in results and not results['trades'].empty:
         trades_df = results['trades'].copy()
         
         # Calculate additional metrics
@@ -165,16 +173,15 @@ def analyze_results(results, market_data, strategy, tickers):
         print("-" * 80)
     
     # Create visualization plots with adjusted size and spacing
-    fig, axes = plt.subplots(3, 1, figsize=(12, 8))
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))  # Changed from 3 to 2 subplots
     fig.patch.set_facecolor('white')
     
     # Plot equity curve
     equity_curve = results['equity_curve']
     if isinstance(equity_curve, pd.Series):
-        dates = pd.to_datetime(equity_curve.index)
+        dates = equity_curve.index  # Already converted to timezone-naive above
         values = equity_curve.values.astype(float)
         
-        ax1 = axes[0]
         ax1.set_facecolor('white')
         ax1.plot(dates, values, label='Portfolio Value', color='blue', linewidth=1.5)
         ax1.set_title('Portfolio Equity Curve', fontsize=10, pad=5)
@@ -197,14 +204,13 @@ def analyze_results(results, market_data, strategy, tickers):
     # Plot drawdown
     daily_returns = results['daily_returns']
     if isinstance(daily_returns, pd.Series):
-        dates = pd.to_datetime(daily_returns.index)
+        dates = daily_returns.index  # Already converted to timezone-naive above
         values = daily_returns.values.astype(float)
         
         cumulative_returns = np.cumprod(1 + values)
         running_max = np.maximum.accumulate(cumulative_returns)
         drawdown = (cumulative_returns / running_max - 1) * 100
         
-        ax2 = axes[1]
         ax2.set_facecolor('white')
         ax2.fill_between(dates, 0, drawdown, color='red', alpha=0.3, label='Drawdown')
         ax2.set_title('Portfolio Drawdown', fontsize=10, pad=5)
@@ -218,56 +224,10 @@ def analyze_results(results, market_data, strategy, tickers):
         ax2.xaxis.set_major_locator(mdates.AutoDateLocator(minticks=3, maxticks=7))
         ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:.1f}%'))
     
-    # Plot price with signals
-    ticker = tickers[0]
-    price = market_data.get_price_data(ticker)
-    if isinstance(price, pd.Series):
-        dates = pd.to_datetime(price.index)
-        values = price.values.astype(float)
-        
-        signals = strategy.get_signals(ticker)
-        if isinstance(signals, pd.DataFrame):
-            signal_dates = pd.to_datetime(signals.index)
-            
-            ax3 = axes[2]
-            ax3.set_facecolor('white')
-            ax3.plot(dates, values, label=f'{ticker} Price', color='blue', alpha=0.6, linewidth=1.5)
-            
-            # Plot signals
-            if 'buy_signal' in signals.columns:
-                buy_mask = signals['buy_signal'] > 0
-                if buy_mask.any():
-                    buy_dates = signal_dates[buy_mask]
-                    buy_prices = values[pd.Series(dates).isin(buy_dates)]
-                    ax3.scatter(buy_dates, buy_prices, color='green', marker='^', s=50, 
-                              label='Buy Signal')
-            
-            if 'sell_signal' in signals.columns:
-                sell_mask = signals['sell_signal'] > 0
-                if sell_mask.any():
-                    sell_dates = signal_dates[sell_mask]
-                    sell_prices = values[pd.Series(dates).isin(sell_dates)]
-                    ax3.scatter(sell_dates, sell_prices, color='red', marker='v', s=50, 
-                              label='Sell Signal')
-            
-            ax3.set_title(f'{ticker} Price with Signals', fontsize=10, pad=5)
-            ax3.set_ylabel('Price ($)', fontsize=8)
-            ax3.grid(True, alpha=0.3)
-            ax3.tick_params(axis='both', labelsize=8)
-            ax3.legend(fontsize=8, loc='upper left')
-            
-            # Format axes
-            ax3.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-            ax3.xaxis.set_major_locator(mdates.AutoDateLocator(minticks=3, maxticks=7))
-            ax3.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'${x:.2f}'))
-    
-    # Adjust layout
-    plt.subplots_adjust(hspace=0.4)  # Adjust space between plots
-    
-    # Make plot responsive
-    fig.canvas.manager.set_window_title('Backtest Results')
+    # Adjust layout and show plot
+    plt.tight_layout()
     plt.show()
-    
+
 def main(tickers=None):
     """
     Main function to run the backtesting system.

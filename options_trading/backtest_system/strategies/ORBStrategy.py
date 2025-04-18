@@ -105,11 +105,11 @@ class ORBStrategy(BaseStrategy):
         """
         Generate buy/sell signals using an ORB breakout with a retest.
         The signal DataFrame includes columns:
-           - buy_signal / sell_signal: 1 if a signal occurs.
-           - entry_price: The entry price.
-           - stop_loss: The risk level.
-           - profit_target: The target level based on the ORB range.
-           - orb_high / orb_low: The opening range values.
+        - buy_signal / sell_signal: 1 if a signal occurs.
+        - entry_price: The entry price.
+        - stop_loss: The risk level (25% of ORB range).
+        - profit_target: The target level (45% of ORB range).
+        - orb_high / orb_low: The opening range values.
         """
         tickers = self.market_data.get_tickers()
         self.signals = {}
@@ -124,9 +124,9 @@ class ORBStrategy(BaseStrategy):
             print(f"Number of bars: {len(data)}")
             
             signals = pd.DataFrame(index=data.index, 
-                                 columns=['buy_signal', 'sell_signal', 'entry_price', 
+                                columns=['buy_signal', 'sell_signal', 'entry_price', 
                                         'stop_loss', 'profit_target', 'orb_high', 'orb_low'],
-                                 data=0)  # Initialize with zeros instead of NaN
+                                data=0)  # Initialize with zeros instead of NaN
             
             if data.index[0].tz is not None:
                 day_grouper = data.index.tz_localize(None).date
@@ -188,13 +188,20 @@ class ORBStrategy(BaseStrategy):
                     # Long trade setup
                     if breakout_long and not trade_taken:
                         if (orb_high * (1 - tolerance) <= current_price <= orb_high * (1 + tolerance)):
+                            # Calculate stop loss (25% of ORB range below entry)
+                            stop_distance = 0.25 * orb_range
+                            stop_loss = current_price - stop_distance
+                            
+                            # Calculate profit target (45% of the ORB range above entry)
+                            profit_target = current_price + (0.45 * orb_range)
+                            
                             # Create a dictionary with ALL signal details
                             signal_details = {
                                 'buy_signal': 1,
                                 'sell_signal': 0,
                                 'entry_price': float(current_price),
-                                'stop_loss': float(self.determine_stop_loss(day_data, i, 'long')),
-                                'profit_target': float(current_price + (self.parameters['profit_target_multiplier'] * orb_range)),
+                                'stop_loss': float(stop_loss),
+                                'profit_target': float(profit_target),
                                 'orb_high': float(orb_high),
                                 'orb_low': float(orb_low)
                             }
@@ -211,13 +218,20 @@ class ORBStrategy(BaseStrategy):
                     # Short trade setup
                     if breakout_short and not trade_taken:
                         if (orb_low * (1 - tolerance) <= current_price <= orb_low * (1 + tolerance)):
+                            # Calculate stop loss (25% of ORB range above entry)
+                            stop_distance = 0.25 * orb_range
+                            stop_loss = current_price + stop_distance
+                            
+                            # Calculate profit target (45% of the ORB range below entry)
+                            profit_target = current_price - (0.45 * orb_range)
+                            
                             # Create a dictionary with ALL signal details
                             signal_details = {
                                 'buy_signal': 0,
                                 'sell_signal': 1,
                                 'entry_price': float(current_price),
-                                'stop_loss': float(self.determine_stop_loss(day_data, i, 'short')),
-                                'profit_target': float(current_price - (self.parameters['profit_target_multiplier'] * orb_range)),
+                                'stop_loss': float(stop_loss),
+                                'profit_target': float(profit_target),
                                 'orb_high': float(orb_high),
                                 'orb_low': float(orb_low)
                             }
