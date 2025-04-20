@@ -72,11 +72,11 @@ def display_option_greeks(greeks: OptionGreeks, optionInputs: OptionInputs):
 # === EXAMPLE USAGE ===
 # Define your option inputs (time to expiry is already in years)
 optionInputs = OptionInputs(
-    spot_price = 245,             # Current SPY price
-    strike_price = 220,           # Option strike
-    T = 74 / 365,                 # 74 days to expiration, in years
+    spot_price = 160,             # Current SPY price
+    strike_price = 160,           # Option strike
+    T = 91 / 365,                 # 74 days to expiration, in years
     risk_free_rate = 0.04,        # 4% annual risk-free rate
-    iv = 0.8323,                  # Implied volatility (83.23% - note this is unusually high)
+    iv = 0.7943,                  # Implied volatility (83.23% - note this is unusually high)
     option_type = 'put'
 )
 

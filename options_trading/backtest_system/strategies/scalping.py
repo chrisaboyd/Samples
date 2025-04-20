@@ -4,79 +4,47 @@ from strategies.base_strategy import BaseStrategy
 
 class ScalpingStrategy(BaseStrategy):
     """
-    Intraday scalping strategy implementation with added momentum confirmation via MACD.
-    Uses volume spikes, price action, and MACD for quick profits with strict risk management.
+    Intraday scalping strategy using EMA crossovers and Opening Range Breakout.
+    
+    Key features:
+    1. Uses 1-minute data for intraday trading
+    2. Employs three EMAs (10, 35, 100) for trend confirmation
+    3. Identifies 15-minute opening range breakout
+    4. Tracks high/low of day for profit targets
+    5. Entry: ORB breakout with retest of 35 EMA and trend confirmation
+    6. Stop loss: Half of ORB width
+    7. Profit target: Full ORB width or high/low of day (whichever is closer)
+    8. Options-focused calculations (ATM ~0.5 delta)
     """
     
     def __init__(self, market_data):
         super().__init__(market_data)
         self.parameters.update({
-            'timeframe': '1min',           # Use 1-minute data
-            'intraday': True,              # This is an intraday strategy
+            'timeframe': '1min',            # Use 1-minute data
+            'intraday': True,               # This is an intraday strategy
             'market_open_time': '09:30',
             'market_close_time': '16:00',
             
-            # Scalping-specific parameters – tuned for intraday signals
-            'price_movement_threshold': 0.0005,  # 0.05% price movement (more sensitive)
-            'volume_ma_period': 3,               # Very short moving average for volume
-            'volume_threshold': 1.5,             # 50% above average volume
-            'atr_period': 5,                     # Shorter ATR window for intraday volatility
-            'atr_multiplier': 1.0,               # Use full ATR for stop loss calculations
-            'min_profit_target': 0.001,          # 0.1% minimum profit target (can be refined)
-            'max_hold_time': 3,                  # Maximum hold time in minutes
-            'min_volume': 5000,                  # Lower volume threshold for signal validity
-            'volatility_threshold': 0.002,       # ATR must be below 0.2% of price
+            # EMA parameters
+            'ema_short': 10,                # Short-term EMA
+            'ema_medium': 35,               # Medium-term EMA
+            'ema_long': 100,                # Long-term EMA
             
-            # MACD parameters for added momentum confirmation:
-            'macd_fast': 5,
-            'macd_slow': 13,
-            'macd_signal': 5,
+            # Opening Range parameters
+            'orb_duration': 15,             # 15-minute opening range duration
             
-            # Time filters – can be adjusted based on further testing:
-            'morning_wait_minutes': 5,           # Short wait after market open
-            'avoid_lunch': False,                # Disabled for testing; enable later if needed
+            # Entry parameters
+            'retest_tolerance': 0.001,      # 0.1% tolerance for retest proximity
+            
+            # Options parameters
+            'option_delta': 0.5,            # Approximate ATM delta
+            
+            # Time filters
+            'morning_wait_minutes': 5,      # Wait after market open
+            'avoid_lunch': False,
             'lunch_start': '12:00',
             'lunch_end': '13:00'
         })
-    
-    def calculate_indicators(self, price_data, volume_data):
-        """
-        Calculate technical indicators for the strategy.
-        
-        Args:
-            price_data (pd.Series): Minute-by-minute price data.
-            volume_data (pd.Series): Minute-by-minute volume data.
-            
-        Returns:
-            pd.DataFrame: DataFrame with calculated indicators.
-        """
-        df = pd.DataFrame(index=price_data.index)
-        df['price'] = price_data
-        df['volume'] = volume_data
-        
-        # Calculate price change (percentage)
-        df['price_change'] = df['price'].pct_change()
-        
-        # Volume indicators
-        df['volume_ma'] = df['volume'].rolling(window=self.parameters['volume_ma_period']).mean()
-        df['volume_ratio'] = df['volume'] / df['volume_ma']
-        
-        # ATR for volatility (using a simple high-low approach)
-        high_low = df['price'].rolling(window=2).max() - df['price'].rolling(window=2).min()
-        df['atr'] = high_low.rolling(window=self.parameters['atr_period']).mean()
-        
-        # MACD Calculation
-        fast_span = self.parameters['macd_fast']
-        slow_span = self.parameters['macd_slow']
-        signal_span = self.parameters['macd_signal']
-        
-        df['ema_fast'] = df['price'].ewm(span=fast_span, adjust=False).mean()
-        df['ema_slow'] = df['price'].ewm(span=slow_span, adjust=False).mean()
-        df['macd'] = df['ema_fast'] - df['ema_slow']
-        df['macd_signal'] = df['macd'].ewm(span=signal_span, adjust=False).mean()
-        df['macd_hist'] = df['macd'] - df['macd_signal']
-        
-        return df
     
     def is_valid_trading_time(self, timestamp):
         """
@@ -90,34 +58,170 @@ class ScalpingStrategy(BaseStrategy):
         """
         if not isinstance(timestamp, pd.Timestamp):
             timestamp = pd.Timestamp(timestamp)
+        
+        # Convert to timezone-naive for comparison if needed
+        if timestamp.tz is not None:
+            timestamp = timestamp.tz_localize(None)
+            
         current_time = timestamp.time()
         market_open = pd.to_datetime(self.parameters['market_open_time']).time()
         market_close = pd.to_datetime(self.parameters['market_close_time']).time()
-        return market_open <= current_time <= market_close
+        
+        # Morning wait period
+        morning_cutoff = (pd.Timestamp(self.parameters['market_open_time']) + 
+                         pd.Timedelta(minutes=self.parameters['morning_wait_minutes'])).time()
+        
+        # Lunch period
+        avoid_lunch = self.parameters['avoid_lunch']
+        lunch_start = pd.to_datetime(self.parameters['lunch_start']).time()
+        lunch_end = pd.to_datetime(self.parameters['lunch_end']).time()
+        
+        # Check if within market hours
+        is_market_hours = market_open <= current_time <= market_close
+        
+        # Check if after morning wait
+        is_after_morning_wait = current_time >= morning_cutoff
+        
+        # Check if during lunch (if avoiding lunch)
+        is_lunch_period = lunch_start <= current_time <= lunch_end if avoid_lunch else False
+        
+        return is_market_hours and is_after_morning_wait and not is_lunch_period
     
-    def validate_data_frequency(self, data):
+    def calculate_indicators(self, price_data):
         """
-        Validate that the incoming data is 1-minute frequency.
+        Calculate EMAs and other indicators for the strategy.
         
         Args:
-            data (pd.DataFrame/Series): Data to validate.
+            price_data (pd.Series): Minute-by-minute price data.
             
         Returns:
-            bool: Whether the data frequency is correct.
+            pd.DataFrame: DataFrame with calculated indicators.
         """
-        if len(data) < 2:
-            return True
-        time_diff = pd.Series(data.index[1:]) - pd.Series(data.index[:-1])
-        median_diff = time_diff.median()
-        # Allow for minor variation (between 55 and 65 seconds)
-        is_one_minute = pd.Timedelta(seconds=55) <= median_diff <= pd.Timedelta(seconds=65)
-        if not is_one_minute:
-            print(f"Warning: Data frequency appears to be {median_diff}, not 1-minute as required")
-        return is_one_minute
+        df = pd.DataFrame(index=price_data.index)
+        df['price'] = price_data
+        
+        # Calculate EMAs
+        df['ema_short'] = price_data.ewm(span=self.parameters['ema_short'], adjust=False).mean()
+        df['ema_medium'] = price_data.ewm(span=self.parameters['ema_medium'], adjust=False).mean()
+        df['ema_long'] = price_data.ewm(span=self.parameters['ema_long'], adjust=False).mean()
+        
+        # Track daily high and low
+        if df.index[0].tz is not None:
+            day_grouper = df.index.tz_localize(None).date
+        else:
+            day_grouper = df.index.date
+            
+        for day, day_data in df.groupby(day_grouper):
+            day_indices = day_data.index
+            df.loc[day_indices, 'high_of_day'] = day_data['price'].cummax()
+            df.loc[day_indices, 'low_of_day'] = day_data['price'].cummin()
+        
+        return df
+    
+    def calculate_orb(self, day_data):
+        """
+        Calculate the Opening Range Breakout (ORB) high, low, and width for a day.
+        
+        Args:
+            day_data (pd.DataFrame): Price data for a single trading day.
+            
+        Returns:
+            tuple: (orb_high, orb_low, orb_width, orb_end_time)
+        """
+        # Use the first timestamp as market open
+        first_timestamp = day_data.index[0]
+        market_open = first_timestamp
+        end_range = market_open + pd.Timedelta(minutes=self.parameters['orb_duration'])
+        
+        # Format timestamps for cleaner logging
+        market_open_str = market_open.strftime('%Y-%m-%d %H:%M:%S')
+        end_range_str = end_range.strftime('%Y-%m-%d %H:%M:%S')
+        print(f"ORB period: {market_open_str} to {end_range_str}")
+        
+        orb_bars = day_data[(day_data.index >= market_open) & (day_data.index < end_range)]
+        
+        if orb_bars.empty:
+            print("No bars found in opening range")
+            return None, None, None, None
+        
+        orb_high = orb_bars['price'].max()
+        orb_low = orb_bars['price'].min()
+        orb_width = orb_high - orb_low
+        
+        print(f"ORB range: ${orb_low:.2f} - ${orb_high:.2f} (Width: ${orb_width:.2f})")
+        return orb_high, orb_low, orb_width, end_range
+    
+    def check_trend_confirmation(self, row, direction):
+        """
+        Check if at least two of the three EMAs confirm the trend direction.
+        
+        Args:
+            row (pd.Series): DataFrame row with EMA values.
+            direction (str): 'long' or 'short'.
+            
+        Returns:
+            bool: Whether the trend is confirmed.
+        """
+        if direction == 'long':
+            # For long trend, EMAs should be in ascending order
+            count = 0
+            if row['ema_short'] > row['ema_medium']: count += 1
+            if row['ema_medium'] > row['ema_long']: count += 1
+            if row['ema_short'] > row['ema_long']: count += 1
+            return count >= 2
+        else:
+            # For short trend, EMAs should be in descending order
+            count = 0
+            if row['ema_short'] < row['ema_medium']: count += 1
+            if row['ema_medium'] < row['ema_long']: count += 1
+            if row['ema_short'] < row['ema_long']: count += 1
+            return count >= 2
+    
+    def check_ema_retest(self, row, prev_row, direction):
+        """
+        Check if price is retesting the medium EMA.
+        
+        Args:
+            row (pd.Series): Current DataFrame row.
+            prev_row (pd.Series): Previous DataFrame row.
+            direction (str): 'long' or 'short'.
+            
+        Returns:
+            bool: Whether the medium EMA is being retested.
+        """
+        tolerance = self.parameters['retest_tolerance']
+        
+        if direction == 'long':
+            # For long, price should dip down to test the medium EMA and then bounce up
+            touched_ema = (row['price'] >= row['ema_medium'] * (1 - tolerance) and 
+                          row['price'] <= row['ema_medium'] * (1 + tolerance))
+            bouncing_up = row['price'] > prev_row['price']
+            return touched_ema and bouncing_up
+        else:
+            # For short, price should rise up to test the medium EMA and then drop down
+            touched_ema = (row['price'] >= row['ema_medium'] * (1 - tolerance) and 
+                          row['price'] <= row['ema_medium'] * (1 + tolerance))
+            dropping_down = row['price'] < prev_row['price']
+            return touched_ema and dropping_down
+    
+    def calculate_option_risk(self, entry_price, stop_price):
+        """
+        Calculate option risk based on underlying price movement and delta.
+        
+        Args:
+            entry_price (float): Entry price of the underlying.
+            stop_price (float): Stop loss price of the underlying.
+            
+        Returns:
+            float: Approximate dollar risk per contract (per 100 shares).
+        """
+        price_difference = abs(entry_price - stop_price)
+        option_delta = self.parameters['option_delta']
+        return price_difference * option_delta * 100  # Dollar risk per contract
     
     def generate_signals(self):
         """
-        Generate buy/sell signals based on price action, volume, and MACD momentum.
+        Generate signals based on EMA trend and Opening Range Breakout with retest.
         
         Returns:
             dict: Dictionary with tickers as keys and signal DataFrames as values.
@@ -126,81 +230,186 @@ class ScalpingStrategy(BaseStrategy):
         self.signals = {}
         
         for ticker in tickers:
+            print(f"\nProcessing {ticker}")
+            
+            # Get price data
             price_data = self.market_data.get_price_data(ticker)
-            volume_data = self.market_data.get_volume(ticker)
-            
-            if price_data.empty or volume_data.empty:
+            if price_data.empty:
+                print(f"No price data for {ticker}")
                 continue
-            
-            # Validate that we're using 1-minute data.
-            if not self.validate_data_frequency(price_data):
-                print(f"Warning: {ticker} data may not be suitable for a scalping strategy")
-            
-            indicators = self.calculate_indicators(price_data, volume_data)
-            
-            # Initialize signal columns.
-            indicators['buy_signal'] = 0
-            indicators['sell_signal'] = 0
-            
-            for i in range(len(indicators)):
-                timestamp = indicators.index[i]
                 
-                # Skip timestamps outside of valid trading hours.
-                if not self.is_valid_trading_time(timestamp):
+            # Calculate indicators
+            indicators = self.calculate_indicators(price_data)
+            
+            # Initialize signal columns with explicit dtypes
+            signals = pd.DataFrame(
+                index=indicators.index,
+                columns=[
+                    'buy_signal', 'sell_signal', 'entry_price', 'stop_loss', 
+                    'profit_target', 'orb_high', 'orb_low', 'orb_width',
+                    'option_risk', 'option_target', 'high_of_day', 'low_of_day'
+                ]
+            )
+            
+            # Set datatypes to float64 for all columns except buy/sell signals
+            for col in signals.columns:
+                if col in ['buy_signal', 'sell_signal']:
+                    signals[col] = 0  # Integer signals
+                else:
+                    signals[col] = 0.0  # Float values
+            
+            # Group by day
+            if indicators.index[0].tz is not None:
+                day_grouper = indicators.index.tz_localize(None).date
+            else:
+                day_grouper = indicators.index.date
+                
+            for day, day_data in indicators.groupby(day_grouper):
+                day_str = str(day)
+                print(f"Analyzing {ticker} - {day_str}")
+                if len(day_data) < self.parameters['orb_duration']:
+                    print(f"Insufficient data for {day_str}: only {len(day_data)} bars")
                     continue
                 
-                price_movement = abs(indicators['price_change'].iloc[i]) > self.parameters['price_movement_threshold']
-                volume_spike = indicators['volume_ratio'].iloc[i] > self.parameters['volume_threshold']
-                sufficient_volume = indicators['volume'].iloc[i] > self.parameters['min_volume']
+                # Calculate ORB for the day
+                orb_high, orb_low, orb_width, orb_end_time = self.calculate_orb(day_data)
+                if orb_high is None or orb_low is None or orb_width is None:
+                    continue
                 
-                atr_value = indicators['atr'].iloc[i]
-                price = indicators['price'].iloc[i]
-                volatility_ok = (atr_value / price) < self.parameters['volatility_threshold']
+                # Set ORB values in signals DataFrame
+                day_indices = day_data.index
+                # Store values with explicit float conversion
+                signals.loc[day_indices, 'orb_high'] = float(orb_high)
+                signals.loc[day_indices, 'orb_low'] = float(orb_low)
+                signals.loc[day_indices, 'orb_width'] = float(orb_width)
                 
-                # MACD confirmation conditions:
-                macd_confirmation_buy = indicators['macd'].iloc[i] > indicators['macd_signal'].iloc[i]
-                macd_confirmation_sell = indicators['macd'].iloc[i] < indicators['macd_signal'].iloc[i]
+                # Store high_of_day and low_of_day values
+                for idx in day_indices:
+                    signals.loc[idx, 'high_of_day'] = float(day_data.loc[idx, 'high_of_day'])
+                    signals.loc[idx, 'low_of_day'] = float(day_data.loc[idx, 'low_of_day'])
                 
-                # Debug information (optional):
-                if price_movement and volume_spike and sufficient_volume:
-                    print(f"\nPotential signal at {timestamp}:")
-                    print(f"  Price change: {indicators['price_change'].iloc[i]:.4f}")
-                    print(f"  Volume ratio: {indicators['volume_ratio'].iloc[i]:.2f}")
-                    print(f"  Volume: {indicators['volume'].iloc[i]:.0f}")
-                    print(f"  ATR: {atr_value:.4f}")
-                    print(f"  Price: {price:.2f}")
-                    print(f"  MACD: {indicators['macd'].iloc[i]:.4f}, Signal: {indicators['macd_signal'].iloc[i]:.4f}")
+                # Trading variables
+                long_breakout = False
+                short_breakout = False
+                trade_taken_long = False
+                trade_taken_short = False
                 
-                # Generate buy signal:
-                if (price_movement and volume_spike and sufficient_volume and volatility_ok and 
-                    indicators['price_change'].iloc[i] > 0 and macd_confirmation_buy):
-                    indicators.iloc[i, indicators.columns.get_loc('buy_signal')] = 1
-                    print(f"\nBUY SIGNAL GENERATED at {timestamp}:")
-                    print(f"  Price change: {indicators['price_change'].iloc[i]:.4f}")
-                    print(f"  Volume ratio: {indicators['volume_ratio'].iloc[i]:.2f}")
-                    print(f"  Volume: {indicators['volume'].iloc[i]:.0f}")
-                    print(f"  ATR: {atr_value:.4f}")
-                    print(f"  Price: {price:.2f}")
-                    print(f"  MACD: {indicators['macd'].iloc[i]:.4f}, Signal: {indicators['macd_signal'].iloc[i]:.4f}")
-                
-                # Generate sell signal:
-                if (price_movement and volume_spike and sufficient_volume and volatility_ok and 
-                    indicators['price_change'].iloc[i] < 0 and macd_confirmation_sell):
-                    indicators.iloc[i, indicators.columns.get_loc('sell_signal')] = 1
-                    print(f"\nSELL SIGNAL GENERATED at {timestamp}:")
-                    print(f"  Price change: {indicators['price_change'].iloc[i]:.4f}")
-                    print(f"  Volume ratio: {indicators['volume_ratio'].iloc[i]:.2f}")
-                    print(f"  Volume: {indicators['volume'].iloc[i]:.0f}")
-                    print(f"  ATR: {atr_value:.4f}")
-                    print(f"  Price: {price:.2f}")
-                    print(f"  MACD: {indicators['macd'].iloc[i]:.4f}, Signal: {indicators['macd_signal'].iloc[i]:.4f}")
+                # Scan for setup after ORB period
+                for i in range(1, len(day_data)):
+                    timestamp = day_data.index[i]
+                    if timestamp <= orb_end_time:
+                        continue
+                    if trade_taken_long and trade_taken_short:
+                        break
+                    if not self.is_valid_trading_time(timestamp):
+                        continue
+                        
+                    curr_row = day_data.loc[timestamp]
+                    prev_row = day_data.iloc[i-1]
+                    current_price = curr_row['price']
+                    
+                    # Check for breakouts
+                    if not long_breakout and current_price > orb_high:
+                        long_breakout = True
+                        ts_str = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                        print(f"Long breakout at {ts_str}: ${current_price:.2f} > ${orb_high:.2f}")
+                    if not short_breakout and current_price < orb_low:
+                        short_breakout = True
+                        ts_str = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                        print(f"Short breakout at {ts_str}: ${current_price:.2f} < ${orb_low:.2f}")
+                    
+                    # Long trade setup
+                    if long_breakout and not trade_taken_long:
+                        # Check for EMA retest and trend confirmation
+                        if (self.check_ema_retest(curr_row, prev_row, 'long') and 
+                            self.check_trend_confirmation(curr_row, 'long')):
+                            
+                            # Calculate stop loss (half of ORB width)
+                            stop_price = current_price - (orb_width / 2)
+                            #stop_price = current_price - orb_width
+                            
+                            # Calculate profit targets
+                            target_orb = current_price + orb_width
+                            target_hod = curr_row['high_of_day']
+                            # Choose whichever is closer
+                            profit_target = min(target_orb, target_hod)
+                            
+                            # Calculate option price changes (approximate)
+                            option_risk = self.calculate_option_risk(current_price, stop_price)
+                            option_target = self.calculate_option_risk(current_price, profit_target)
+                            
+                            # Set values in signals DataFrame
+                            signals.loc[timestamp, 'buy_signal'] = 1
+                            signals.loc[timestamp, 'sell_signal'] = 0
+                            signals.loc[timestamp, 'entry_price'] = float(current_price)
+                            signals.loc[timestamp, 'stop_loss'] = float(stop_price)
+                            signals.loc[timestamp, 'profit_target'] = float(profit_target)
+                            signals.loc[timestamp, 'option_risk'] = float(option_risk)
+                            signals.loc[timestamp, 'option_target'] = float(option_target)
+                            signals.loc[timestamp, 'high_of_day'] = float(curr_row['high_of_day'])
+                            signals.loc[timestamp, 'low_of_day'] = float(curr_row['low_of_day'])
+                            
+                            trade_taken_long = True
+                            # Set signals in DataFrame
+                            ts_str = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                            print(f"\nBUY SIGNAL at {ts_str}:")
+                            print(f"Entry: ${current_price:.2f}")
+                            print(f"Stop: ${stop_price:.2f} (Half ORB width)")
+                            print(f"Target: ${profit_target:.2f}")
+                            print(f"Option Risk: ${option_risk:.2f}")
+                            print(f"Option Target: ${option_target:.2f}")
+                    
+                    # Short trade setup
+                    if short_breakout and not trade_taken_short:
+                        # Check for EMA retest and trend confirmation
+                        if (self.check_ema_retest(curr_row, prev_row, 'short') and 
+                            self.check_trend_confirmation(curr_row, 'short')):
+                            
+                            # Calculate stop loss (half of ORB width)
+                            stop_price = current_price + (orb_width / 2)
+                            #stop_price = current_price + orb_width
+                            # Calculate profit targets
+                            target_orb = current_price - orb_width
+                            target_lod = curr_row['low_of_day']
+                            # Choose whichever is closer
+                            profit_target = max(target_orb, target_lod)
+                            
+                            # Calculate option price changes (approximate)
+                            option_risk = self.calculate_option_risk(current_price, stop_price)
+                            option_target = self.calculate_option_risk(current_price, profit_target)
+                            
+                            # Set values in signals DataFrame
+                            signals.loc[timestamp, 'buy_signal'] = 0
+                            signals.loc[timestamp, 'sell_signal'] = 1
+                            signals.loc[timestamp, 'entry_price'] = float(current_price)
+                            signals.loc[timestamp, 'stop_loss'] = float(stop_price)
+                            signals.loc[timestamp, 'profit_target'] = float(profit_target)
+                            signals.loc[timestamp, 'option_risk'] = float(option_risk)
+                            signals.loc[timestamp, 'option_target'] = float(option_target)
+                            signals.loc[timestamp, 'high_of_day'] = float(curr_row['high_of_day'])
+                            signals.loc[timestamp, 'low_of_day'] = float(curr_row['low_of_day'])
+                                
+                            trade_taken_short = True
+                            # Set signals in DataFrame
+                            ts_str = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+                            print(f"\nSELL SIGNAL at {ts_str}:")
+                            print(f"Entry: ${current_price:.2f}")
+                            print(f"Stop: ${stop_price:.2f} (Half ORB width)")
+                            print(f"Target: ${profit_target:.2f}")
+                            print(f"Option Risk: ${option_risk:.2f}")
+                            print(f"Option Target: ${option_target:.2f}")
             
-            self.signals[ticker] = indicators
-            print(f"\nSignal summary for {ticker}:")
-            print(f"Total buy signals: {indicators['buy_signal'].sum()}")
-            print(f"Total sell signals: {indicators['sell_signal'].sum()}")
-            print(f"Average volume: {indicators['volume'].mean():.0f}")
-            print(f"Number of volume spikes: {(indicators['volume_ratio'] > self.parameters['volume_threshold']).sum()}")
-            print(f"Average ATR: {indicators['atr'].mean():.4f}")
-        
+            # Signal summary
+            total_longs = signals['buy_signal'].sum()
+            total_shorts = signals['sell_signal'].sum()
+            print(f"\n{ticker} Signal Summary:")
+            print(f"Total long signals: {total_longs}")
+            print(f"Total short signals: {total_shorts}")
+            
+            # Replace any invalid values
+            signals = signals.replace([np.inf, -np.inf], 0)
+            signals = signals.fillna(0)
+            
+            self.signals[ticker] = signals
+            
         return self.signals

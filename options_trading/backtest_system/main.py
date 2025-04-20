@@ -61,7 +61,7 @@ def run_backtest(tickers,
         raise ValueError(f"Error loading data for tickers {tickers}: {str(e)}")
     
     # 2. Initialize strategy
-    strategy = ORBStrategy(market_data)
+    strategy = ScalpingStrategy(market_data)
     
     # Apply custom strategy parameters if provided
     if strategy_params:
