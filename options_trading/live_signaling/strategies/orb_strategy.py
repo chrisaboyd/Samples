@@ -1,7 +1,7 @@
 from datetime import datetime, time
 import pandas as pd
 import numpy as np
-from .base_strategy import LiveStrategy
+from strategies.base_strategy import LiveStrategy
 
 class LiveORBStrategy(LiveStrategy):
     def __init__(self):
