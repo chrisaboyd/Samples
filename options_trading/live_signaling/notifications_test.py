@@ -1,18 +1,22 @@
 import requests
 import json
+from dotenv import load_dotenv
+import os
 
 def test_discord_notification():
     # Your Discord webhook URL
-    webhook_url = "https://discord.com/api/webhooks/1337973080911249499/Ctf9bLlNFpt_j5oGdrzxmoSEOBZaqPvsX5tyWX2RwPgcmJd1cB0PHIzI1Zl6-_D60wCj"
+    # Load the webhook URL from the .env file
+    load_dotenv()
+    webhook_url = os.getenv("WEBHOOK_URL")
     
     # Sample signal dictionary (using your provided structure)
     test_signal = {
         'signal': 'sell',
-        'entry_price': 190.75,
-        'stop_loss': 195.50,
-        'profit_target': 180.25,
-        'orb_high': 192.30, 
-        'orb_low': 188.45
+        'entry_price': 120.75,
+        'stop_loss': 115.50,
+        'profit_target': 125.25,
+        'orb_high': 122.30, 
+        'orb_low': 118.45
     }
     
     # Test strategy and ticker

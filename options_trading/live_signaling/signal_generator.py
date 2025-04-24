@@ -8,6 +8,8 @@ import pytz
 from strategies.base_strategy import LiveStrategy
 import requests
 import json
+from dotenv import load_dotenv
+import os
 
 
 # Enhanced logging setup with custom formatter
@@ -28,6 +30,10 @@ logger.handlers = [handler]
 
 class SignalGenerator:
     def __init__(self, api_key: str, api_secret: str):
+
+        # Load environment variables
+        load_dotenv()
+
         self.api_key = api_key
         self.api_secret = api_secret
         self.trading_client = TradingClient(api_key, api_secret)
@@ -36,8 +42,8 @@ class SignalGenerator:
         self.bar_count: Dict[str, int] = {}
         self.last_bar_time: Dict[str, datetime] = {}
         self.debug_mode = False
-        self.discord_webhook_url = "https://discord.com/api/webhooks/1337973080911249499/Ctf9bLlNFpt_j5oGdrzxmoSEOBZaqPvsX5tyWX2RwPgcmJd1cB0PHIzI1Zl6-_D60wCj"
-        
+        self.discord_webhook_url = os.getenv("WEBHOOK_URL")
+
     def add_strategy(self, strategy: LiveStrategy):
         """Add a trading strategy to the generator"""
         self.strategies.append(strategy)
