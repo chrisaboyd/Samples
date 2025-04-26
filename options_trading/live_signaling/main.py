@@ -1,11 +1,12 @@
 import os
 import asyncio
 from signal_generator import SignalGenerator
-from strategies.orb_strategy import LiveORBStrategy
-from strategies.scalping_strategy import LiveORB_EMA_Strategy
+from strategies.orb_strategy import ORBBreakOnVolume
+from strategies.trending_ema_strategy import Trending_EMA
 import logging
 from datetime import datetime
 import pytz
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,7 @@ def is_market_hours():
 
 async def main():
     # Get API credentials
+    load_dotenv()
     api_key = os.getenv("ALPACA_API_KEY")
     api_secret = os.getenv("ALPACA_API_SECRET")
     
@@ -41,11 +43,11 @@ async def main():
     generator = SignalGenerator(api_key, api_secret)
     
     # Add strategies
-    generator.add_strategy(LiveORBStrategy())
-    generator.add_strategy(LiveORB_EMA_Strategy())
+    generator.add_strategy(ORBBreakOnVolume())
+    generator.add_strategy(Trending_EMA())
     
     # Define symbols to track
-    symbols = [ "SPY", "QQQ", "ASTS", "TSLA", "NVDA", "PLTR", "NFLX", "MSTR", "ISRG", "AAPL" ]
+    symbols = [ "SPY", "QQQ", "TSLA", "NVDA", "PLTR", "NFLX", "MSTR", "AAPL" ]
     
     try:
         logger.info("\nInitializing signal generator...")

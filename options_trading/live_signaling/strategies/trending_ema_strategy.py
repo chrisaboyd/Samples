@@ -26,6 +26,7 @@ class Trending_EMA(LiveStrategy):
             'ema_long': 100,
             'pullback_to_mid': True,
             'profit_target_pct_orb': 0.5,  # half ORB range
+            'rsi_period': 14,              # RSI period
         })
         # State
         self.orb = {}            # ticker -> dict(high, low)
@@ -54,22 +55,30 @@ class Trending_EMA(LiveStrategy):
         bars = data.copy()
         if len(bars) < 2:
             return {'signal': None}  # Need at least 2 bars for calculations
+            
+        # Calculate RSI and VWAP
+        rsi_value = None
+        vwap_value = None
+        
+        if len(bars) >= self.parameters['rsi_period']:
+            rsi_series = self.calculate_rsi(bars['close'], periods=self.parameters['rsi_period'])
+            rsi_value = rsi_series.iloc[-1]
+            
+            # Calculate VWAP as well
+            vwap_series = self.calculate_vwap(bars)
+            vwap_value = vwap_series.iloc[-1]
 
         # During ORB period: record high/low
         if now <= end_orb:
             h = bars['high'].max()
             l = bars['low'].min()
             self.orb[ticker].update({'high': h, 'low': l})
-            if self.parameters['debug']:
-                print(f"[DEBUG] {ticker} - Building ORB: high={h:.2f}, low={l:.2f}")
-            return {'signal': None}
+            return {'signal': None, 'rsi': rsi_value, 'vwap': vwap_value}
 
         # After ORB
         orb_h, orb_l = self.orb[ticker].get('high'), self.orb[ticker].get('low')
         if orb_h is None or orb_l is None:
-            if self.parameters['debug']:
-                print(f"[DEBUG] {ticker} - No ORB values available")
-            return {'signal': None}
+            return {'signal': None, 'rsi': rsi_value, 'vwap': vwap_value}
             
         flags = self.flags[ticker]
         current_close = bars['close'].iloc[-1]
@@ -79,18 +88,18 @@ class Trending_EMA(LiveStrategy):
         orb_range = orb_h - orb_l
 
         # Check for reversal - price closing back inside the ORB after a breakout
-        if self.parameters['allow_reversals'] and (flags['breakout_confirmed_long'] or flags['breakout_confirmed_short']):
+        if self.parameters.get('allow_reversals', False) and (flags['breakout_confirmed_long'] or flags['breakout_confirmed_short']):
             # If price closes back inside the range, reset breakout flags
             if orb_l <= current_close <= orb_h:
                 # Only reset the direction that hasn't been taken yet
                 if not flags['long_taken'] and flags['breakout_confirmed_long']:
                     flags['breakout_confirmed_long'] = False
-                    if self.parameters['debug']:
+                    if self.parameters.get('debug', False):
                         print(f"[DEBUG] {ticker} - REVERSAL DETECTED: Price closed back inside ORB, resetting long breakout")
                 
                 if not flags['short_taken'] and flags['breakout_confirmed_short']:
                     flags['breakout_confirmed_short'] = False
-                    if self.parameters['debug']:
+                    if self.parameters.get('debug', False):
                         print(f"[DEBUG] {ticker} - REVERSAL DETECTED: Price closed back inside ORB, resetting short breakout")
 
         # Compute EMAs
@@ -105,13 +114,13 @@ class Trending_EMA(LiveStrategy):
         if not flags['breakout_confirmed_long'] and previous_close > orb_h:
             flags['breakout_confirmed_long'] = True
             self.breakout_prices[ticker]['long'] = previous_close
-            if self.parameters['debug']:
+            if self.parameters.get('debug', False):
                 print(f"[DEBUG] {ticker} - Long breakout CONFIRMED at {previous_close:.2f} > ORB high {orb_h:.2f}")
         
         if not flags['breakout_confirmed_short'] and previous_close < orb_l:
             flags['breakout_confirmed_short'] = True
             self.breakout_prices[ticker]['short'] = previous_close
-            if self.parameters['debug']:
+            if self.parameters.get('debug', False):
                 print(f"[DEBUG] {ticker} - Short breakout CONFIRMED at {previous_close:.2f} < ORB low {orb_l:.2f}")
 
         # Calculate pullback tolerance in absolute price terms
@@ -124,7 +133,7 @@ class Trending_EMA(LiveStrategy):
             
             if pullback_to_ema:
                 # Debug
-                if self.parameters['debug']:
+                if self.parameters.get('debug', False):
                     print(f"[DEBUG] {ticker} - Potential LONG pullback to 35 EMA:")
                     print(f"  Current price: {current_close:.2f}")
                     print(f"  35 EMA: {ema_m:.2f}")
@@ -142,7 +151,7 @@ class Trending_EMA(LiveStrategy):
                     flags['long_taken'] = True
                     self.last_direction[ticker] = 'long'
                     
-                    if self.parameters['debug']:
+                    if self.parameters.get('debug', False):
                         print(f"[DEBUG] {ticker} - GENERATING LONG SIGNAL:")
                         print(f"  EMAs aligned: 10 EMA={ema_s:.2f}, 35 EMA={ema_m:.2f}, 100 EMA={ema_l:.2f}")
                         print(f"  Entry: {current_close:.2f}")
@@ -158,7 +167,9 @@ class Trending_EMA(LiveStrategy):
                         'ema_short': float(ema_s),
                         'ema_long': float(ema_l),
                         'orb_high': float(orb_h),
-                        'reversal': self.last_direction[ticker] == 'short'  # Flag if this is a reversal
+                        'reversal': self.last_direction[ticker] == 'short',  # Flag if this is a reversal
+                        'rsi': float(rsi_value) if rsi_value is not None else None,
+                        'vwap': float(vwap_value) if vwap_value is not None else None
                     }
         
         # Short entry criteria - PULLBACK TO 35 EMA after confirmed breakout
@@ -168,7 +179,7 @@ class Trending_EMA(LiveStrategy):
             
             if pullback_to_ema:
                 # Debug
-                if self.parameters['debug']:
+                if self.parameters.get('debug', False):
                     print(f"[DEBUG] {ticker} - Potential SHORT pullback to 35 EMA:")
                     print(f"  Current price: {current_close:.2f}")
                     print(f"  35 EMA: {ema_m:.2f}")
@@ -186,7 +197,7 @@ class Trending_EMA(LiveStrategy):
                     flags['short_taken'] = True
                     self.last_direction[ticker] = 'short'
                     
-                    if self.parameters['debug']:
+                    if self.parameters.get('debug', False):
                         print(f"[DEBUG] {ticker} - GENERATING SHORT SIGNAL:")
                         print(f"  EMAs aligned: 10 EMA={ema_s:.2f}, 35 EMA={ema_m:.2f}, 100 EMA={ema_l:.2f}")
                         print(f"  Entry: {current_close:.2f}")
@@ -202,7 +213,9 @@ class Trending_EMA(LiveStrategy):
                         'ema_short': float(ema_s),
                         'ema_long': float(ema_l),
                         'orb_low': float(orb_l),
-                        'reversal': self.last_direction[ticker] == 'long'  # Flag if this is a reversal
+                        'reversal': self.last_direction[ticker] == 'long',  # Flag if this is a reversal
+                        'rsi': float(rsi_value) if rsi_value is not None else None,
+                        'vwap': float(vwap_value) if vwap_value is not None else None
                     }
 
-        return {'signal': None}
+        return {'signal': None, 'rsi': rsi_value, 'vwap': vwap_value}

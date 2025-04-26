@@ -3,9 +3,9 @@ import pandas as pd
 import numpy as np
 from strategies.base_strategy import LiveStrategy
 
-class LiveORBStrategy(LiveStrategy):
+class ORBBreakOnVolume(LiveStrategy):
     def __init__(self):
-        super().__init__("ORB")
+        super().__init__("ORB_VolBreak")
         self.parameters.update({
             'market_open_time': time(9, 30),
             'market_close_time': time(16, 0),
@@ -17,6 +17,7 @@ class LiveORBStrategy(LiveStrategy):
             'macd_fast': 5,
             'macd_slow': 13,
             'macd_signal': 5,
+            'rsi_period': 14,                # RSI period
         })
         self.orb_ranges = {}           # {ticker: {'high':float,'low':float,'avg_vol':float,'vwap':float}}
         self.breakout_flags = {}       # {ticker: {'long':bool,'short':bool,'trade_taken':bool}}
@@ -39,9 +40,21 @@ class LiveORBStrategy(LiveStrategy):
         cutoff = (datetime.combine(datetime.today(), open_time)
                   + pd.Timedelta(minutes=duration)).time()
 
+        # Calculate RSI for current data
+        df = current_data.copy()
+        rsi_value = None
+        vwap_value = None
+        
+        if len(df) >= self.parameters['rsi_period']:
+            rsi_series = self.calculate_rsi(df['close'], periods=self.parameters['rsi_period'])
+            rsi_value = rsi_series.iloc[-1]
+            
+            # Calculate VWAP as well
+            vwap_series = self.calculate_vwap(df)
+            vwap_value = vwap_series.iloc[-1]
+
         # During ORB period: accumulate high/low, average volume, VWAP
         if now <= cutoff:
-            df = current_data.copy()
             high = df['high'].max()
             low  = df['low'].min()
             avg_vol = df['volume'].mean()
@@ -55,12 +68,12 @@ class LiveORBStrategy(LiveStrategy):
                 'avg_vol': avg_vol,
                 'vwap': vwap,
             })
-            return {'signal': None}
+            return {'signal': None, 'rsi': rsi_value, 'vwap': vwap_value}
 
         # After ORB
         orb = self.orb_ranges[ticker]
         if not orb:
-            return {'signal': None}
+            return {'signal': None, 'rsi': rsi_value, 'vwap': vwap_value}
 
         state = self.breakout_flags[ticker]
         bar = current_data.iloc[-1]
@@ -72,7 +85,7 @@ class LiveORBStrategy(LiveStrategy):
 
         # Volume filter: only after ORB, require bar.volume > min_volume_multiplier * avg_vol
         if vol < self.parameters['min_volume_multiplier'] * orb['avg_vol']:
-            return {'signal': None}
+            return {'signal': None, 'rsi': rsi_value, 'vwap': vwap_value}
 
         # Compute MACD for momentum confirmation
         prices = current_data['close']
@@ -91,7 +104,7 @@ class LiveORBStrategy(LiveStrategy):
 
         # Only one trade per day
         if state['trade_taken']:
-            return {'signal': None}
+            return {'signal': None, 'rsi': rsi_value, 'vwap': vwap_value}
 
         t = self.parameters['tolerance']
         # Long retest & entry
@@ -105,7 +118,10 @@ class LiveORBStrategy(LiveStrategy):
                     entry_price=float(price),
                     stop_loss=float(stop),
                     profit_target=float(target),
-                    orb_high=float(orb_high), orb_low=float(orb_low)
+                    orb_high=float(orb_high), 
+                    orb_low=float(orb_low),
+                    rsi=float(rsi_value) if rsi_value is not None else None,
+                    vwap=float(vwap_value) if vwap_value is not None else None
                 )
 
         # Short retest & entry
@@ -119,7 +135,10 @@ class LiveORBStrategy(LiveStrategy):
                     entry_price=float(price),
                     stop_loss=float(stop),
                     profit_target=float(target),
-                    orb_high=float(orb_high), orb_low=float(orb_low)
+                    orb_high=float(orb_high), 
+                    orb_low=float(orb_low),
+                    rsi=float(rsi_value) if rsi_value is not None else None,
+                    vwap=float(vwap_value) if vwap_value is not None else None
                 )
 
-        return {'signal': None}
+        return {'signal': None, 'rsi': rsi_value, 'vwap': vwap_value}

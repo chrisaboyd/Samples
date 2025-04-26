@@ -26,70 +26,67 @@ def test_discord_notification():
         'ema_mid': 153.87,
         'ema_long': 150.42,
         'orb_high': 154.50,
-        'reversal': False
+        'reversal': False,
+        'rsi': 58.7,  # Sample RSI value
+        'vwap': 154.10  # Sample VWAP value
     }
     
     # Test data
-    strategy_name = "ORB_EMA"
+    strategy_name = "ORB_VolBreak"
     ticker = "AAPL"
     
     try:
+        # Extract signal data
+        signal_type = sample_signal['signal']
+        signal_emoji = "🟢" if signal_type == 'buy' else "🔴"
+        
         # Format all numeric values to two decimal places
         entry_price = f"${sample_signal['entry_price']:.2f}"
         stop_loss = f"${sample_signal['stop_loss']:.2f}"
         profit_target = f"${sample_signal['profit_target']:.2f}"
         
-        # Format EMAs to two decimal places
-        ema_short = f"{sample_signal.get('ema_short', 0):.2f}"
-        ema_mid = f"{sample_signal.get('ema_mid', 0):.2f}"
-        ema_long = f"{sample_signal.get('ema_long', 0):.2f}"
-        
-        # Format orb levels
-        orb_high = f"${sample_signal.get('orb_high', 0):.2f}" if 'orb_high' in sample_signal else "N/A"
-        orb_low = f"${sample_signal.get('orb_low', 0):.2f}" if 'orb_low' in sample_signal else "N/A"
-        
-        # Current price (use entry price since that's current price at signal)
-        current_price = f"${sample_signal['entry_price']:.2f}"
+        # Add emojis for stop loss and target
+        stop_emoji = "🛑" # Stop sign emoji
+        target_emoji = "🎯" # Target emoji
         
         # Calculate risk/reward
         risk = abs(sample_signal['entry_price'] - sample_signal['stop_loss'])
         reward = abs(sample_signal['profit_target'] - sample_signal['entry_price'])
         risk_reward = f"{(reward / risk if risk > 0 else 0):.2f}"
         
-        # Check if this is a reversal
-        reversal = sample_signal.get('reversal', False)
-        reversal_text = "True" if reversal else "False"
+        # Get RSI value if available
+        rsi_value = "N/A"
+        if 'rsi' in sample_signal and sample_signal['rsi'] is not None:
+            rsi_emoji = "📊" # Chart emoji
+            rsi_value = f"{sample_signal['rsi']:.1f}"
+            # Add color indicators for RSI
+            if sample_signal['rsi'] >= 70:
+                rsi_value += " 🔴" # Overbought
+            elif sample_signal['rsi'] <= 30:
+                rsi_value += " 🟢" # Oversold
         
-        # Signal emoji based on type
-        emoji = "🟢" if sample_signal['signal'] == 'buy' else "🔴"
-        
-        # Build embedded message
+        # Build embedded message with the requested fields
         embed = {
             "title": f"{strategy_name} - {ticker}",
-            "color": 65280 if sample_signal['signal'] == 'buy' else 16711680,  # Green for buy, Red for sell
+            "color": 65280 if signal_type == 'buy' else 16711680,  # Green for buy, Red for sell
             "fields": [
                 {
                     "name": "Signal",
-                    "value": f"{emoji} **{sample_signal['signal'].upper()}**",
+                    "value": f"{signal_emoji} **{signal_type.upper()}**",
                     "inline": True
                 },
                 {
-                    "name": "Price",
-                    "value": current_price,
-                    "inline": True
-                },
-                {
-                    "name": "Entry_price",
+                    "name": "Entry Price",
                     "value": entry_price,
                     "inline": True
                 },
                 {
-                    "name": "Stop_loss",
+                    "name": f"{stop_emoji} Stop Loss",
                     "value": stop_loss,
                     "inline": True
                 },
                 {
-                    "name": "Profit_target",
+                    "name": f"{target_emoji} Target",
                     "value": profit_target,
                     "inline": True
                 },
@@ -99,18 +96,8 @@ def test_discord_notification():
                     "inline": True
                 },
                 {
-                    "name": "Ema_mid",
-                    "value": ema_mid,
-                    "inline": True
-                },
-                {
-                    "name": "Ema_short",
-                    "value": ema_short,
-                    "inline": True
-                },
-                {
-                    "name": "Ema_long",
-                    "value": ema_long,
+                    "name": f"{rsi_emoji} RSI",
+                    "value": rsi_value,
                     "inline": True
                 }
             ],
@@ -118,27 +105,6 @@ def test_discord_notification():
                 "text": f"Time: {datetime.now(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S ET')}"
             }
         }
-        
-        # Add ORB levels based on signal type
-        if sample_signal['signal'] == 'buy':
-            embed["fields"].append({
-                "name": "Orb_high",
-                "value": orb_high,
-                "inline": True
-            })
-        else:
-            embed["fields"].append({
-                "name": "Orb_low",
-                "value": orb_low,
-                "inline": True
-            })
-            
-        # Add reversal field
-        embed["fields"].append({
-            "name": "Reversal",
-            "value": reversal_text,
-            "inline": True
-        })
         
         # Send to Discord
         payload = {
@@ -176,70 +142,67 @@ def test_sell_signal():
         'ema_mid': 188.45,
         'ema_long': 190.18,
         'orb_low': 186.75,
-        'reversal': True
+        'reversal': True,
+        'rsi': 72.3,  # Sample RSI value - overbought
+        'vwap': 187.80  # Sample VWAP value
     }
     
     # Test data
-    strategy_name = "ORB_EMA"
+    strategy_name = "Trending_EMA"
     ticker = "META"
     
     try:
+        # Extract signal data
+        signal_type = sample_signal['signal']
+        signal_emoji = "🟢" if signal_type == 'buy' else "🔴"
+        
         # Format all numeric values to two decimal places
         entry_price = f"${sample_signal['entry_price']:.2f}"
         stop_loss = f"${sample_signal['stop_loss']:.2f}"
         profit_target = f"${sample_signal['profit_target']:.2f}"
         
-        # Format EMAs to two decimal places
-        ema_short = f"{sample_signal.get('ema_short', 0):.2f}"
-        ema_mid = f"{sample_signal.get('ema_mid', 0):.2f}"
-        ema_long = f"{sample_signal.get('ema_long', 0):.2f}"
-        
-        # Format orb levels
-        orb_high = f"${sample_signal.get('orb_high', 0):.2f}" if 'orb_high' in sample_signal else "N/A"
-        orb_low = f"${sample_signal.get('orb_low', 0):.2f}" if 'orb_low' in sample_signal else "N/A"
-        
-        # Current price (use entry price since that's current price at signal)
-        current_price = f"${sample_signal['entry_price']:.2f}"
+        # Add emojis for stop loss and target
+        stop_emoji = "🛑" # Stop sign emoji
+        target_emoji = "🎯" # Target emoji
         
         # Calculate risk/reward
         risk = abs(sample_signal['entry_price'] - sample_signal['stop_loss'])
         reward = abs(sample_signal['profit_target'] - sample_signal['entry_price'])
         risk_reward = f"{(reward / risk if risk > 0 else 0):.2f}"
         
-        # Check if this is a reversal
-        reversal = sample_signal.get('reversal', False)
-        reversal_text = "True" if reversal else "False"
+        # Get RSI value if available
+        rsi_value = "N/A"
+        if 'rsi' in sample_signal and sample_signal['rsi'] is not None:
+            rsi_emoji = "📊" # Chart emoji
+            rsi_value = f"{sample_signal['rsi']:.1f}"
+            # Add color indicators for RSI
+            if sample_signal['rsi'] >= 70:
+                rsi_value += " 🔴" # Overbought
+            elif sample_signal['rsi'] <= 30:
+                rsi_value += " 🟢" # Oversold
         
-        # Signal emoji based on type
-        emoji = "🟢" if sample_signal['signal'] == 'buy' else "🔴"
-        
-        # Build embedded message
+        # Build embedded message with the requested fields
         embed = {
             "title": f"{strategy_name} - {ticker}",
-            "color": 65280 if sample_signal['signal'] == 'buy' else 16711680,  # Green for buy, Red for sell
+            "color": 65280 if signal_type == 'buy' else 16711680,  # Green for buy, Red for sell
             "fields": [
                 {
                     "name": "Signal",
-                    "value": f"{emoji} **{sample_signal['signal'].upper()}**",
+                    "value": f"{signal_emoji} **{signal_type.upper()}**",
                     "inline": True
                 },
                 {
-                    "name": "Price",
-                    "value": current_price,
-                    "inline": True
-                },
-                {
-                    "name": "Entry_price",
+                    "name": "Entry Price",
                     "value": entry_price,
                     "inline": True
                 },
                 {
-                    "name": "Stop_loss",
+                    "name": f"{stop_emoji} Stop Loss",
                     "value": stop_loss,
                     "inline": True
                 },
                 {
-                    "name": "Profit_target",
+                    "name": f"{target_emoji} Target",
                     "value": profit_target,
                     "inline": True
                 },
@@ -249,18 +212,8 @@ def test_sell_signal():
                     "inline": True
                 },
                 {
-                    "name": "Ema_mid",
-                    "value": ema_mid,
-                    "inline": True
-                },
-                {
-                    "name": "Ema_short",
-                    "value": ema_short,
-                    "inline": True
-                },
-                {
-                    "name": "Ema_long",
-                    "value": ema_long,
+                    "name": f"{rsi_emoji} RSI",
+                    "value": rsi_value,
                     "inline": True
                 }
             ],
@@ -268,27 +221,6 @@ def test_sell_signal():
                 "text": f"Time: {datetime.now(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S ET')}"
             }
         }
-        
-        # Add ORB levels based on signal type
-        if sample_signal['signal'] == 'buy':
-            embed["fields"].append({
-                "name": "Orb_high",
-                "value": orb_high,
-                "inline": True
-            })
-        else:
-            embed["fields"].append({
-                "name": "Orb_low",
-                "value": orb_low,
-                "inline": True
-            })
-            
-        # Add reversal field
-        embed["fields"].append({
-            "name": "Reversal",
-            "value": reversal_text,
-            "inline": True
-        })
         
         # Send to Discord
         payload = {
