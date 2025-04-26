@@ -15,7 +15,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Now we can import from other modules
 from simple_strategy import SimpleStrategy
-from signal_generator_test import SignalGenerator
+from tests.signal_generator_test import SignalGenerator
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, 

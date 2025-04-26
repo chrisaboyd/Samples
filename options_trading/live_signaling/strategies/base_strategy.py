@@ -22,6 +22,42 @@ class LiveStrategy(ABC):
             # Keep only last 100 bars for memory efficiency
             self.data_buffer[ticker] = self.data_buffer[ticker].tail(100)
             
+    def update_daily_bars(self, ticker: str, daily_bars: pd.DataFrame):
+        """
+        Update the strategy's data buffer with daily bar data
+        
+        This method processes daily bars and ensures they're properly formatted
+        for use by the strategy. It's primarily used at startup to ensure
+        we have historical context for generating signals.
+        
+        Args:
+            ticker: Symbol being updated
+            daily_bars: DataFrame with daily OHLCV data
+        """
+        if ticker not in self.data_buffer:
+            # Initialize with daily data
+            self.data_buffer[ticker] = daily_bars
+        else:
+            # Check if we have newer data than what's already loaded
+            if len(self.data_buffer[ticker]) > 0 and len(daily_bars) > 0:
+                # Get the most recent timestamp in our buffer
+                last_timestamp = self.data_buffer[ticker].index[-1]
+                
+                # Filter daily bars to only include newer data
+                new_bars = daily_bars[daily_bars.index > last_timestamp]
+                
+                if len(new_bars) > 0:
+                    # Append the new data
+                    self.data_buffer[ticker] = pd.concat([self.data_buffer[ticker], new_bars])
+                    # Keep only last 100 bars for memory efficiency
+                    self.data_buffer[ticker] = self.data_buffer[ticker].tail(100)
+            else:
+                # Just use the daily data if our buffer is empty
+                self.data_buffer[ticker] = daily_bars
+        
+        # Ensure the index is properly sorted
+        self.data_buffer[ticker] = self.data_buffer[ticker].sort_index()
+            
     def calculate_rsi(self, data, periods=14, ema=True):
         """
         Calculate Relative Strength Index

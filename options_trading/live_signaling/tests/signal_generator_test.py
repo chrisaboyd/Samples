@@ -3,12 +3,16 @@
 Simplified SignalGenerator for testing data persistence
 """
 import os
+import sys
 import logging
 import pandas as pd
 from datetime import datetime
 import pickle
 import atexit
 from typing import List, Dict, Any, Optional
+
+# Update the sys.path to include the parent directory for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Setup logging
 logger = logging.getLogger(__name__)
@@ -198,23 +202,6 @@ class SignalGenerator:
         except Exception as e:
             logger.error(f"Error processing bar: {e}", exc_info=True)
             
-    async def shutdown(self):
-        """
-        Gracefully shut down the SignalGenerator.
-        Call this method explicitly before exiting to ensure data is saved.
-        """
-        logger.info("Starting graceful shutdown sequence...")
-        
-        # Save all data
-        try:
-            logger.info("Saving all market data...")
-            self.save_data()
-        except Exception as e:
-            logger.error(f"Error saving data during shutdown: {e}")
-            
-        logger.info("Shutdown complete.")
-            
     async def start_streaming(self, symbols: List[str]):
-        """Placeholder for the streaming method, will be mocked in test"""
-        logger.warning("This is a placeholder method. It should be overridden in testing.")
-        raise NotImplementedError("start_streaming method needs to be implemented or mocked") 
+        """Start the data stream - placeholder for mock mode overrides"""
+        pass 

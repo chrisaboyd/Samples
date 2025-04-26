@@ -219,12 +219,12 @@ class SignalGenerator:
                     logger.debug(f"   {ticker}: Last bar from {self.last_bar_time[ticker]}")
         else:
             logger.info("No market data loaded")
-            
+    
     async def process_bar(self, bar):
         """Process incoming bar data"""
         try:
             ticker = bar.symbol
-            timestamp = bar.timestamp
+            timestamp = pd.Timestamp(bar.timestamp)
             
             # Update bar count
             self.bar_count[ticker] = self.bar_count.get(ticker, 0) + 1
@@ -247,6 +247,10 @@ class SignalGenerator:
                 
                 if signals['signal'] is not None:
                     logger.info(f"Signal generated for {ticker}: {signals['signal']}")
+                    logger.info(f"Entry: ${signals['entry_price']:.2f}")
+                    logger.info(f"Stop Loss: ${signals['stop_loss']:.2f}")
+                    logger.info(f"Target: ${signals['profit_target']:.2f}")
+                    
                     # Always save data immediately when a signal is generated
                     self.save_data()
                     self.total_bars_since_save = 0
@@ -257,16 +261,24 @@ class SignalGenerator:
             time_since_last_save = (current_time - self.last_save_time).total_seconds()
             
             if time_since_last_save >= self.save_interval or self.total_bars_since_save >= self.bars_per_save:
-                logger.info(f"Saving data after {self.total_bars_since_save} bars or {time_since_last_save:.1f} seconds")
+                logger.debug(f"Saving data after {self.total_bars_since_save} bars or {time_since_last_save:.1f} seconds")
                 self.save_data()
                 self.total_bars_since_save = 0
                 self.last_save_time = current_time
+                
+            # Show current data counts every 10 bars
+            if self.bar_count[ticker] % 10 == 0:
+                logger.info(f"{ticker}: {self.bar_count[ticker]} bars processed")
+                logger.info(f"Data buffer size: {len(strategy.data_buffer[ticker])} bars")
         
         except Exception as e:
             logger.error(f"Error processing bar: {e}", exc_info=True)
-            
+    
     async def shutdown(self):
-        """Gracefully shut down the SignalGenerator"""
+        """
+        Gracefully shut down the SignalGenerator.
+        Call this method explicitly before exiting to ensure data is saved.
+        """
         logger.info("Starting graceful shutdown sequence...")
         
         # Save all data
@@ -277,144 +289,94 @@ class SignalGenerator:
             logger.error(f"Error saving data during shutdown: {e}")
             
         logger.info("Shutdown complete.")
-            
+    
     async def generate_mock_data(self, symbols, num_bars=100, delay=0.1):
-        """Generate mock data for testing"""
-        logger.info(f"Generating mock data for {symbols}")
+        """Generate mock bar data for testing"""
         
         class MockBar:
             def __init__(self, symbol):
                 self.symbol = symbol
-                self.timestamp = pd.Timestamp.now()
-                price = 100 + random.normalvariate(0, 5)
-                self.open = price
-                self.high = price * (1 + random.random() * 0.01)
-                self.low = price * (1 - random.random() * 0.01)
-                self.close = price * (1 + random.normalvariate(0, 0.005))
-                self.volume = int(random.random() * 10000)
+                self.timestamp = datetime.now()
+                # Generate random price data 
+                base_price = 100 + random.random() * 100  # Random price between 100-200
+                self.open = base_price
+                self.high = base_price * (1 + random.random() * 0.01)  # Up to 1% higher
+                self.low = base_price * (1 - random.random() * 0.01)   # Up to 1% lower
+                self.close = base_price * (1 + (random.random() * 0.02 - 0.01))  # +/- 1%
+                self.volume = int(random.random() * 10000)  # Random volume
         
-        try:
-            # Generate data
-            for i in range(num_bars):
-                for symbol in symbols:
-                    # Create and process a mock bar
-                    bar = MockBar(symbol)
-                    await self.process_bar(bar)
-                    
-                # Sleep to simulate time passing
-                await asyncio.sleep(delay)
+        logger.info(f"Generating {num_bars} mock bars for {len(symbols)} symbols...")
+        
+        for i in range(num_bars):
+            for symbol in symbols:
+                # Create a mock bar
+                bar = MockBar(symbol)
                 
-                # Print progress
-                if i > 0 and i % 10 == 0:
-                    logger.info(f"Generated {i} bars for each symbol")
-                    
-        except asyncio.CancelledError:
-            logger.info("Mock data generation cancelled")
-            await self.shutdown()
-        except Exception as e:
-            logger.error(f"Error generating mock data: {e}")
-            await self.shutdown()
+                # Process the bar
+                await self.process_bar(bar)
+                
+            # Add some delay to simulate real-time data
+            await asyncio.sleep(delay)
+            
+            # Progress update
+            if (i+1) % 10 == 0:
+                logger.info(f"Generated {i+1}/{num_bars} bars")
 
 async def run_test(save_interval=5, bars_per_save=5, run_time=30):
-    """Run the data persistence test"""
-    # Create the signal generator
+    """Run the test"""
+    # Create components
     signal_gen = SignalGenerator()
-    
-    # Configure persistence
-    signal_gen.set_persistence_config(
-        save_interval_seconds=save_interval,
-        bars_per_save=bars_per_save
-    )
-    
-    # Add a strategy
     strategy = SimpleStrategy()
+    
+    # Configure
+    signal_gen.set_persistence_config(save_interval, bars_per_save)
     signal_gen.add_strategy(strategy)
     
-    # Create a shutdown flag
-    shutdown_in_progress = False
-    
-    # Set up signal handler for graceful shutdown
+    # Set up shutdown handler
     def handle_signal(sig, frame):
-        nonlocal shutdown_in_progress
-        if shutdown_in_progress:
-            logger.info("Shutdown already in progress, please wait...")
-            return
-            
-        shutdown_in_progress = True
-        logger.info(f"Received signal {sig}. Starting graceful shutdown...")
-        
-        # Create a new event loop for the shutdown
+        logger.info(f"Received signal {sig}, shutting down...")
+        # We need to use a new event loop for the shutdown
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
             loop.run_until_complete(signal_gen.shutdown())
-            logger.info("Graceful shutdown complete. Exiting...")
-        except Exception as e:
-            logger.error(f"Error during shutdown: {e}")
         finally:
             loop.close()
-            sys.exit(0)
+        sys.exit(0)
     
-    # Register signal handlers
-    signal.signal(signal.SIGINT, handle_signal)   # Ctrl+C
-    signal.signal(signal.SIGTERM, handle_signal)  # Terminal close
+    # Register the signal handler
+    signal.signal(signal.SIGINT, handle_signal)
     
-    # Start generating mock data
-    logger.info(f"Starting mock data generation. Will run for {run_time} seconds or until Ctrl+C.")
-    logger.info(f"Data will be saved every {save_interval} seconds or {bars_per_save} bars.")
-    
+    # Run the test for specified duration
+    logger.info(f"Running test for {run_time} seconds...")
     try:
-        # Create a task for data generation
-        data_task = asyncio.create_task(signal_gen.generate_mock_data(
-            TEST_SYMBOLS, 
-            num_bars=1000,  # More than we need
-            delay=0.2       # Slower for testing
-        ))
-        
-        # Run for specified time then cancel
-        await asyncio.sleep(run_time)
-        logger.info(f"Test completed after {run_time} seconds.")
-        data_task.cancel()
-        
-        # Shutdown
-        await signal_gen.shutdown()
-        
-    except KeyboardInterrupt:
-        logger.info("Test interrupted. Shutting down...")
-        await signal_gen.shutdown()
+        await signal_gen.generate_mock_data(TEST_SYMBOLS, num_bars=run_time*2, delay=0.5)
     except Exception as e:
-        logger.error(f"Error during test: {e}")
+        logger.error(f"Error during test: {e}", exc_info=True)
+    finally:
+        # Make sure we save data before exiting
         await signal_gen.shutdown()
-
+        
 if __name__ == "__main__":
-    # Parse command line arguments
-    parser = argparse.ArgumentParser(description="Test data persistence")
+    parser = argparse.ArgumentParser(description="Test data persistence functionality")
     parser.add_argument("--save-interval", type=int, default=5,
-                        help="How often to save in seconds (default: 5)")
-    parser.add_argument("--bars-per-save", type=int, default=5, 
-                        help="How many bars to process before saving (default: 5)")
+                       help="How often to save data in seconds (default: 5)")
+    parser.add_argument("--bars-per-save", type=int, default=5,
+                       help="How many bars to process before saving (default: 5)")
     parser.add_argument("--run-time", type=int, default=30,
-                        help="How long to run the test in seconds (default: 30)")
+                       help="How long to run the test in seconds (default: 30)")
     args = parser.parse_args()
     
-    # Check if data already exists
+    logger.info(f"Starting data persistence test with settings:")
+    logger.info(f"Save interval: {args.save_interval} seconds")
+    logger.info(f"Bars per save: {args.bars_per_save}")
+    logger.info(f"Run time: {args.run_time} seconds")
+    
+    # Check if saved data already exists
     today = datetime.now().strftime("%Y-%m-%d")
     data_path = os.path.join(os.getcwd(), "saved_data", f"market_data_{today}.pkl")
-    
     if os.path.exists(data_path):
         logger.info(f"Found existing data file at {data_path}")
-        logger.info("The test will load this data and continue collecting")
-    else:
-        logger.info("No existing data found. Will start fresh data collection")
     
     # Run the test
-    try:
-        asyncio.run(run_test(
-            save_interval=args.save_interval,
-            bars_per_save=args.bars_per_save,
-            run_time=args.run_time
-        ))
-    except KeyboardInterrupt:
-        logger.info("Test interrupted by user. Exiting...")
-    except Exception as e:
-        logger.error(f"Error in main: {e}") 
+    asyncio.run(run_test(args.save_interval, args.bars_per_save, args.run_time)) 
