@@ -1199,8 +1199,8 @@ class SignalGenerator:
         """
         try:
             # Set up time range for the request
-            # Get 200 trading days of data to ensure we have enough context
-            start_date = last_date - timedelta(days=200)  # Go back 14 calendar days to get ~10 trading days
+            # Get 50 trading days of data to ensure we have enough context
+            start_date = last_date - timedelta(days=50)  # Go back 50 calendar days to get ~50 trading days
             end_date = last_date + timedelta(days=1)  # Add 1 day to make the end date inclusive
             
             # Create the request

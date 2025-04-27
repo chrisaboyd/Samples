@@ -4,6 +4,7 @@ from signal_generator import SignalGenerator
 from strategies.orb_strategy import ORBBreakOnVolume
 from strategies.trending_ema_strategy import Trending_EMA
 from strategies.bollinger_reversal import BollingerReversal
+from strategies.bollinger_breakout import BollingerBreakout
 import logging
 from datetime import datetime
 import pytz
@@ -47,7 +48,7 @@ async def main():
     generator.add_strategy(ORBBreakOnVolume())
     generator.add_strategy(Trending_EMA())
     generator.add_strategy(BollingerReversal())
-    
+    generator.add_strategy(BollingerBreakout())
     # Define symbols to track
     symbols = [ "SPY", "QQQ", "TSLA", "NVDA", "PLTR", "NFLX", "MSTR", "AAPL" ]
     
