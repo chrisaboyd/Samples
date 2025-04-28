@@ -3,10 +3,12 @@ import asyncio
 from signal_generator import SignalGenerator
 from strategies.orb_strategy import LiveORBStrategy
 from strategies.scalping_strategy import LiveORB_EMA_Strategy
+from strategies.bollinger_band_reversal import BollingerBandReversal
+from strategies.bollinger_band_breakout import BollingerBandBreakout
 import logging
 from datetime import datetime
 import pytz
-
+import dotenv
 logger = logging.getLogger(__name__)
 
 def is_market_hours():
@@ -26,6 +28,7 @@ def is_market_hours():
 
 async def main():
     # Get API credentials
+    dotenv.load_dotenv()
     api_key = os.getenv("ALPACA_API_KEY")
     api_secret = os.getenv("ALPACA_API_SECRET")
     
@@ -43,7 +46,9 @@ async def main():
     # Add strategies
     generator.add_strategy(LiveORBStrategy())
     generator.add_strategy(LiveORB_EMA_Strategy())
-    
+    generator.add_strategy(BollingerBandReversal())
+    generator.add_strategy(BollingerBandBreakout())
+
     # Define symbols to track
     symbols = [ "SPY", "QQQ", "ASTS", "TSLA", "NVDA", "PLTR", "NFLX", "MSTR", "ISRG", "AAPL" ]
     
