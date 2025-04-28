@@ -36,6 +36,56 @@ class LiveORB_EMA_Strategy(LiveStrategy):
         self.breakout_prices = {}          # Store prices at breakout for reference
         self.last_direction = {}           # Keep track of the last trade direction
 
+    def set_orb_from_history(self, ticker, minute_bars):
+        """
+        Set ORB high/low (and avg_vol, vwap) from historical minute bars.
+        minute_bars: DataFrame with at least 'high', 'low', 'close', 'volume', indexed by datetime.
+        """
+        print(f"[DEBUG] {ticker} - Setting ORB from history. DataFrame shape: {minute_bars.shape}")
+        open_time = self.parameters['market_open_time']
+        duration = self.parameters['opening_range_duration']
+        
+        if minute_bars.empty:
+            print(f"[DEBUG] {ticker} - DataFrame is empty. Skipping ORB calculation.")
+            return
+            
+        # Convert the first bar's date to ET
+        market_open = minute_bars.index[0].replace(hour=open_time.hour, minute=open_time.minute, second=0, microsecond=0)
+        market_open = market_open.tz_convert('US/Eastern')  # Convert to ET
+        orb_end = market_open + pd.Timedelta(minutes=duration)
+        
+        print(f"[DEBUG] {ticker} - ORB window: {market_open} to {orb_end}")
+        print(f"[DEBUG] {ticker} - First bar date: {minute_bars.index[0]}")
+        
+        # Filter bars within the ORB window
+        orb_bars = minute_bars[(minute_bars.index >= market_open) & (minute_bars.index < orb_end)]
+        print(f"[DEBUG] {ticker} - Found {len(orb_bars)} bars in ORB window")
+        
+        if orb_bars.empty:
+            print(f"[DEBUG] {ticker} - No bars in ORB window. Skipping ORB calculation.")
+            return
+            
+        high = orb_bars['high'].max()
+        low = orb_bars['low'].min()
+        print(f"[DEBUG] {ticker} - ORB high: {high}, low: {low}")
+        
+        avg_vol = orb_bars['volume'].mean()
+        vwap = (orb_bars['close'] * orb_bars['volume']).sum() / orb_bars['volume'].sum()
+        
+        # Initialize state for this ticker
+        self.orb[ticker] = {'high': high, 'low': low, 'avg_vol': avg_vol, 'vwap': vwap}
+        self.flags[ticker] = {
+            'breakout_confirmed_long': False, 
+            'breakout_confirmed_short': False, 
+            'long_taken': False,
+            'short_taken': False
+        }
+        self.breakout_prices[ticker] = {'long': None, 'short': None}
+        self.last_direction[ticker] = None
+        
+        print(f"[DEBUG] {ticker} - Set ORB values: high={high}, low={low}, avg_vol={avg_vol}, vwap={vwap}")
+        print(f"[DEBUG] {ticker} - Initialized flags: {self.flags[ticker]}")
+
     def generate_signal(self, ticker: str, data: pd.DataFrame) -> dict:
         now = datetime.now().time()
         open_t = self.parameters['market_open_time']

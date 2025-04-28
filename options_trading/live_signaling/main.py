@@ -9,6 +9,8 @@ import logging
 from datetime import datetime
 import pytz
 import dotenv
+import pandas as pd
+
 logger = logging.getLogger(__name__)
 
 def is_market_hours():
@@ -51,17 +53,19 @@ async def main():
 
     # Define symbols to track
     symbols = [ "SPY", "QQQ", "ASTS", "TSLA", "NVDA", "PLTR", "NFLX", "MSTR", "ISRG", "AAPL" ]
-    
+    #symbols = ["SPY"]
     try:
         logger.info("\nInitializing signal generator...")
         logger.info(f"Tracking symbols: {symbols}")
         logger.info("Press Ctrl+C to stop the stream")
         
+        generator.populate_intraday_history(symbols)
         await generator.start_streaming(symbols)
     except KeyboardInterrupt:
         logger.info("\nShutting down gracefully...")
     except Exception as e:
         logger.error(f"Fatal error: {e}", exc_info=True)
+
 
 if __name__ == "__main__":
     loop = asyncio.new_event_loop()
