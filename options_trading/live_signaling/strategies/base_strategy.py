@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 import numpy as np
+from typing import Dict, Any
 
 class LiveStrategy(ABC):
     def __init__(self, name: str):
@@ -256,3 +257,89 @@ class LiveStrategy(ABC):
         df['%D'] = df['%K'].rolling(window=d_period).mean()
         
         return df['%K'], df['%D']
+
+    def estimate_option_prices(self, option_data: Dict[str, Any], 
+                              stop_loss_price: float, 
+                              take_profit_price: float) -> Dict[str, Any]:
+        """
+        Estimate option prices at stop loss and take profit levels using Black-Scholes
+        """
+        try:
+            if not option_data:
+                return {}
+            
+            # Get current data
+            current_price = option_data['underlying_price']
+            option_price = option_data.get('mark', 1.0)
+            strike = option_data['strike']
+            option_type = option_data['option_type'].lower()
+            days_to_expiry = option_data.get('days_to_expiry', 14)
+            T = days_to_expiry / 365  # Time in years
+            
+            # If we have greeks from API, use them
+            if 'greeks' in option_data and 'delta' in option_data['greeks']:
+                # Use delta from API
+                delta = option_data['greeks']['delta']
+                if option_type == 'put':
+                    delta = -delta  # Put delta is negative
+                    
+                # If we have implied volatility, use Black-Scholes
+                if 'impliedVolatility' in option_data:
+                    sigma = option_data['impliedVolatility']
+                    r = 0.05  # Assume 5% risk-free rate (can be parameterized)
+                    
+                    # Use Black-Scholes to compute new prices
+                    if option_type == 'call':
+                        sl_price = self._bs_call(stop_loss_price, strike, T, r, sigma)
+                        tp_price = self._bs_call(take_profit_price, strike, T, r, sigma)
+                    else:
+                        sl_price = self._bs_put(stop_loss_price, strike, T, r, sigma)
+                        tp_price = self._bs_put(take_profit_price, strike, T, r, sigma)
+                    
+                    return {
+                        'entry': option_price,
+                        'stop_loss': max(0.01, sl_price),
+                        'take_profit': max(0.01, tp_price),
+                        'estimated_delta': delta
+                    }
+                
+                # If no IV, use delta approximation
+                if option_type == 'call':
+                    sl_price_diff = stop_loss_price - current_price
+                    tp_price_diff = take_profit_price - current_price
+                else:
+                    sl_price_diff = current_price - stop_loss_price
+                    tp_price_diff = current_price - take_profit_price
+                    
+                sl_option_price = max(0.01, option_price + (sl_price_diff * delta))
+                tp_option_price = max(0.01, option_price + (tp_price_diff * delta))
+                
+                return {
+                    'entry': option_price,
+                    'stop_loss': sl_option_price,
+                    'take_profit': tp_option_price,
+                    'estimated_delta': delta
+                }
+            
+            # Otherwise, fall back to our original estimation approach
+            # [existing code here]
+        
+        except Exception as e:
+            logger.error(f"Error estimating option prices: {e}", exc_info=True)
+            return {}
+        
+    def _bs_call(self, S, K, T, r, sigma, q=0):
+        """Black-Scholes formula for call option price"""
+        from scipy.stats import norm
+        
+        d1 = (np.log(S/K) + (r - q + sigma**2/2)*T) / (sigma*np.sqrt(T))
+        d2 = d1 - sigma * np.sqrt(T)
+        return S * np.exp(-q*T) * norm.cdf(d1) - K * np.exp(-r*T) * norm.cdf(d2)
+    
+    def _bs_put(self, S, K, T, r, sigma, q=0):
+        """Black-Scholes formula for put option price"""
+        from scipy.stats import norm
+        
+        d1 = (np.log(S/K) + (r - q + sigma**2/2)*T) / (sigma*np.sqrt(T))
+        d2 = d1 - sigma * np.sqrt(T)
+        return K * np.exp(-r*T) * norm.cdf(-d2) - S * np.exp(-q*T) * norm.cdf(-d1)

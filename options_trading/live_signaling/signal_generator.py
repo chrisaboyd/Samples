@@ -16,6 +16,7 @@ import atexit
 import pickle
 from strategies.base_strategy import LiveStrategy
 import uuid
+from options_analyzer import OptionsAnalyzer
 
 # Enhanced logging setup with custom formatter
 class CustomFormatter(logging.Formatter):
@@ -424,52 +425,63 @@ class TradeTracker:
         return tracker
 
 class SignalGenerator:
+    """
+    Main class for generating signals from market data
+    """
     def __init__(self, api_key: str, api_secret: str):
+        """Initialize the generator with API credentials"""
         self.api_key = api_key
         self.api_secret = api_secret
+        
+        # Create API clients
         self.trading_client = TradingClient(api_key, api_secret)
-        self.stream = StockDataStream(api_key, api_secret)
         self.historical_client = StockHistoricalDataClient(api_key, api_secret)
-        self.strategies: List[LiveStrategy] = []
-        self.bar_count: Dict[str, int] = {}
-        self.last_bar_time: Dict[str, datetime] = {}
-        self.debug_mode = False
+        self.stream = StockDataStream(api_key, api_secret)
+        
+        # Create options analyzer
+        self.options_analyzer = OptionsAnalyzer(api_key, api_secret)
+        
+        # Initialize variables for strategies and data tracking
+        self.strategies = []
+        self.bar_count = {}
+        self.last_bar_time = {}
         
         # Initialize trade tracker
         self.trade_tracker = TradeTracker()
         
+        # Load environment variables for Discord webhook
+        discord_webhook = os.getenv("DISCORD_WEBHOOK_URL")
+        self.discord_webhook_url = discord_webhook if discord_webhook else None
+        
+        # Load trades from file if exists
+        self.trade_data_file = "trade_data.json"
+        self.load_trades()
+        
         # Data persistence settings
         self.data_directory = os.path.join(os.getcwd(), "saved_data")
+        self.daily_bars_directory = os.path.join(self.data_directory, "daily_bars")
         self.today_date = datetime.now().strftime("%Y-%m-%d")
         self.data_filename = os.path.join(self.data_directory, f"market_data_{self.today_date}.pkl")
-        self.trades_filename = os.path.join(self.data_directory, f"trades_{self.today_date}.pkl")
-        self.daily_bars_directory = os.path.join(self.data_directory, "daily_bars")
+        
+        # Make sure directories exist
+        if not os.path.exists(self.data_directory):
+            os.makedirs(self.data_directory)
+        if not os.path.exists(self.daily_bars_directory):
+            os.makedirs(self.daily_bars_directory)
+            
+        # Save settings
         self.last_save_time = datetime.now()
         self.save_interval = 60  # Save every 60 seconds
         self.total_bars_since_save = 0
         self.bars_per_save = 10  # Save every 10 bars
-        
-        # Create data directories if they don't exist
-        for directory in [self.data_directory, self.daily_bars_directory]:
-            if not os.path.exists(directory):
-                os.makedirs(directory)
             
-        # Register save_data function to run on exit
+        # Register save functions to run on exit
         atexit.register(self.save_data)
         atexit.register(self.save_trades)
         
         # Try to load existing data for today
         self.load_data()
-        self.load_trades()
-        
-        # Load Discord webhook URL
-        dotenv.load_dotenv()
-        self.discord_webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
-        if self.discord_webhook_url:
-            logger.info("Discord webhook URL loaded successfully")
-        else:
-            logger.warning("Discord webhook URL not found in environment variables")
-        
+
     def add_strategy(self, strategy: LiveStrategy):
         """Add a trading strategy to the generator"""
         self.strategies.append(strategy)
@@ -589,13 +601,13 @@ class SignalGenerator:
             data_to_save = self.trade_tracker.to_dict()
             
             # Save to file
-            with open(self.trades_filename, 'wb') as f:
+            with open(self.trade_data_file, 'wb') as f:
                 pickle.dump(data_to_save, f)
                 
             # Show a message with trade stats
             stats = self.trade_tracker.get_stats_summary()
             logger.info(f"📊 Trades saved: {stats['total_trades']} total, {len(self.trade_tracker.open_trades)} open")
-            logger.debug(f"Trades file location: {self.trades_filename}")
+            logger.debug(f"Trades file location: {self.trade_data_file}")
             
         except Exception as e:
             logger.error(f"Error saving trade data: {e}", exc_info=True)
@@ -603,12 +615,12 @@ class SignalGenerator:
     def load_trades(self):
         """Load trade data from file if it exists for the current day"""
         try:
-            if not os.path.exists(self.trades_filename):
+            if not os.path.exists(self.trade_data_file):
                 logger.info(f"No saved trade data found for today ({self.today_date})")
                 return
                 
             # Load data from file
-            with open(self.trades_filename, 'rb') as f:
+            with open(self.trade_data_file, 'rb') as f:
                 saved_data = pickle.load(f)
                 
             # Restore trade tracker
@@ -623,33 +635,79 @@ class SignalGenerator:
         except Exception as e:
             logger.error(f"Error loading trade data: {e}", exc_info=True)
 
+    def get_options_data(self, ticker: str, signal_type: str, 
+                       entry_price: float, stop_loss: float, 
+                       take_profit: float) -> Dict[str, Any]:
+        """
+        Get options data for a signal
+        
+        Args:
+            ticker: Symbol to get options for
+            signal_type: 'buy' or 'sell'
+            entry_price: Signal entry price
+            stop_loss: Stop loss level
+            take_profit: Take profit level
+            
+        Returns:
+            Dict with options data or empty dict if not available
+        """
+        try:
+            # Get ATM option
+            option_data = self.options_analyzer.get_atm_option(
+                ticker, signal_type, entry_price
+            )
+            
+            if not option_data:
+                logger.debug(f"Could not find options data for {ticker}")
+                return {}
+                
+            # Estimate prices at stop loss and take profit
+            price_estimates = self.options_analyzer.estimate_option_prices(
+                option_data, stop_loss, take_profit
+            )
+            
+            if not price_estimates:
+                logger.debug(f"Could not estimate option prices for {ticker}")
+                return {}
+                
+            # Combine option data and price estimates
+            options_data = {
+                **option_data,
+                'estimated_entry': price_estimates['entry'],
+                'estimated_stop_loss': price_estimates['stop_loss'],
+                'estimated_take_profit': price_estimates['take_profit'],
+                'estimated_delta': price_estimates['estimated_delta']
+            }
+            
+            return options_data
+            
+        except Exception as e:
+            logger.error(f"Error getting options data for {ticker}: {e}", exc_info=True)
+            return {}
+
     def send_to_discord(self, strategy_name: str, ticker: str, signals: dict):
-        """Send nicely formatted signal to Discord webhook"""
+        """Send signal to Discord webhook if configured"""
         if not self.discord_webhook_url:
             return
             
         try:
-            # Extract signal data
             signal_type = signals['signal']
+            if signal_type not in ['buy', 'sell']:
+                return
+                
             signal_emoji = "🟢" if signal_type == 'buy' else "🔴"
-            
-            # Format all numeric values to two decimal places
-            entry_price = f"${signals['entry_price']:.2f}"
-            stop_loss = f"${signals['stop_loss']:.2f}"
-            profit_target = f"${signals['profit_target']:.2f}"
+            entry_price = signals['entry_price']
+            stop_loss = signals['stop_loss']
+            profit_target = signals['profit_target']
             
             # Add emojis for stop loss and target
             stop_emoji = "🛑" # Stop sign emoji
             target_emoji = "🎯" # Target emoji
             
             # Calculate risk/reward
-            risk = abs(signals['entry_price'] - signals['stop_loss'])
-            reward = abs(signals['profit_target'] - signals['entry_price'])
+            risk = abs(entry_price - stop_loss)
+            reward = abs(profit_target - entry_price)
             risk_reward = f"{(reward / risk if risk > 0 else 0):.2f}"
-            
-            # Calculate price spread
-            price_spread = abs(signals['profit_target'] - signals['entry_price'])
-            spread_emoji = "📏" # Ruler emoji for spread
             
             # Get RSI value if available
             rsi_value = "N/A"
@@ -662,203 +720,108 @@ class SignalGenerator:
                 elif signals['rsi'] <= 30:
                     rsi_value += " 🟢" # Oversold
             
-            # Build embedded message with the requested fields
-            embed = {
-                "title": f"{strategy_name} - {ticker}",
-                "color": 65280 if signal_type == 'buy' else 16711680,  # Green for buy, Red for sell
-                "fields": [
-                    {
-                        "name": "Signal",
-                        "value": f"{signal_emoji} **{signal_type.upper()}**",
-                        "inline": True
-                    },
-                    {
-                        "name": "Entry Price",
-                        "value": entry_price,
-                        "inline": True
-                    },
-                    {
-                        "name": f"{stop_emoji} Stop Loss",
-                        "value": stop_loss,
-                        "inline": True
-                    },
-                    {
-                        "name": f"{target_emoji} Target",
-                        "value": profit_target,
-                        "inline": True
-                    },
-                    {
-                        "name": f"{spread_emoji} Price Spread",
-                        "value": f"${price_spread:.2f}",
-                        "inline": True
-                    },
-                    {
-                        "name": "Risk/Reward",
-                        "value": risk_reward,
-                        "inline": True
-                    },
-                    {
-                        "name": f"{rsi_emoji} RSI",
-                        "value": rsi_value,
-                        "inline": True
-                    }
-                ],
-                "footer": {
-                    "text": f"Time: {datetime.now(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S ET')}"
-                }
-            }
-            
-            # Send to Discord
-            payload = {
-                "embeds": [embed]
-            }
-            
-            response = requests.post(
-                self.discord_webhook_url, 
-                data=json.dumps(payload),
-                headers={"Content-Type": "application/json"}
+            # Get options data
+            options_data = self.get_options_data(
+                ticker, signal_type, entry_price, stop_loss, profit_target
             )
-            response.raise_for_status()
             
-        except Exception as e:
-            logger.error(f"Error sending to Discord: {e}")
-
-    def send_trade_alert_to_discord(self, trade: Trade, alert_type: str = "new", price: float = None):
-        """
-        Send a trade alert to Discord
-        
-        Args:
-            trade: The trade to alert about
-            alert_type: Type of alert ("new", "closed", "stop_loss", "take_profit")
-            price: Current price for stop loss/take profit alerts
-        """
-        if not self.discord_webhook_url:
-            return
-            
-        try:
-            # Set color and title based on alert type
-            if alert_type == "new":
-                color = 3447003  # Blue
-                title = f"🆕 New {trade.trade_type.upper()} Trade: {trade.ticker}"
-            elif alert_type == "stop_loss":
-                color = 15158332  # Red
-                title = f"🛑 STOP LOSS Hit: {trade.ticker}"
-            elif alert_type == "take_profit":
-                color = 3066993  # Green
-                title = f"🎯 TAKE PROFIT Hit: {trade.ticker}"
-            elif alert_type == "closed":
-                color = 10181046  # Purple
-                title = f"✅ Trade Closed: {trade.ticker}"
-            else:
-                color = 9807270  # Gray
-                title = f"Trade Update: {trade.ticker}"
-                
-            # Format fields based on alert type
+            # Create embed fields list
             fields = [
                 {
-                    "name": "Strategy",
-                    "value": trade.strategy_name,
+                    "name": "Signal",
+                    "value": f"{signal_emoji} **{signal_type.upper()}**",
                     "inline": True
                 },
                 {
-                    "name": "Trade ID",
-                    "value": trade.id,
+                    "name": "Entry Price",
+                    "value": f"${entry_price:.2f}",
                     "inline": True
                 },
                 {
-                    "name": "Type",
-                    "value": trade.trade_type.upper(),
+                    "name": f"{stop_emoji} Stop Loss",
+                    "value": f"${stop_loss:.2f}",
+                    "inline": True
+                },
+                {
+                    "name": f"{target_emoji} Target",
+                    "value": f"${profit_target:.2f}",
+                    "inline": True
+                },
+                {
+                    "name": "Risk/Reward",
+                    "value": risk_reward,
                     "inline": True
                 }
             ]
             
-            # Add price fields
-            fields.extend([
-                {
-                    "name": "Entry Price",
-                    "value": f"${trade.entry_price:.2f}",
-                    "inline": True
-                },
-                {
-                    "name": "Stop Loss",
-                    "value": f"${trade.stop_loss:.2f}",
-                    "inline": True
-                },
-                {
-                    "name": "Take Profit",
-                    "value": f"${trade.take_profit:.2f}",
-                    "inline": True
-                }
-            ])
-            
-            # Calculate and add price spread for new trades
-            if alert_type == "new":
-                price_spread = abs(trade.take_profit - trade.entry_price)
+            # Add RSI if available
+            if 'rsi' in signals and signals['rsi'] is not None:
                 fields.append({
-                    "name": "Price Spread",
-                    "value": f"${price_spread:.2f}",
+                    "name": f"{rsi_emoji} RSI",
+                    "value": rsi_value,
+                    "inline": True
+                })
+                
+            # Add VWAP if available
+            if 'vwap' in signals and signals['vwap'] is not None:
+                fields.append({
+                    "name": "VWAP",
+                    "value": f"${signals['vwap']:.2f}",
                     "inline": True
                 })
             
-            # Add exit details for closed trades
-            if alert_type in ["stop_loss", "take_profit", "closed"] and trade.exit_price:
-                # Calculate profit/loss
-                if trade.trade_type == "buy":
-                    pnl = (trade.exit_price - trade.entry_price) / trade.entry_price * 100
-                    pnl_str = f"{pnl:.2f}%"
-                else:  # sell/short
-                    pnl = (trade.entry_price - trade.exit_price) / trade.entry_price * 100
-                    pnl_str = f"{pnl:.2f}%"
-                    
-                # Add exit fields
-                fields.extend([
-                    {
-                        "name": "Exit Price",
-                        "value": f"${trade.exit_price:.2f}",
-                        "inline": True
-                    },
-                    {
-                        "name": "P&L",
-                        "value": pnl_str,
-                        "inline": True
-                    },
-                    {
-                        "name": "Exit Reason",
-                        "value": trade.exit_reason,
-                        "inline": True
-                    }
-                ])
+            # Add options data if available
+            if options_data:
+                # Add a divider
+                fields.append({
+                    "name": "─────────────",
+                    "value": "**Options Data**",
+                    "inline": False
+                })
                 
-                # Add duration if available
-                if hasattr(trade, 'duration') and trade.duration:
-                    duration_str = str(trade.duration).split('.')[0]  # Remove microseconds
-                    fields.append({
-                        "name": "Duration",
-                        "value": duration_str,
-                        "inline": True
-                    })
-            
-            # For alerts on open trades, show current price
-            if alert_type in ["stop_loss", "take_profit"] and price:
+                # Add contract details
+                option_type_emoji = "📈" if options_data['option_type'] == 'CALL' else "📉"
+                fields.append({
+                    "name": f"{option_type_emoji} Contract",
+                    "value": f"{ticker} {options_data['strike']} {options_data['option_type']}",
+                    "inline": True
+                })
+                
+                fields.append({
+                    "name": "Expiration",
+                    "value": f"{options_data['expiration']} ({options_data['days_to_expiry']} days)",
+                    "inline": True
+                })
+                
                 fields.append({
                     "name": "Current Price",
-                    "value": f"${price:.2f}",
+                    "value": f"${options_data['estimated_entry']:.2f}",
+                    "inline": True
+                })
+                
+                fields.append({
+                    "name": f"{stop_emoji} Option SL Est",
+                    "value": f"${options_data['estimated_stop_loss']:.2f}",
+                    "inline": True
+                })
+                
+                fields.append({
+                    "name": f"{target_emoji} Option TP Est",
+                    "value": f"${options_data['estimated_take_profit']:.2f}",
+                    "inline": True
+                })
+                
+                # Add bid/ask spread
+                fields.append({
+                    "name": "Bid/Ask",
+                    "value": f"${options_data['bid']:.2f} / ${options_data['ask']:.2f}",
                     "inline": True
                 })
             
-            # Add risk metrics
-            fields.extend([
-                {
-                    "name": "Risk/Reward",
-                    "value": f"{trade.risk_reward_ratio:.2f}",
-                    "inline": True
-                }
-            ])
-            
-            # Build the embed
+            # Build embedded message
             embed = {
-                "title": title,
-                "color": color,
+                "title": f"{strategy_name} - {ticker}",
+                "color": 65280 if signal_type == 'buy' else 16711680,  # Green for buy, Red for sell
                 "fields": fields,
                 "footer": {
                     "text": f"Time: {datetime.now(pytz.timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S ET')}"
@@ -877,9 +840,13 @@ class SignalGenerator:
             )
             response.raise_for_status()
             
-        except Exception as e:
-            logger.error(f"Error sending trade alert to Discord: {e}")
+            logger.info(f"Sent {signal_type.upper()} signal for {ticker} to Discord")
+            return True
             
+        except Exception as e:
+            logger.error(f"Error sending Discord notification: {e}", exc_info=True)
+            return False
+
     def print_trade_stats(self):
         """Print a summary of trade statistics"""
         stats = self.trade_tracker.get_stats_summary()
@@ -1021,10 +988,15 @@ class SignalGenerator:
                 logger.info(f"Entry: ${trade.entry_price:.2f}, Exit: ${trade.exit_price:.2f}, P&L: ${trade.pnl:.2f}")
                 
                 # Send Discord notification
-                self.send_trade_alert_to_discord(
-                    trade, 
-                    alert_type=trade.exit_reason,
-                    price=current_price
+                self.send_to_discord(
+                    strategy_name=trade.strategy_name,
+                    ticker=trade.ticker,
+                    signals={
+                        'signal': trade.trade_type,
+                        'entry_price': trade.entry_price,
+                        'stop_loss': trade.stop_loss,
+                        'profit_target': trade.take_profit
+                    }
                 )
                 
                 # Save trades immediately when one is closed
@@ -1058,8 +1030,11 @@ class SignalGenerator:
                     self.trade_tracker.add_trade(new_trade)
                     
                     # Send to Discord
-                    self.send_to_discord(strategy.name, ticker, signals)
-                    self.send_trade_alert_to_discord(new_trade, alert_type="new")
+                    self.send_to_discord(
+                        strategy_name=strategy.name,
+                        ticker=ticker,
+                        signals=signals
+                    )
                     
                     # Save data and trades immediately when a signal is generated
                     self.save_data()
