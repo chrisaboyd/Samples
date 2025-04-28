@@ -2,6 +2,7 @@ from datetime import datetime, time
 import pandas as pd
 import numpy as np
 from .base_strategy import LiveStrategy
+import logging
 
 class Trending_EMA(LiveStrategy):
     """
@@ -35,6 +36,9 @@ class Trending_EMA(LiveStrategy):
         self.last_direction = {}           # Keep track of the last trade direction
 
     def generate_signal(self, ticker: str, data: pd.DataFrame) -> dict:
+        logger = logging.getLogger(__name__)
+        if self.parameters.get('debug', False):
+            logger.info(f"[{self.name}] generate_signal called for {ticker}. Parameters: {self.parameters}")
         now = datetime.now().time()
         open_t = self.parameters['market_open_time']
         end_orb = (datetime.combine(datetime.today(), open_t)

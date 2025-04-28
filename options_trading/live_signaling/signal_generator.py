@@ -17,6 +17,7 @@ import pickle
 from strategies.base_strategy import LiveStrategy
 import uuid
 from options_analyzer import OptionsAnalyzer
+from strategies.trending_ema_strategy import Trending_EMA
 
 # Enhanced logging setup with custom formatter
 class CustomFormatter(logging.Formatter):
@@ -478,6 +479,9 @@ class SignalGenerator:
         # Register save functions to run on exit
         atexit.register(self.save_data)
         atexit.register(self.save_trades)
+        
+        # Debug mode setting
+        self.debug_mode = True  # Default to False
         
         # Try to load existing data for today
         self.load_data()
@@ -978,6 +982,7 @@ class SignalGenerator:
                 'volume': [bar.volume]
             }, index=[timestamp])
             
+            logger.info(f"Processing bar for {ticker} at {timestamp} - {new_data}")
             # Check for stop loss/take profit hits on existing trades
             current_price = bar.close
             closed_trades = self.trade_tracker.check_price_updates(ticker, current_price, timestamp)
