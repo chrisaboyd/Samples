@@ -6,7 +6,7 @@ from strategies.indicators import detect_trend
 import os
 import pickle
 
-class Live5mSupertrendStrategy(LiveStrategy):
+class DailyTrendContinuationStrategy(LiveStrategy):
     '''
     - Uses last 30 days of daily data and detect_trend() for a moderate or strong trend
     - If trending, calculate previous daily high and low
@@ -18,7 +18,7 @@ class Live5mSupertrendStrategy(LiveStrategy):
     - Take profit previous day's high or low
     '''
     def __init__(self):
-        super().__init__("5m_supertrend")
+        super().__init__("Daily_trend_continuation")
         self.parameters.update({
             'market_open_time': time(9, 30),
             'market_close_time': time(16, 0),
