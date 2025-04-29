@@ -36,121 +36,36 @@ class BollingerBandBreakout(LiveStrategy):
             'atr_period': 14,            # ATR calculation period
         })
         # State variables
-        self.daily_data = {}             # Daily candlestick data
         self.breakout_signals = {}       # Breakout signals from daily timeframe 
         self.breakout_flags = {}         # Flags for intraday breakout/retest
         self.last_check_day = {}         # Last day we checked for breakout pattern
     
-    def calculate_bollinger_bands(self, prices, period=None, std_dev=None):
-        """Calculate Bollinger Bands for a series of prices"""
-        if period is None:
-            period = self.parameters['bb_period']
-        if std_dev is None:
-            std_dev = self.parameters['bb_std_dev']
-            
-        # Calculate moving average
-        ma = prices.rolling(window=period).mean()
-        
-        # Calculate standard deviation
-        std = prices.rolling(window=period).std()
-        
-        # Calculate upper and lower bands
-        upper_band = ma + (std * std_dev)
-        lower_band = ma - (std * std_dev)
-        
-        # Calculate bandwidth (normalized)
-        bandwidth = (upper_band - lower_band) / ma
-        
-        return {
-            'middle': ma,
-            'upper': upper_band,
-            'lower': lower_band,
-            'bandwidth': bandwidth
-        }
-    
-    def calculate_macd(self, prices):
-        """Calculate MACD for a series of prices"""
-        fast = self.parameters['macd_fast']
-        slow = self.parameters['macd_slow']
-        signal_period = self.parameters['macd_signal']
-        
-        # Calculate EMAs
-        ema_fast = prices.ewm(span=fast, adjust=False).mean()
-        ema_slow = prices.ewm(span=slow, adjust=False).mean()
-        
-        # Calculate MACD line
-        macd_line = ema_fast - ema_slow
-        
-        # Calculate signal line
-        signal_line = macd_line.ewm(span=signal_period, adjust=False).mean()
-        
-        # Calculate histogram
-        histogram = macd_line - signal_line
-        
-        return {
-            'macd': macd_line,
-            'signal': signal_line,
-            'histogram': histogram
-        }
-        
-    def calculate_atr(self, data, period=None):
-        """Calculate Average True Range"""
-        if period is None:
-            period = self.parameters['atr_period']
-            
-        high = data['high']
-        low = data['low']
-        close = data['close'].shift(1)
-        
-        # Handle first row with no previous close
-        close.iloc[0] = data['open'].iloc[0]
-        
-        # Calculate true range
-        tr1 = high - low
-        tr2 = abs(high - close)
-        tr3 = abs(low - close)
-        
-        tr = pd.DataFrame({
-            'tr1': tr1,
-            'tr2': tr2,
-            'tr3': tr3
-        }).max(axis=1)
-        
-        # Calculate ATR
-        atr = tr.rolling(window=period).mean()
-        
-        return atr
-    
-    def update_daily_bars(self, ticker, daily_data):
+    def check_breakout_pattern(self, ticker: str) -> None:
         """
-        Update daily bar data and check for breakout patterns
-        
-        Args:
-            ticker: Symbol
-            daily_data: DataFrame of daily bars
+        Check for breakout patterns using daily data
         """
-        # Store the daily data
-        self.daily_data[ticker] = daily_data.copy()
+        # Get today's date
+        today = datetime.now().date()
         
+        # If we already checked for today, skip
+        if ticker in self.last_check_day and self.last_check_day[ticker] == today:
+            return
+            
+        # Get daily data from base class
+        df = self.get_daily_df(ticker)
+        
+        if df.empty or len(df) < max(self.parameters['bb_period'], self.parameters['vol_ma_period']):
+            if self.parameters['debug']:
+                print(f"[DEBUG] {self.name} - Insufficient daily data for {ticker}: {len(df)} bars")
+            return
+            
         # Initialize ticker data structures if first time seeing ticker
         if ticker not in self.breakout_signals:
             self.breakout_signals[ticker] = {'long': False, 'short': False}
             self.breakout_flags[ticker] = {'long': False, 'short': False, 'long_taken': False, 'short_taken': False}
             self.last_check_day[ticker] = None
-        
-        # Get today's date
-        today = datetime.now().date()
-        
-        # If we already checked for today, skip
-        if self.last_check_day[ticker] == today:
-            return
             
-        # Calculate indicators on daily data
-        if len(daily_data) < max(self.parameters['bb_period'], self.parameters['vol_ma_period']):
-            return  # Not enough data
-            
-        # Calculate Bollinger Bands
-        df = daily_data.copy()
+        # Calculate indicators
         bb = self.calculate_bollinger_bands(df['close'])
         df['bb_middle'] = bb['middle']
         df['bb_upper'] = bb['upper']
@@ -205,7 +120,7 @@ class BollingerBandBreakout(LiveStrategy):
             self.breakout_signals[ticker]['long_bb_upper'] = current_day['bb_upper']
             
             # For debugging
-            if self.parameters.get('debug', False):
+            if self.parameters['debug']:
                 print(f"[DEBUG] {ticker} - Daily BULLISH Breakout Signal:")
                 print(f"  Date: {df.index[-1]}")
                 print(f"  Close: ${current_day['close']:.2f}")
@@ -237,7 +152,7 @@ class BollingerBandBreakout(LiveStrategy):
             self.breakout_signals[ticker]['short_bb_lower'] = current_day['bb_lower']
             
             # For debugging
-            if self.parameters.get('debug', False):
+            if self.parameters['debug']:
                 print(f"[DEBUG] {ticker} - Daily BEARISH Breakout Signal:")
                 print(f"  Date: {df.index[-1]}")
                 print(f"  Close: ${current_day['close']:.2f}")
@@ -266,6 +181,9 @@ class BollingerBandBreakout(LiveStrategy):
         """
         # Initialize response with default signal None and basic indicators
         response = {'signal': None}
+        
+        # Check for breakout patterns using daily data
+        self.check_breakout_pattern(ticker)
         
         # Add RSI and VWAP to response if we have enough data
         if len(current_data) >= self.parameters['rsi_period']:
@@ -307,7 +225,7 @@ class BollingerBandBreakout(LiveStrategy):
             # First, detect a breakout above the signal price
             if not flags['long'] and current_high > signal_price:
                 flags['long'] = True
-                if self.parameters.get('debug', False):
+                if self.parameters['debug']:
                     print(f"[DEBUG] {ticker} - LONG breakout above ${signal_price:.2f}")
                     
             # Then, wait for a retest of the breakout level
@@ -337,7 +255,7 @@ class BollingerBandBreakout(LiveStrategy):
                     }
                     
                     # Debug
-                    if self.parameters.get('debug', False):
+                    if self.parameters['debug']:
                         print(f"[DEBUG] {ticker} - GENERATING LONG SIGNAL:")
                         print(f"  Entry: ${current_close:.2f}")
                         print(f"  Stop: ${stop_loss:.2f}")
@@ -357,7 +275,7 @@ class BollingerBandBreakout(LiveStrategy):
             # First, detect a breakdown below the signal price
             if not flags['short'] and current_low < signal_price:
                 flags['short'] = True
-                if self.parameters.get('debug', False):
+                if self.parameters['debug']:
                     print(f"[DEBUG] {ticker} - SHORT breakdown below ${signal_price:.2f}")
                     
             # Then, wait for a retest of the breakdown level
@@ -387,7 +305,7 @@ class BollingerBandBreakout(LiveStrategy):
                     }
                     
                     # Debug
-                    if self.parameters.get('debug', False):
+                    if self.parameters['debug']:
                         print(f"[DEBUG] {ticker} - GENERATING SHORT SIGNAL:")
                         print(f"  Entry: ${current_close:.2f}")
                         print(f"  Stop: ${stop_loss:.2f}")

@@ -1,12 +1,69 @@
 from abc import ABC, abstractmethod
 import pandas as pd
+import os
+import pickle
 
 class LiveStrategy(ABC):
     def __init__(self, name: str):
         self.name = name
-        self.parameters = {}
+        self.parameters = {
+            'debug': True  # Enable debug logging by default
+        }
         self.data_buffer = {}  # Store data for each ticker
+        self.daily_data = self._load_daily_data()  # Load daily data on initialization
         
+    def _load_daily_data(self) -> dict:
+        """Load daily bars from saved file"""
+        try:
+            daily_bars_path = os.path.join('saved_data', 'daily_bars.pkl')
+            if os.path.exists(daily_bars_path):
+                with open(daily_bars_path, 'rb') as f:
+                    data = pickle.load(f)
+                if self.parameters.get('debug', True):
+                    print(f"[DEBUG] {self.name} - Loaded daily data for {len(data)} symbols")
+                return data
+            else:
+                if self.parameters.get('debug', True):
+                    print(f"[DEBUG] {self.name} - No daily bars file found at {daily_bars_path}")
+                return {}
+        except Exception as e:
+            if self.parameters.get('debug', True):
+                print(f"[DEBUG] {self.name} - Error loading daily bars: {e}")
+            return {}
+            
+    def get_daily_df(self, ticker: str) -> pd.DataFrame:
+        """
+        Convert daily data dictionary for a ticker into a DataFrame
+        
+        Args:
+            ticker: The symbol to get data for
+            
+        Returns:
+            DataFrame with OHLCV data or empty DataFrame if no data available
+        """
+        if not self.daily_data or ticker not in self.daily_data:
+            if self.parameters.get('debug', True):
+                print(f"[DEBUG] {self.name} - No daily data available for {ticker}")
+            return pd.DataFrame()
+            
+        # Convert daily data dictionary to DataFrame
+        ticker_data = self.daily_data[ticker]
+        daily_df = pd.DataFrame({
+            'open': pd.Series(ticker_data['open']),
+            'high': pd.Series(ticker_data['high']),
+            'low': pd.Series(ticker_data['low']),
+            'close': pd.Series(ticker_data['close']),
+            'volume': pd.Series(ticker_data['volume'])
+        })
+        
+        # Sort by index (timestamp) to ensure correct order
+        daily_df.sort_index(inplace=True)
+        
+        if self.parameters.get('debug', True):
+            print(f"[DEBUG] {self.name} - Loaded {len(daily_df)} daily bars for {ticker}")
+            
+        return daily_df
+
     @abstractmethod
     def generate_signal(self, ticker: str, current_data: pd.DataFrame) -> dict:
         """Generate trading signals from the current market data"""

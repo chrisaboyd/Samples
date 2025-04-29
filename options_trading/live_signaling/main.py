@@ -6,10 +6,14 @@ from strategies.scalping_strategy import LiveORB_EMA_Strategy
 from strategies.bollinger_band_reversal import BollingerBandReversal
 from strategies.bollinger_band_breakout import BollingerBandBreakout
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 import dotenv
 import pandas as pd
+from alpaca.data import StockHistoricalDataClient
+from alpaca.data.requests import StockBarsRequest
+from alpaca.data.timeframe import TimeFrame
+import pickle
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +31,75 @@ def is_market_hours():
     market_close = now.replace(hour=16, minute=0, second=0, microsecond=0)
     
     return market_open <= now <= market_close
+
+def fetch_daily_data(api_key: str, api_secret: str, symbols: list) -> dict:
+    """
+    Fetch last 30 days of daily bars for each symbol
+    
+    Args:
+        api_key: Alpaca API key
+        api_secret: Alpaca API secret
+        symbols: List of symbols to fetch data for
+        
+    Returns:
+        Dictionary of daily bars by symbol
+    """
+    logger.info("\nFetching historical daily data...")
+    
+    # Initialize client
+    client = StockHistoricalDataClient(api_key, api_secret)
+    
+    # Calculate date range (last 30 trading days)
+    end = datetime.now(pytz.timezone('US/Eastern'))
+    start = end - timedelta(days=45)  # Get 45 calendar days to ensure we have 30 trading days
+    
+    # Create request
+    request = StockBarsRequest(
+        symbol_or_symbols=symbols,
+        timeframe=TimeFrame.Day,
+        start=start,
+        end=end,
+        feed="iex"  # Use IEX feed for free tier
+    )
+    
+    try:
+        # Get the data
+        bars = client.get_stock_bars(request)
+        
+        # Convert to dictionary format
+        daily_data = {}
+        for symbol in symbols:
+            if symbol in bars:
+                symbol_bars = bars[symbol]
+                daily_data[symbol] = {
+                    'open': {},
+                    'high': {},
+                    'low': {},
+                    'close': {},
+                    'volume': {}
+                }
+                
+                for bar in symbol_bars:
+                    daily_data[symbol]['open'][bar.timestamp] = bar.open
+                    daily_data[symbol]['high'][bar.timestamp] = bar.high
+                    daily_data[symbol]['low'][bar.timestamp] = bar.low
+                    daily_data[symbol]['close'][bar.timestamp] = bar.close
+                    daily_data[symbol]['volume'][bar.timestamp] = bar.volume
+                
+                logger.info(f"Fetched {len(symbol_bars)} daily bars for {symbol}")
+        
+        # Save to file
+        os.makedirs('saved_data', exist_ok=True)
+        save_path = os.path.join('saved_data', 'daily_bars.pkl')
+        with open(save_path, 'wb') as f:
+            pickle.dump(daily_data, f)
+        logger.info(f"Saved daily bars to {save_path}")
+        
+        return daily_data
+        
+    except Exception as e:
+        logger.error(f"Error fetching daily data: {e}")
+        return {}
 
 async def main():
     # Get API credentials
@@ -53,12 +126,19 @@ async def main():
 
     # Define symbols to track
     symbols = [ "SPY", "QQQ", "ASTS", "TSLA", "NVDA", "PLTR", "NFLX", "MSTR", "ISRG", "AAPL" ]
-    #symbols = ["SPY"]
+    
     try:
         logger.info("\nInitializing signal generator...")
         logger.info(f"Tracking symbols: {symbols}")
         logger.info("Press Ctrl+C to stop the stream")
         
+        # Fetch and save daily data first
+        daily_data = fetch_daily_data(api_key, api_secret, symbols)
+        if not daily_data:
+            logger.error("Failed to fetch daily data. Check your API credentials and internet connection.")
+            return
+            
+        # Now populate intraday history and start streaming
         generator.populate_intraday_history(symbols)
         await generator.start_streaming(symbols)
     except KeyboardInterrupt:
