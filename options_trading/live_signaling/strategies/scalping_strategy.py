@@ -28,7 +28,8 @@ class LiveORB_EMA_Strategy(LiveStrategy):
             'ema_long': 100,
             'profit_target_pct_orb': 0.5,  # half ORB range
             'allow_reversals': True,       # Allow changes in direction
-            'debug': True                  # Enable detailed logging
+            'debug': True,                 # Enable detailed logging
+            'rsi_period': 14               # RSI period
         })
         # State
         self.orb = {}                      # ticker -> dict(high, low)
@@ -87,6 +88,17 @@ class LiveORB_EMA_Strategy(LiveStrategy):
         print(f"[DEBUG] {ticker} - Initialized flags: {self.flags[ticker]}")
 
     def generate_signal(self, ticker: str, data: pd.DataFrame) -> dict:
+        # Initialize response with indicators
+        response = {'signal': None}
+        
+        # Calculate RSI and VWAP if we have enough data
+        if len(data) >= self.parameters['rsi_period']:
+            rsi = self.calculate_rsi(data['close'], periods=self.parameters['rsi_period'])
+            response['rsi'] = float(rsi.iloc[-1])
+            
+            vwap = self.calculate_vwap(data)
+            response['vwap'] = float(vwap.iloc[-1])
+
         now = datetime.now().time()
         open_t = self.parameters['market_open_time']
         end_orb = (datetime.combine(datetime.today(), open_t)
@@ -106,7 +118,7 @@ class LiveORB_EMA_Strategy(LiveStrategy):
 
         bars = data.copy()
         if len(bars) < 2:
-            return {'signal': None}  # Need at least 2 bars for calculations
+            return response  # Need at least 2 bars for calculations
 
         # During ORB period: record high/low
         if now <= end_orb:
@@ -115,14 +127,14 @@ class LiveORB_EMA_Strategy(LiveStrategy):
             self.orb[ticker].update({'high': h, 'low': l})
             if self.parameters['debug']:
                 print(f"[DEBUG] {ticker} - Building ORB: high={h:.2f}, low={l:.2f}")
-            return {'signal': None}
+            return response
 
         # After ORB
         orb_h, orb_l = self.orb[ticker].get('high'), self.orb[ticker].get('low')
         if orb_h is None or orb_l is None:
             if self.parameters['debug']:
                 print(f"[DEBUG] {ticker} - No ORB values available")
-            return {'signal': None}
+            return response
             
         flags = self.flags[ticker]
         current_close = bars['close'].iloc[-1]
@@ -198,22 +210,23 @@ class LiveORB_EMA_Strategy(LiveStrategy):
                     if self.parameters['debug']:
                         print(f"[DEBUG] {ticker} - GENERATING LONG SIGNAL:")
                         print(f"  EMAs aligned: 10 EMA={ema_s:.2f}, 35 EMA={ema_m:.2f}, 100 EMA={ema_l:.2f}")
-                        print(f"  Entry: {current_close:.2f}")
-                        print(f"  Stop: {stop_loss:.2f}")
-                        print(f"  Target: {profit_target:.2f}")
+                        print(f"  Entry: ${current_close:.2f}")
+                        print(f"  Stop: ${stop_loss:.2f}")
+                        print(f"  Target: ${profit_target:.2f}")
                     
-                    return {
-                        'signal': 'buy', 
+                    response.update({
+                        'signal': 'buy',
                         'entry_price': float(current_close),
-                        'stop_loss': float(stop_loss), 
+                        'stop_loss': float(stop_loss),
                         'profit_target': float(profit_target),
-                        'ema_mid': float(ema_m),  # Include the 35 EMA for reference
-                        'ema_short': float(ema_s),
-                        'ema_long': float(ema_l),
                         'orb_high': float(orb_h),
-                        'reversal': self.last_direction[ticker] == 'short'  # Flag if this is a reversal
-                    }
-        
+                        'orb_low': float(orb_l),
+                        'ema_short': float(ema_s),
+                        'ema_mid': float(ema_m),
+                        'ema_long': float(ema_l)
+                    })
+                    return response
+
         # Short entry criteria - PULLBACK TO 35 EMA after confirmed breakout
         if flags['breakout_confirmed_short'] and not flags['short_taken']:
             # Check if price is pulling back to the 35 EMA
@@ -229,33 +242,34 @@ class LiveORB_EMA_Strategy(LiveStrategy):
                     print(f"  100 EMA: {ema_l:.2f}")
                     print(f"  Tolerance: ±{pullback_tolerance:.2f}")
                 
-                # EMAs aligned: at least two declining (s<m<l)
+                # EMAs aligned: at least two falling (s<m<l)
                 aligned = (ema_s < ema_m and ema_m < ema_l) or (ema_s < ema_l and ema_m < ema_l)
                 
                 if aligned:
-                    daily_low = bars['low'].min()
-                    profit_target = min(daily_low, current_close - self.parameters['profit_target_pct_orb'] * orb_range)
+                    # Determine targets and stops based on ORB width
                     stop_loss = current_close + 0.25 * orb_range
+                    profit_target = min(bars['low'].min(), current_close - self.parameters['profit_target_pct_orb'] * orb_range)
                     flags['short_taken'] = True
                     self.last_direction[ticker] = 'short'
                     
                     if self.parameters['debug']:
                         print(f"[DEBUG] {ticker} - GENERATING SHORT SIGNAL:")
                         print(f"  EMAs aligned: 10 EMA={ema_s:.2f}, 35 EMA={ema_m:.2f}, 100 EMA={ema_l:.2f}")
-                        print(f"  Entry: {current_close:.2f}")
-                        print(f"  Stop: {stop_loss:.2f}")
-                        print(f"  Target: {profit_target:.2f}")
+                        print(f"  Entry: ${current_close:.2f}")
+                        print(f"  Stop: ${stop_loss:.2f}")
+                        print(f"  Target: ${profit_target:.2f}")
                     
-                    return {
-                        'signal': 'sell', 
+                    response.update({
+                        'signal': 'sell',
                         'entry_price': float(current_close),
                         'stop_loss': float(stop_loss),
                         'profit_target': float(profit_target),
-                        'ema_mid': float(ema_m),  # Include the 35 EMA for reference
-                        'ema_short': float(ema_s),
-                        'ema_long': float(ema_l),
+                        'orb_high': float(orb_h),
                         'orb_low': float(orb_l),
-                        'reversal': self.last_direction[ticker] == 'long'  # Flag if this is a reversal
-                    }
+                        'ema_short': float(ema_s),
+                        'ema_mid': float(ema_m),
+                        'ema_long': float(ema_l)
+                    })
+                    return response
 
-        return {'signal': None}
+        return response

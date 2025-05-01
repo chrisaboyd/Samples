@@ -17,6 +17,7 @@ class LiveORBStrategy(LiveStrategy):
             'macd_fast': 5,
             'macd_slow': 13,
             'macd_signal': 5,
+            'rsi_period': 14,               # RSI period
         })
         self.orb_ranges = {}           # {ticker: {'high':float,'low':float,'avg_vol':float,'vwap':float}}
         self.breakout_flags = {}       # {ticker: {'long':bool,'short':bool,'trade_taken':bool}}
@@ -77,6 +78,17 @@ class LiveORBStrategy(LiveStrategy):
           ['high','low','close','volume']
         Returns dict with signal details or {'signal':None}.
         """
+        # Initialize response with indicators
+        response = {'signal': None}
+        
+        # Calculate RSI and VWAP if we have enough data
+        if len(current_data) >= self.parameters['rsi_period']:
+            rsi = self.calculate_rsi(current_data['close'], periods=self.parameters['rsi_period'])
+            response['rsi'] = float(rsi.iloc[-1])
+            
+            vwap = self.calculate_vwap(current_data)
+            response['vwap'] = float(vwap.iloc[-1])
+
         # Initialize per-ticker state
         if ticker not in self.orb_ranges:
             self.orb_ranges[ticker] = {}
@@ -105,12 +117,12 @@ class LiveORBStrategy(LiveStrategy):
                 'avg_vol': avg_vol,
                 'vwap': vwap,
             })
-            return {'signal': None}
+            return response
 
         # After ORB
         orb = self.orb_ranges[ticker]
         if not orb:
-            return {'signal': None}
+            return response
 
         state = self.breakout_flags[ticker]
         bar = current_data.iloc[-1]
@@ -122,7 +134,7 @@ class LiveORBStrategy(LiveStrategy):
 
         # Volume filter: only after ORB, require bar.volume > min_volume_multiplier * avg_vol
         if vol < self.parameters['min_volume_multiplier'] * orb['avg_vol']:
-            return {'signal': None}
+            return response
 
         # Compute MACD for momentum confirmation
         prices = current_data['close']
@@ -141,7 +153,7 @@ class LiveORBStrategy(LiveStrategy):
 
         # Only one trade per day
         if state['trade_taken']:
-            return {'signal': None}
+            return response
 
         t = self.parameters['tolerance']
         # Long retest & entry
@@ -150,13 +162,15 @@ class LiveORBStrategy(LiveStrategy):
                 stop = price - 0.25 * orb_range
                 target = price + 0.5 * orb_range  # 2:1 reward
                 state['trade_taken'] = True
-                return dict(
+                response.update(dict(
                     signal='buy',
                     entry_price=float(price),
                     stop_loss=float(stop),
                     profit_target=float(target),
-                    orb_high=float(orb_high), orb_low=float(orb_low)
-                )
+                    orb_high=float(orb_high), 
+                    orb_low=float(orb_low)
+                ))
+                return response
 
         # Short retest & entry
         if state['short'] and macd_ok_short:
@@ -164,12 +178,14 @@ class LiveORBStrategy(LiveStrategy):
                 stop = price + 0.25 * orb_range
                 target = price - 0.5 * orb_range
                 state['trade_taken'] = True
-                return dict(
+                response.update(dict(
                     signal='sell',
                     entry_price=float(price),
                     stop_loss=float(stop),
                     profit_target=float(target),
-                    orb_high=float(orb_high), orb_low=float(orb_low)
-                )
+                    orb_high=float(orb_high), 
+                    orb_low=float(orb_low)
+                ))
+                return response
 
-        return {'signal': None}
+        return response

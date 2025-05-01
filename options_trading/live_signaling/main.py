@@ -153,10 +153,10 @@ async def main():
     generator.add_strategy(LiveORB_EMA_Strategy())
     generator.add_strategy(BollingerBandReversal())
     generator.add_strategy(BollingerBandBreakout())
-    generator.add_strategy(DailyTrendContinuationStrategy())
+    #generator.add_strategy(DailyTrendContinuationStrategy())
 
     # Define symbols to track
-    symbols = [ "SPY", "QQQ", "ASTS", "TSLA", "NVDA", "PLTR", "NFLX", "MSTR", "ISRG", "AAPL" ]
+    symbols = [ "SPY", "QQQ", "TSLA", "NVDA", "PLTR", "NFLX", "MSTR", "AAPL", "SBUX", "COST", "AMZN" ]
     
     try:
         logger.info("\nInitializing signal generator...")

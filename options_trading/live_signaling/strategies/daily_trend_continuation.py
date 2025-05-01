@@ -69,7 +69,7 @@ class DailyTrendContinuationStrategy(LiveStrategy):
         # Store previous day's high and low for profit targets
         if len(daily_df) >= 2:
             prev_day = daily_df.iloc[-2]
-            self.daily_levels[ticker] = {
+            self.parameters['daily_levels'][ticker] = {
                 'high': prev_day['high'],
                 'low': prev_day['low']
             }
@@ -99,7 +99,7 @@ class DailyTrendContinuationStrategy(LiveStrategy):
             return result
             
         # Detect trend if not already set
-        if ticker not in self.daily_levels:
+        if ticker not in self.parameters['daily_levels']:
             trend = self.detect_trend(ticker, data)
             if self.parameters['debug']:
                 print(f"[DEBUG] {ticker} - Trend Analysis: {trend}")
@@ -152,7 +152,7 @@ class DailyTrendContinuationStrategy(LiveStrategy):
                 if abs(current_low - breakout_level) <= tolerance:
                     # Generate long signal
                     stop_loss = min(current_low, orb_low)
-                    profit_target = self.daily_levels[ticker]['high']
+                    profit_target = self.parameters['daily_levels'][ticker]['high']
                     
                     if self.parameters['debug']:
                         print(f"[DEBUG] {ticker} - Long signal generated:")
@@ -183,7 +183,7 @@ class DailyTrendContinuationStrategy(LiveStrategy):
                 if abs(current_high - breakout_level) <= tolerance:
                     # Generate short signal
                     stop_loss = max(current_high, orb_high)
-                    profit_target = self.daily_levels[ticker]['low']
+                    profit_target = self.parameters['daily_levels'][ticker]['low']
                     
                     if self.parameters['debug']:
                         print(f"[DEBUG] {ticker} - Short signal generated:")

@@ -59,10 +59,14 @@ class BollingerBandReversal(LiveStrategy):
             self.last_check_day[ticker] = None
             
         # Calculate indicators
-        bb = self.calculate_bollinger_bands(df['close'])
-        df['bb_middle'] = bb['middle']
-        df['bb_upper'] = bb['upper']
-        df['bb_lower'] = bb['lower']
+        middle_band, upper_band, lower_band = self.calculate_bollinger_bands(
+            df['close'],
+            window=self.parameters['bb_period'],
+            num_std=self.parameters['bb_std_dev']
+        )
+        df['bb_middle'] = middle_band
+        df['bb_upper'] = upper_band
+        df['bb_lower'] = lower_band
         
         # Calculate RSI
         df['rsi'] = self.calculate_rsi(df['close'], periods=self.parameters['rsi_period'])

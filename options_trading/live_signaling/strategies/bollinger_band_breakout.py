@@ -66,20 +66,29 @@ class BollingerBandBreakout(LiveStrategy):
             self.last_check_day[ticker] = None
             
         # Calculate indicators
-        bb = self.calculate_bollinger_bands(df['close'])
-        df['bb_middle'] = bb['middle']
-        df['bb_upper'] = bb['upper']
-        df['bb_lower'] = bb['lower']
-        df['bb_bandwidth'] = bb['bandwidth']
+        middle_band, upper_band, lower_band = self.calculate_bollinger_bands(
+            df['close'],
+            window=self.parameters['bb_period'],
+            num_std=self.parameters['bb_std_dev']
+        )
+        df['bb_middle'] = middle_band
+        df['bb_upper'] = upper_band
+        df['bb_lower'] = lower_band
+        df['bb_bandwidth'] = (upper_band - lower_band) / middle_band  # Calculate bandwidth
         
         # Calculate RSI
         df['rsi'] = self.calculate_rsi(df['close'], periods=self.parameters['rsi_period'])
         
         # Calculate MACD
-        macd = self.calculate_macd(df['close'])
-        df['macd'] = macd['macd']
-        df['macd_signal'] = macd['signal']
-        df['macd_hist'] = macd['histogram']
+        macd_line, signal_line, histogram = self.calculate_macd(
+            df['close'],
+            fast_period=self.parameters['macd_fast'],
+            slow_period=self.parameters['macd_slow'],
+            signal_period=self.parameters['macd_signal']
+        )
+        df['macd'] = macd_line
+        df['macd_signal'] = signal_line
+        df['macd_hist'] = histogram
         
         # Calculate volume moving average
         df['volume_ma'] = df['volume'].rolling(window=self.parameters['vol_ma_period']).mean()
