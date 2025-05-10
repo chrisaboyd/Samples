@@ -29,7 +29,7 @@ class BollingerBandBreakout(LiveStrategy):
             'macd_fast': 12,             # MACD fast EMA period
             'macd_slow': 26,             # MACD slow EMA period
             'macd_signal': 9,            # MACD signal line period
-            'vol_ma_period': 20,         # Volume moving average period
+            'vol_ma_period': 5,          # Volume moving average period (reduced from 20 to 5)
             'vol_increase_factor': 1.2,  # Required volume above moving average
             'bb_expansion_factor': 1.1,  # Required BB width expansion (10%)
             'tolerance': 0.001,          # Price tolerance for entries
@@ -114,8 +114,6 @@ class BollingerBandBreakout(LiveStrategy):
         bullish_breakout = False
         if (current_day['close'] > current_day['bb_upper'] and  # Price closed above upper band
             self.parameters['rsi_long_min'] <= current_day['rsi'] <= self.parameters['rsi_long_max'] and  # RSI in target range
-            current_day['macd_hist'] > 0 and  # MACD histogram positive
-            prev_day['macd_hist'] < current_day['macd_hist'] and  # MACD histogram increasing
             volume_spike and  # Volume above average
             bb_expanding):  # Volatility expanding
             
@@ -146,8 +144,6 @@ class BollingerBandBreakout(LiveStrategy):
         bearish_breakout = False
         if (current_day['close'] < current_day['bb_lower'] and  # Price closed below lower band
             self.parameters['rsi_short_min'] <= current_day['rsi'] <= self.parameters['rsi_short_max'] and  # RSI in target range
-            current_day['macd_hist'] < 0 and  # MACD histogram negative
-            prev_day['macd_hist'] > current_day['macd_hist'] and  # MACD histogram decreasing (more negative)
             volume_spike and  # Volume above average
             bb_expanding):  # Volatility expanding
             

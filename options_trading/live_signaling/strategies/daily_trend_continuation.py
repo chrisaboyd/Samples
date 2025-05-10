@@ -29,6 +29,8 @@ class DailyTrendContinuationStrategy(LiveStrategy):
             'orb_levels': {},  # Store ORB levels by ticker
             'daily_levels': {},  # Store previous day's high/low by ticker
             'breakout_levels': {},  # Store breakout levels by ticker
+            'signal_triggered': {},  # Track if signal was triggered for ticker
+            'gap_threshold': 0.005,  # 0.5% gap threshold (configurable)
             'debug': True
         })
         # Load daily data
@@ -81,6 +83,30 @@ class DailyTrendContinuationStrategy(LiveStrategy):
             'strength': trend_analysis['overall_score']
         }
 
+    def is_gap(self, ticker, data):
+        """
+        Detect if there is a gap up or down at the open.
+        Returns (is_gap: bool, direction: 'up'|'down'|None)
+        """
+        daily_levels = self.parameters['daily_levels'].get(ticker, {})
+        if not daily_levels:
+            return False, None
+        # Use the first bar of the day for open
+        today_open = data[data.index.date == datetime.today().date()]['open']
+        if today_open.empty:
+            return False, None
+        today_open = today_open.iloc[0]
+        prev_high = daily_levels['high']
+        prev_low = daily_levels['low']
+        gap_threshold = self.parameters.get('gap_threshold', 0.005)
+        gap_up = today_open > prev_high * (1 + gap_threshold)
+        gap_down = today_open < prev_low * (1 - gap_threshold)
+        if gap_up:
+            return True, 'up'
+        elif gap_down:
+            return True, 'down'
+        return False, None
+
     def generate_signal(self, ticker: str, data: pd.DataFrame) -> dict:
         '''
         Generate a signal for the given ticker and current data
@@ -125,6 +151,10 @@ class DailyTrendContinuationStrategy(LiveStrategy):
                 print(f"[DEBUG] {ticker} - Setting ORB levels - High: {orb_high:.2f}, Low: {orb_low:.2f}")
             return result
         
+        # Prevent multiple triggers per ticker per day
+        if self.parameters['signal_triggered'].get(ticker, False):
+            return result  # Already triggered today
+        
         # After ORB period, look for breakouts and retests
         if ticker not in self.parameters['orb_levels']:
             return result
@@ -137,6 +167,10 @@ class DailyTrendContinuationStrategy(LiveStrategy):
         
         # Calculate retest zone with tolerance
         tolerance = self.parameters['tolerance'] * current_close
+        
+        # Detect gap scenario
+        is_gap, gap_dir = self.is_gap(ticker, data)
+        orb_range = orb_high - orb_low
         
         if self.parameters['trend_direction'] == 1:  # Uptrend
             # Look for breakout above ORB high
@@ -151,8 +185,12 @@ class DailyTrendContinuationStrategy(LiveStrategy):
                 breakout_level = self.parameters['breakout_levels'][ticker]
                 if abs(current_low - breakout_level) <= tolerance:
                     # Generate long signal
-                    stop_loss = min(current_low, orb_low)
-                    profit_target = self.parameters['daily_levels'][ticker]['high']
+                    if is_gap and gap_dir == 'up':
+                        stop_loss = current_close - 0.25 * orb_range
+                        profit_target = current_close + 0.5 * orb_range
+                    else:
+                        stop_loss = min(current_low, orb_low)
+                        profit_target = self.parameters['daily_levels'][ticker]['high']
                     
                     if self.parameters['debug']:
                         print(f"[DEBUG] {ticker} - Long signal generated:")
@@ -160,6 +198,7 @@ class DailyTrendContinuationStrategy(LiveStrategy):
                         print(f"Stop: {stop_loss:.2f}")
                         print(f"Target: {profit_target:.2f}")
                     
+                    self.parameters['signal_triggered'][ticker] = True
                     return {
                         'signal': 'buy',
                         'entry_price': current_close,
@@ -182,8 +221,12 @@ class DailyTrendContinuationStrategy(LiveStrategy):
                 breakout_level = self.parameters['breakout_levels'][ticker]
                 if abs(current_high - breakout_level) <= tolerance:
                     # Generate short signal
-                    stop_loss = max(current_high, orb_high)
-                    profit_target = self.parameters['daily_levels'][ticker]['low']
+                    if is_gap and gap_dir == 'down':
+                        stop_loss = current_close + 0.25 * orb_range
+                        profit_target = current_close - 0.5 * orb_range
+                    else:
+                        stop_loss = max(current_high, orb_high)
+                        profit_target = self.parameters['daily_levels'][ticker]['low']
                     
                     if self.parameters['debug']:
                         print(f"[DEBUG] {ticker} - Short signal generated:")
@@ -191,6 +234,7 @@ class DailyTrendContinuationStrategy(LiveStrategy):
                         print(f"Stop: {stop_loss:.2f}")
                         print(f"Target: {profit_target:.2f}")
                     
+                    self.parameters['signal_triggered'][ticker] = True
                     return {
                         'signal': 'sell',
                         'entry_price': current_close,

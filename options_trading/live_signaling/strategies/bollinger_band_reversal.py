@@ -21,9 +21,9 @@ class BollingerBandReversal(LiveStrategy):
             'bb_period': 20,             # Period for Bollinger Bands
             'bb_std_dev': 2,             # Standard deviations for Bollinger Bands
             'rsi_period': 14,            # RSI period
-            'rsi_oversold': 30,          # RSI oversold threshold
-            'rsi_overbought': 70,        # RSI overbought threshold
-            'volume_increase_factor': 1.5,  # Required volume increase vs previous day
+            'rsi_oversold': 35,          # RSI oversold threshold
+            'rsi_overbought': 65,        # RSI overbought threshold
+            'volume_increase_factor': 1.2,  # Required volume increase vs previous day
             'tolerance': 0.001,          # Price tolerance for entries
             'tp1_ratio': 0.5,            # Take Profit 1 at 50% to BB midline
             'tp2_ratio': 1.0,            # Take Profit 2 at opposite BB

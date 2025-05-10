@@ -156,7 +156,7 @@ async def main():
     #generator.add_strategy(DailyTrendContinuationStrategy())
 
     # Define symbols to track
-    symbols = [ "SPY", "QQQ", "TSLA", "NVDA", "PLTR", "NFLX", "MSTR", "AAPL", "SBUX", "COST", "AMZN" ]
+    symbols = [ "SPY", "QQQ", "TSLA", "NVDA", "PLTR", "NFLX", "MSTR"] 
     
     try:
         logger.info("\nInitializing signal generator...")
