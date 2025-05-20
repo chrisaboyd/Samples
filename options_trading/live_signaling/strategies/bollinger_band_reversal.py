@@ -336,3 +336,50 @@ class BollingerBandReversal(LiveStrategy):
                     return response
                     
         return response
+
+    def is_shooting_star(self, bar):
+        """
+        Detect shooting star candlestick pattern.
+        Returns True if the bar is a shooting star, False otherwise.
+        """
+        body = abs(bar['close'] - bar['open'])
+        upper_shadow = bar['high'] - max(bar['open'], bar['close'])
+        lower_shadow = min(bar['open'], bar['close']) - bar['low']
+        return upper_shadow > 2 * body and lower_shadow < body
+
+    def is_engulfing(self, current_bar, previous_bar):
+        """
+        Detect bullish and bearish engulfing patterns.
+        
+        Args:
+            current_bar: Current day's bar data
+            previous_bar: Previous day's bar data
+            
+        Returns:
+            1 for bullish engulfing
+            -1 for bearish engulfing
+            0 for no engulfing pattern
+        """
+        # Calculate body sizes
+        current_body = abs(current_bar['close'] - current_bar['open'])
+        previous_body = abs(previous_bar['close'] - previous_bar['open'])
+        
+        # Check if current body is larger than previous body
+        if current_body <= previous_body:
+            return 0
+            
+        # Bullish engulfing
+        if (current_bar['close'] > current_bar['open'] and  # Current bar is bullish
+            previous_bar['close'] < previous_bar['open'] and  # Previous bar is bearish
+            current_bar['open'] < previous_bar['close'] and  # Current open below previous close
+            current_bar['close'] > previous_bar['open']):  # Current close above previous open
+            return 1
+            
+        # Bearish engulfing
+        if (current_bar['close'] < current_bar['open'] and  # Current bar is bearish
+            previous_bar['close'] > previous_bar['open'] and  # Previous bar is bullish
+            current_bar['open'] > previous_bar['close'] and  # Current open above previous close
+            current_bar['close'] < previous_bar['open']):  # Current close below previous open
+            return -1
+            
+        return 0
