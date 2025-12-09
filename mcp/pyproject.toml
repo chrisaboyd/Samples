@@ -6,6 +6,7 @@ requires-python = ">=3.10"
 dependencies = [
     "mcp",
     "anthropic",
+    "httpx",
     "python-nmap",
     "pydantic>=2.0",
     "click",
