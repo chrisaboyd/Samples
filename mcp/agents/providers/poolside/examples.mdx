@@ -1,0 +1,373 @@
+### Prerequisites
+
+Before you get started, you will need:
+
+1. **Authentication**: Bearer token authentication (JWT)
+2. **curl or similar**: A tool to make API requests
+
+#### List available models
+
+Most API requests require you to pass a model `id`. To get all available models and their `ids`:
+
+```bash
+curl --request GET \
+  --url https://<api.domain.com>/openai/v1/models \
+  --header 'Accept: application/json, application/problem+json' \
+  --header 'Authorization: bearer <TOKEN>'
+```
+
+**Response:**
+
+```json
+{
+  "$schema": "https://<api.domain.com>/openai/schemas/PageListModel.json",
+  "data": [
+    {
+      "id": "malibu",
+      "created": 1751637312,
+      "owned_by": "system",
+      "object": "model"
+    }
+  ],
+  "object": "list"
+}
+```
+
+In this case, we only have one model with `id` **malibu**.
+
+#### Chat prompt example
+
+To generate completions from a model, you only need the model `id` and your prompt formatted as `content` inside `messages` assigned to the `user` `role`. As shown in the following example:
+
+```bash
+curl --request POST \
+  --url https://<api.domain.com>/openai/v1/chat/completions \
+  --header 'Accept: application/json, application/problem+json' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: bearer <TOKEN>' \
+  --data '{
+  "messages": [
+    {
+      "content": "Explain cURL",
+      "role": "user"
+    }
+  ],
+  "model": "malibu"
+}'
+```
+
+**Response:**
+
+```json
+{
+  "$schema": "https://<api.domain.com>/openai/schemas/ChatCompletion.json",
+  "model": "malibu",
+  "created": 1751993576,
+  "object": "chat.completion",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "content": "cURL is a powerful command-line tool used for transferring data to or from a server, supporting various protocols such as HTTP, HTTPS, FTP, and more. It's widely used for testing APIs, downloading files, and automating HTTP requests. cURL allows you to specify headers, methods (GET, POST, PUT, DELETE, etc.), and data payloads, making it versatile for a range of web-related tasks.\n",
+        "role": "assistant"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "completion_tokens": 88,
+    "prompt_tokens": 447,
+    "total_tokens": 535
+  }
+}
+```
+In this case, we used a total of 535 tokens. 447 tokens for our input prompt, and 88 tokens to generate the response.
+
+You can set optional parameters. This is not an exhaustive list.
+
+**Request Body:**
+
+- `model` (required): UUID of the model to use
+- `messages` (required): An array of messages representing the conversation.
+- `max_completion_tokens` (optional): The maximum number of tokens to generate in the completion.
+- `stop` (optional): An array of sequences where the API will stop generating further tokens
+- `temperature` (optional): What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
+- `stream` (optional): Response format. A stream of a series of events or a single JSON object.
+
+For example, if you want to receive your response as a series chunks of completions returned as server-sent events, you set the parameter `stream=true`. This is useful for real-time applications.
+
+```bash
+curl --request POST \
+  --url https://<api.domain.com>/openai/v1/chat/completions \
+  --header 'Accept: application/json, application/problem+json' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: bearer <TOKEN>' \
+  --data '{
+  "messages": [
+    {
+      "content": "Explain cURL",
+      "role": "user"
+    }
+  ],
+  "model": "malibu",
+  "stream": true
+}'
+```
+
+**Response:**
+
+```json
+data: {"model":"malibu","created":1754035552,"object":"chat.completion.chunk","choices":[{"index":0,"delta":{"role":"assistant"},"finish_reason":""}]}
+
+data: {"model":"malibu","created":1754035552,"object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"cURL","role":"assistant"},"finish_reason":""}]}
+
+data: {"model":"malibu","created":1754035552,"object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":" ","role":"assistant"},"finish_reason":""}]}
+
+data: {"model":"malibu","created":1754035552,"object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"is a","role":"assistant"},"finish_reason":""}]}
+
+...
+
+data: {"model":"malibu","created":1754035552,"object":"chat.completion.chunk","choices":[],"usage":{"completion_tokens":95,"prompt_tokens":167,"total_tokens":262}}
+```
+
+
+#### Chat prompt example with expanded context
+
+Optionally, you can add more context to a query. This is useful when you want to give the model information it doesn't have. Refer to our [Prompting Guide](/user-guides/best-practices/prompt-engineering) for further guidance.
+
+Consider the following query:
+
+```bash
+curl --request POST \
+  --url https://<api.domain.com>/openai/v1/chat/completions \
+  --header 'Accept: application/json, application/problem+json' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: bearer <TOKEN>' \
+  --data '{
+  "messages": [
+    {
+      "content": "What is my name?",
+      "role": "user"
+    }
+  ],
+  "model": "malibu"
+}'
+```
+
+The model has no mechanism to know the user's name, and as such provides a sub-par response:
+
+**Response:**
+
+```json
+{
+  "$schema": "https://<api.domain.com>/openai/schemas/ChatCompletion.json",
+  "model": "malibu",
+  "created": 1751993576,
+  "object": "chat.completion",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "content": "I'm sorry, but I do not have that information. Could you please provide your name?\n",
+        "role": "assistant"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "completion_tokens": 22,
+    "prompt_tokens": 674,
+    "total_tokens": 696
+  }
+}
+```
+
+However, if you want the model to be able to answer questions about data you have, you can pass that as context using a system message:
+
+```bash
+curl --request POST \
+  --url https://<api.domain.com>/openai/v1/chat/completions \
+  --header 'Accept: application/json, application/problem+json' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: bearer <TOKEN>' \
+  --data '{
+  "messages": [
+    {
+      "content": "path:/Users/name/Desktop/userinfo content:My name is Ivo. Question: What is my name?",
+      "role": "user"
+    }
+  ],
+  "model": "malibu"
+}'
+```
+
+In the previous snippet, the system message provides context about the user's name. If you run this example, you will see a response that takes into consideration this information.
+
+**Response:**
+
+```json
+{
+  "$schema": "https://<api.domain.com>/openai/schemas/ChatCompletion.json",
+  "model": "malibu",
+  "created": 1751993576,
+  "object": "chat.completion",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "content": "Based on the provided context, your name is Ivo.",
+        "role": "assistant"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "completion_tokens": 15,
+    "prompt_tokens": 693,
+    "total_tokens": 708
+  }
+}
+```
+
+You can also provide multiple context messages or include file contents as context by describing them in system messages.
+
+
+#### Extend models with tools
+
+You can extend your model's capabilities by providing tools (functions) that the model can call during conversations. This enables the model to perform actions like retrieving real-time data, calculations, or interacting with external systems.
+
+To use tools, include a `tools` array in your request and define the functions the model can call:
+
+```bash
+curl --request POST \
+  --url https://<api.domain.com>/openai/v1/chat/completions \
+  --header 'Accept: application/json, application/problem+json' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: bearer <TOKEN>' \
+  --data '{
+  "model": "malibu",
+  "messages": [
+    {
+      "role": "user",
+      "content": "what is the weather forecast for Paris"
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_forecast",
+        "description": "Get weather forecast for a city",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "city": {
+              "type": "string",
+              "description": "City name"
+            }
+          },
+          "required": [
+            "city"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  ]
+}'
+```
+
+When the model needs to use a tool, it will respond with a `tool_calls` array in the assistant message.
+
+**Response:**
+
+```json
+{
+  "model": "malibu",
+  "created": 1753997542,
+  "object": "chat.completion",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "tool_calls": [
+          {
+            "type": "function",
+            "function": {
+              "name": "get_forecast",
+              "arguments": "{\"city\": \"Paris\"}"
+            }
+          }
+        ]
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "completion_tokens": 95,
+    "prompt_tokens": 338,
+    "total_tokens": 433
+  }
+}
+```
+
+To continue the conversation, you then need to execute the tool, and provide the tool result:
+
+```bash
+curl --request POST \
+  --url https://<api.domain.com>/openai/v1/chat/completions \
+  --header 'Accept: application/json, application/problem+json' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: bearer <TOKEN>' \
+  --data '{
+  "model": "malibu",
+  "messages": [
+    {
+      "role": "user",
+      "content": "what is the weather forecast for Paris"
+    },
+    {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "get_forecast",
+            "arguments": "{\"city\": \"Paris\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "content": "{\"temperature\": 25}"
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_forecast",
+        "description": "Get weather forecast for a city",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "city": {
+              "type": "string",
+              "description": "City name"
+            }
+          },
+          "required": [
+            "city"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  ]
+}'
+```
+
+
