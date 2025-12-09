@@ -1,0 +1,34 @@
+# Allowed scan targets - SAFETY GUARDRAIL
+# Only targets listed here can be actively scanned
+# This prevents accidental scanning of unauthorized systems
+
+allowed_targets:
+  # Metasploitable 2 VM - update this IP to match your lab setup
+  - name: "metasploitable2"
+    description: "Intentionally vulnerable VM for security testing"
+    hosts:
+      - "192.168.174.133"      # Update to your Metasploitable IP
+    networks:
+      #- "192.168.56.0/24"    # VirtualBox host-only network
+      #- "192.168.1.0/24"     # Common home lab network
+
+  # Localhost for testing
+  - name: "localhost"
+    description: "Local machine for tool testing only"
+    hosts:
+      - "127.0.0.1"
+      - "localhost"
+
+# Explicitly blocked - never scan these regardless of other rules
+blocked_targets:
+  - "0.0.0.0/8"
+  - "10.0.0.0/8"      # Uncomment if you don't use 10.x for lab
+  - "172.16.0.0/12"   # Uncomment if you don't use 172.x for lab
+  - "192.168.1.0/24"
+  - "192.168.0.0/24"
+
+# Scan settings
+settings:
+  require_explicit_approval: false  # Set true to require confirmation for each scan
+  max_concurrent_scans: 3
+  default_timeout_seconds: 300
