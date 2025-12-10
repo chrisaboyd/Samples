@@ -46,7 +46,7 @@ This is a proof-of-concept security scanning system built with LLM agents and MC
 ## Repository Structure
 
 ```
-security-scanner/
+mcp/
 ├── README.md
 ├── pyproject.toml
 ├── config/

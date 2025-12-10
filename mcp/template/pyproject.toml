@@ -1,0 +1,80 @@
+[project]
+name = "your-project-name"  # TODO: Change this
+version = "0.1.0"
+description = "Your project description"  # TODO: Change this
+requires-python = ">=3.10"
+dependencies = [
+    # MCP SDK - Model Context Protocol
+    "mcp",
+
+    # LLM Providers (add/remove as needed)
+    "poolside",       # Poolside/Malibu
+    # "openai",        # OpenAI (uncomment if needed)
+
+    # HTTP client (for API integrations)
+    "httpx",
+
+    # Data validation
+    "pydantic>=2.0",
+
+    # CLI framework
+    "click",
+
+    # Terminal output formatting
+    "rich",
+
+    # Configuration file parsing
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "ruff",  # Linting
+]
+
+# Add provider-specific optional dependencies
+# openai = ["openai"]
+# ollama = ["ollama"]
+
+[project.scripts]
+# CLI entry point - customize the command name
+# Usage: your-cli --help
+your-cli = "cli:main"  # TODO: Change 'your-cli' to your command name
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mcp_servers", "agents"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "mcp_servers",
+    "agents",
+    "prompts",
+    "config",
+    "cli.py",
+]
+
+# Ruff linting configuration
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+
+# Pytest configuration
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

@@ -1,0 +1,41 @@
+# Application Configuration
+#
+# This is a template configuration file. Customize for your application.
+# Sensitive values (API keys, etc.) should be set via environment variables.
+
+app:
+  name: "Your Application"
+  version: "0.1.0"
+  debug: false
+
+# LLM Provider configuration
+provider:
+  # Default provider to use (poolside, openai, etc.)
+  default: "poolside"
+
+  # Default model (provider-specific)
+  # model: "malibu_agent_1201_2k"
+
+  # Maximum tokens for LLM responses
+  max_tokens: 3276
+
+# MCP Server settings
+mcp:
+  # Timeout for tool execution (seconds)
+  timeout: 30
+
+  # Number of retry attempts for failed operations
+  retry_attempts: 3
+
+# Logging configuration
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
+
+  # Log format
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Add your application-specific configuration below
+# custom:
+#   setting1: "value1"
+#   setting2: 42
