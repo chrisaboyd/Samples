@@ -46,13 +46,17 @@ class ScopeValidator:
 
         # Parse allowed targets
         for target in raw.get("allowed_targets", []):
-            for host in target.get("hosts", []):
+            if target is None:
+                continue
+            for host in target.get("hosts", []) or []:
                 allowed_hosts.add(host.lower())
-            for network in target.get("networks", []):
+            for network in target.get("networks", []) or []:
                 allowed_networks.append(ipaddress.ip_network(network, strict=False))
 
         # Parse blocked targets
-        for network in raw.get("blocked_targets", []):
+        for network in raw.get("blocked_targets", []) or []:
+            if network is None:
+                continue
             blocked_networks.append(ipaddress.ip_network(network, strict=False))
 
         return ScopeConfig(
