@@ -25,7 +25,6 @@ def get_provider(name: str, model: str | None = None) -> LLMProvider:
     """
     providers = {
         "anthropic": AnthropicProvider,
-        "claude": AnthropicProvider,  # alias
         "poolside": PoolsideProvider,
         "malibu": PoolsideProvider,  # alias
     }

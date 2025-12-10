@@ -225,7 +225,7 @@ def list_providers():
     console.print("\n[bold]Available LLM Providers:[/bold]\n")
 
     providers = [
-        ("anthropic", "Claude models (claude-sonnet-4-20250514, claude-opus-4-20250514)", "ANTHROPIC_API_KEY"),
+        ("anthropic", "Anthropic models (claude-sonnet-4-20250514, claude-opus-4-20250514)", "ANTHROPIC_API_KEY"),
         ("poolside", "Poolside models (malibu)", "POOLSIDE_API_KEY + POOLSIDE_BASE_URL"),
     ]
 

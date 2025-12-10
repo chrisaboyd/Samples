@@ -1,6 +1,6 @@
 # Security Scanner PoC
 
-AI-driven security scanning system using MCP (Model Context Protocol) and Claude.
+AI-driven security scanning system using MCP (Model Context Protocol).
 
 ## Quick Start
 

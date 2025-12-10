@@ -1,7 +1,7 @@
 """
-Anthropic (Claude) LLM Provider.
+Anthropic LLM Provider.
 
-This provider uses the Anthropic API to interact with Claude models.
+This provider uses the Anthropic API to interact with Anthropic models.
 """
 
 from anthropic import Anthropic
@@ -11,7 +11,7 @@ from .base import LLMProvider, LLMResponse, ToolCall
 
 class AnthropicProvider(LLMProvider):
     """
-    LLM Provider for Anthropic's Claude models.
+    LLM Provider for Anthropic's models.
 
     Requires ANTHROPIC_API_KEY environment variable to be set.
     """
