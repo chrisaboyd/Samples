@@ -1,0 +1,131 @@
+{# TODO: Implement Jinja2 template for Markdown report #}
+{# See ../README.md for expected structure #}
+
+# Security Assessment Report
+
+**Target:** {{ metadata.target }}
+**Scan ID:** {{ metadata.scan_id }}
+**Date:** {{ metadata.created_at | default('N/A') }}
+**Status:** {{ metadata.status }}
+
+---
+
+## Executive Summary
+
+{# TODO: Summary statistics #}
+- **Total Findings:** {{ findings | length }}
+- **Critical:** {{ severity_counts.critical | default(0) }}
+- **High:** {{ severity_counts.high | default(0) }}
+- **Medium:** {{ severity_counts.medium | default(0) }}
+- **Low:** {{ severity_counts.low | default(0) }}
+
+---
+
+## MITRE ATT&CK Coverage
+
+### Phases Covered
+- **Reconnaissance (TA0043)**: Passive information gathering
+- **Resource Development (TA0042)**: Vulnerability research and analysis
+
+### Phases NOT Covered
+> **Important:** This assessment did NOT include:
+> - **Initial Access / Exploitation (TA0001)**: No exploits were executed
+> - **Privilege Escalation (TA0004)**: No escalation attempted
+> - **Persistence (TA0003)**: No backdoors installed
+
+### Techniques Identified
+{% for technique in mitre_techniques %}
+- {{ technique }}
+{% else %}
+- No MITRE techniques mapped
+{% endfor %}
+
+---
+
+## Reconnaissance Findings
+
+{% for finding in recon_findings %}
+### {{ finding.tool | title }}
+- **Target:** {{ finding.target }}
+- **Timestamp:** {{ finding.timestamp }}
+
+{{ finding.data | tojson(indent=2) }}
+
+{% else %}
+No reconnaissance findings recorded.
+{% endfor %}
+
+---
+
+## Scanning Findings
+
+{% for finding in scan_findings %}
+### Port {{ finding.port }}/{{ finding.protocol }} - {{ finding.service }}
+- **Version:** {{ finding.version | default('Unknown') }}
+- **Tool:** {{ finding.tool }}
+
+{% else %}
+No scanning findings recorded.
+{% endfor %}
+
+---
+
+## Vulnerability Analysis
+
+{% for finding in analysis_findings %}
+### {{ finding.data.title | default('Finding ' ~ loop.index) }}
+
+{% for vuln in finding.vulnerabilities %}
+#### {{ vuln.cve_id | default('No CVE') }} - {{ vuln.title }}
+- **Severity:** {{ vuln.severity }} (CVSS: {{ vuln.cvss_score | default('N/A') }})
+- **Description:** {{ vuln.description }}
+
+**Available Exploits:**
+{% for exploit in vuln.exploits %}
+- [{{ exploit.source }}] {{ exploit.title }} ({{ exploit.type }})
+{% else %}
+- No known exploits
+{% endfor %}
+
+**Remediation:** {{ vuln.remediation | default('See vendor advisory') }}
+
+{% endfor %}
+{% else %}
+No vulnerability analysis performed.
+{% endfor %}
+
+---
+
+## Recommendations
+
+{# TODO: Prioritized recommendations #}
+
+### Immediate Actions (Critical/High)
+1. TODO: List critical remediations
+
+### Short-Term Actions (Medium)
+1. TODO: List medium-priority items
+
+### Long-Term Actions (Low/Hardening)
+1. TODO: List hardening recommendations
+
+---
+
+## Appendix
+
+### Methodology
+This assessment followed a structured approach:
+1. Passive reconnaissance to gather target information
+2. Active scanning to identify services and potential vulnerabilities
+3. Vulnerability analysis to research known CVEs and exploits
+4. Report generation to document findings
+
+### Tools Used
+{# TODO: List tools used #}
+
+### References
+{# TODO: List references #}
+
+---
+
+*Report generated at {{ generated_at }}*

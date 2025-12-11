@@ -11,7 +11,7 @@ from mcp.client.stdio import stdio_client
 from rich.console import Console
 from rich.panel import Panel
 
-from .providers import LLMProvider, AnthropicProvider
+from .providers import LLMProvider, AnthropicProvider, PoolsideProvider
 
 console = Console()
 
@@ -22,16 +22,16 @@ class BaseAgent(ABC):
     def __init__(
         self,
         provider: LLMProvider | None = None,
-        max_tokens: int = 4096,
+        max_tokens: int = 3276,
     ):
         """
         Initialize the agent.
 
         Args:
-            provider: LLM provider to use. Defaults to AnthropicProvider.
+            provider: LLM provider to use. Defaults to PoolsideProvider.
             max_tokens: Maximum tokens for LLM responses.
         """
-        self.provider = provider or AnthropicProvider()
+        self.provider = provider or PoolsideProvider()
         self.max_tokens = max_tokens
         self.system_prompt = self._load_system_prompt()
 

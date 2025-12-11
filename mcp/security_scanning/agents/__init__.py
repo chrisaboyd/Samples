@@ -1,10 +1,17 @@
 # Agents package
 from .scanner_agent import ScannerAgent
-from .providers import LLMProvider, AnthropicProvider, get_provider
+from .recon_agent import ReconAgent
+from .analysis_agent import AnalysisAgent
+from .orchestrator import OrchestratorAgent
+from .providers import LLMProvider, AnthropicProvider, PoolsideProvider, get_provider
 
 __all__ = [
     "ScannerAgent",
+    "ReconAgent",
+    "AnalysisAgent",
+    "OrchestratorAgent",
     "LLMProvider",
     "AnthropicProvider",
+    "PoolsideProvider",
     "get_provider",
 ]
