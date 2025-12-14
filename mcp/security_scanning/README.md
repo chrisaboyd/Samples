@@ -42,7 +42,7 @@ allowed_targets:
 ### 4. Set API Key
 
 ```bash
-export ANTHROPIC_API_KEY="your-key-here"
+export POOLSIDE_API_KEY="your-key-here"
 ```
 
 ### 5. Run a Scan
