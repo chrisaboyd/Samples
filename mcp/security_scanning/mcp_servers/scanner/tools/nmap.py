@@ -93,18 +93,20 @@ def parse_nmap_output(output: str) -> list[dict]:
             }
 
         # Port line: "21/tcp open ftp vsftpd 2.3.4"
-        elif current_host and "/tcp" in line or "/udp" in line:
+        elif current_host and ("/tcp" in line or "/udp" in line):
             parts = line.split()
             if len(parts) >= 3:
                 port_proto = parts[0].split("/")
-                port_info = {
-                    "port": int(port_proto[0]),
-                    "protocol": port_proto[1],
-                    "state": parts[1],
-                    "service": parts[2] if len(parts) > 2 else "unknown",
-                    "version": " ".join(parts[3:]) if len(parts) > 3 else None,
-                }
-                current_host["ports"].append(port_info)
+                # Ensure we have a valid port number
+                if len(port_proto) >= 2 and port_proto[0].isdigit():
+                    port_info = {
+                        "port": int(port_proto[0]),
+                        "protocol": port_proto[1],
+                        "state": parts[1],
+                        "service": parts[2] if len(parts) > 2 else "unknown",
+                        "version": " ".join(parts[3:]) if len(parts) > 3 else None,
+                    }
+                    current_host["ports"].append(port_info)
 
         # OS detection
         elif current_host and "OS details:" in line:

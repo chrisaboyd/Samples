@@ -54,7 +54,7 @@ def scan(target: str, mode: str, provider: str, model: str | None, verbose: bool
 
         scanner scan 192.168.56.101 --mode active -v
 
-        scanner scan 192.168.56.101 -p poolside -m malibu_agent_1201_2k
+        scanner scan 192.168.56.101 -p poolside -m agent_malibu_1201_2k
 
         scanner scan 192.168.56.101 -p openai -m gpt-4o
     """
@@ -236,7 +236,7 @@ def list_providers():
 
     providers = [
         ("anthropic", "Anthropic models (claude-sonnet-4-20250514, claude-opus-4-20250514)", "ANTHROPIC_API_KEY"),
-        ("poolside", "Poolside models (malibu_agent_1201_2k)", "POOLSIDE_API_KEY + POOLSIDE_BASE_URL"),
+        ("poolside", "Poolside models (agent_malibu_1201_2k)", "POOLSIDE_API_KEY + POOLSIDE_BASE_URL"),
     ]
 
     for name, models, env_var in providers:
@@ -244,6 +244,89 @@ def list_providers():
         console.print(f"  Models: {models}")
         console.print(f"  Env var: {env_var}")
         console.print()
+
+
+@main.command()
+@click.option(
+    "--provider",
+    "-p",
+    type=str,
+    default="poolside",
+    help="Provider to list models from",
+)
+def list_models(provider: str):
+    """List available models from a provider."""
+    import httpx
+    import os
+    from rich.table import Table
+
+    if provider.lower() != "poolside":
+        console.print(f"[red]Model listing only supported for Poolside provider currently.[/red]")
+        return
+
+    # Get API credentials
+    api_key = os.environ.get("POOLSIDE_API_KEY")
+    base_url = (os.environ.get("POOLSIDE_BASE_URL") or "https://poolside.poolside.local").rstrip("/")
+
+    if not api_key:
+        console.print("[red]Error: POOLSIDE_API_KEY environment variable not set.[/red]")
+        return
+
+    console.print(f"\n[bold]Fetching models from {base_url}...[/bold]\n")
+
+    try:
+        url = f"{base_url}/v0/admin/models"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Accept": "application/json",
+        }
+
+        with httpx.Client(timeout=30.0) as client:
+            response = client.get(url, headers=headers)
+            response.raise_for_status()
+            data = response.json()
+
+        models = data.get("models", [])
+
+        if not models:
+            console.print("[yellow]No models found.[/yellow]")
+            return
+
+        # Create a table
+        table = Table(title="Available Poolside Models", show_lines=True)
+        table.add_column("Name", style="cyan", no_wrap=True)
+        table.add_column("Type", style="magenta")
+        table.add_column("Status", style="green")
+        table.add_column("Default", style="yellow")
+        table.add_column("Capabilities", style="blue")
+        table.add_column("Context Length", style="white")
+
+        for model in models:
+            name = model.get("name", "N/A")
+            model_type = model.get("type", "N/A")
+            status = model.get("status", "N/A")
+            is_default = "✓" if model.get("is_default", False) else ""
+
+            metadata = model.get("metadata", {})
+            capabilities = ", ".join(metadata.get("capabilities", []))
+            context_length = str(metadata.get("context_length", "N/A"))
+
+            table.add_row(
+                name,
+                model_type,
+                status,
+                is_default,
+                capabilities,
+                context_length,
+            )
+
+        console.print(table)
+        console.print(f"\n[dim]Total models: {len(models)}[/dim]")
+
+    except httpx.HTTPStatusError as e:
+        console.print(f"[red]HTTP Error {e.response.status_code}: {e.response.text}[/red]")
+    except Exception as e:
+        console.print(f"[red]Error fetching models: {e}[/red]")
 
 
 # --- New Orchestrated Assessment Commands ---

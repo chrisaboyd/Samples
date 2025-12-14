@@ -27,7 +27,7 @@ class PoolsideProvider(LLMProvider):
 
     def __init__(
         self,
-        model: str = "malibu_agent_1201_2k",
+        model: str = "agent_malibu_1201_2k",
         base_url: str | None = None,
         api_key: str | None = None,
         timeout: float = 120.0,
@@ -36,7 +36,7 @@ class PoolsideProvider(LLMProvider):
         Initialize the Poolside provider.
 
         Args:
-            model: Model to use (default: "malibu_agent_1201_2k")
+            model: Model to use (default: "agent_malibu_1201_2k")
             base_url: API base URL (default: from POOLSIDE_BASE_URL env or https://poolside.poolside.local)
             api_key: API key (default: from POOLSIDE_API_KEY env)
             timeout: Request timeout in seconds
@@ -96,7 +96,7 @@ class PoolsideProvider(LLMProvider):
         # Make API request
         url = f"{self._base_url}/openai/v1/chat/completions"
         headers = {
-            "Authorization": f"bearer {self._api_key}",
+            "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",
             "Accept": "application/json, application/problem+json",
         }
