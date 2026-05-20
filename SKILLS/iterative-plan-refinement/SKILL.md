@@ -2,7 +2,7 @@
 name: iterative-plan-refinement
 description: Iteratively refine plans or projects using two models (primary and rubber duck) in a feedback loop. Use when users want to develop, review, and improve ideas, plans, or projects through structured multi-model collaboration. Triggers on requests like "review this plan", "iterate on this idea", "rubber duck planning", "multi-model review", "collaborative planning".
 metadata:
-  version: "0.1.0"
+  version: "0.3.0"
 ---
 
 # Iterative Plan Refinement
@@ -215,6 +215,36 @@ This skill triggers automatically when user requests contain keywords like:
 ### Explicit Invocation
 
 Ask explicitly: "Use the iterative-plan-refinement skill to develop my idea"
+
+Or specify a model: "Review this plan using claude-sonnet-4.6"
+
+### Using Within Poolside TUI
+
+**When you're in a Poolside TUI session and want to use a secondary model:**
+
+The skill uses the `pool` CLI binary to invoke cross-model calls. This works because:
+
+1. The `pool` binary has access to your Poolside credentials
+2. It can invoke any registered agent/model via `-a <model-name>`
+3. The skill uses `--unsafe-auto-allow` for non-interactive execution
+
+**How it works:**
+```bash
+# The skill internally runs:
+pool -a anthropic/claude-sonnet-4.6 -f <prompt_file> --unsafe-auto-allow -o markdown
+```
+
+**Specify a model from within the skill:**
+
+```bash
+# CLI override
+python scripts/iterative_plan_refinement.py -p "Build X" --provider pool --model "anthropic/claude-opus-4.6"
+
+# Or inline in your prompt
+python scripts/iterative_plan_refinement.py -p "Build X using claude-opus-4.6"
+```
+
+**Available models:** Run `pool agents list` to see all available models
 
 ### Portability
 

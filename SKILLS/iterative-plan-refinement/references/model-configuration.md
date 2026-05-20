@@ -168,3 +168,84 @@ If no rubber duck model is configured:
 3. Review quality depends on the primary model's ability to simulate feedback
 
 This ensures the skill always works, even without external model access.
+
+## Using the Helper Script
+
+The `scripts/iterative_plan_refinement.py` helper script provides additional ways to specify models:
+
+### Priority Order (highest to lowest)
+1. **CLI arguments**: `--provider` and `--model` flags
+2. **Inline prompt specification**: "using claude-sonnet-4.6" in your prompt
+3. **Environment variables**: `RUBBER_DUCK_PROVIDER` and `RUBBER_DUCK_MODEL`
+4. **Simulation mode**: Fallback when nothing is configured
+
+### CLI Examples
+```bash
+# Use CLI overrides
+python scripts/iterative_plan_refinement.py -p "Build X" --provider anthropic --model claude-3-5-sonnet-20241022
+
+# Check current configuration
+python scripts/iterative_plan_refinement.py --status
+
+# Use inline specification from prompt
+python scripts/iterative_plan_refinement.py -p "Build X using claude-sonnet-4.6"
+```
+
+### Inline Specification Patterns
+The skill parses these patterns from prompts:
+- `"using claude-sonnet-4.6"` → anthropic provider, claude-3-5-sonnet-20241022
+- `"with gpt-4-turbo"` → openai provider, gpt-4-turbo
+- `"using anthropic/claude-opus-4.6"` → anthropic provider (with alias mapping)
+
+### Poolside Model Aliases
+When using Poolside-specific model names, they're automatically mapped:
+- `claude-sonnet-4.6` → `claude-3-5-sonnet-20241022`
+- `claude-opus-4.6` → `claude-3-opus-20240229`
+- `claude-haiku-4.6` → `claude-3-5-haiku-20241022`
+
+## Calling Models from Shell/TUI
+
+### Can the skill call another model from within shell/TUI?
+
+**Yes, but with limitations:**
+
+1. **The `poolside` Python package** must be available in the shell environment
+   - If you see "Poolside model_pool not available", the package isn't installed
+   - The skill falls back to simulation mode in this case
+
+2. **For direct API calls** (OpenAI, Anthropic), you need:
+   - API keys set in environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`)
+   - The respective Python packages installed (`anthropic`, `openai`)
+
+3. **Shell invocation works** because it can:
+   - Run Python scripts with `python3`
+   - Make HTTP requests with `curl`
+   - Use any model accessible via standard APIs
+
+### Example: Direct curl to Anthropic API
+
+```bash
+# From shell, you can call models directly
+curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "content-type: application/json" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "claude-3-5-sonnet-20241022",
+    "max_tokens": 1000,
+    "messages": [{"role": "user", "content": "Review this plan..."}]
+  }'
+```
+
+### Testing Model Connectivity
+
+Use the `--status` flag to verify your configuration:
+
+```bash
+python scripts/iterative_plan_refinement.py --status
+```
+
+This shows:
+- Which provider/model will be used
+- Whether API keys are detected
+- If you're in simulation mode
