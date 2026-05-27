@@ -4,6 +4,7 @@ import asyncio
 import csv
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 from typing import Optional
 
@@ -27,20 +28,41 @@ app = typer.Typer(
 console = Console()
 
 
-def compact_table(title: str, *columns: tuple[str, str]) -> Table:
+def compact_table(title: str, *columns: tuple) -> Table:
     """Create a compact table with minimal padding.
 
     Args:
         title: Table title
-        columns: Tuples of (column_name, style) for each column
+        columns: Tuples of (column_name, style, options) for each column.
+                 Options is an optional dict with keys like 'max_width', 'overflow'.
 
     Returns:
         Configured Table instance with compact styling
     """
     table = Table(title=title, pad_edge=False, collapse_padding=True)
-    for col_name, style in columns:
-        table.add_column(col_name, style=style)
+    for col_name, style, *opts in columns:
+        kwargs = {"style": style}
+        if opts and opts[0]:
+            kwargs.update(opts[0])
+        table.add_column(col_name, **kwargs)
     return table
+
+
+def display_count_summary(item_name: str, items: list, count_attr: str = None) -> None:
+    """Display a count summary after a table.
+
+    Args:
+        item_name: Singular name for the item (e.g., "Teams", "Users")
+        items: List of items to count
+        count_attr: Optional attribute to group counts by (e.g., "status")
+    """
+    total = len(items)
+    if count_attr:
+        counts = Counter(getattr(item, count_attr, None) or "unknown" for item in items)
+        summary_parts = [f"{count} {name}" for name, count in sorted(counts.items())]
+        console.print(f"[dim]{' • '.join(summary_parts)}[/dim]")
+    else:
+        console.print(f"[dim]{item_name}: {total}[/dim]")
 
 # Global state for environment profile
 _env_profile: Optional[str] = None
@@ -234,15 +256,19 @@ def _display_sync_plan(plan):
         console.print("\n[bold]Sync Plan:[/bold] No team specified")
 
     if plan.users_to_create:
-        table = compact_table("Users to Create", ("Email", "cyan"), ("Name", "green"))
+        table = compact_table(
+            "Users to Create",
+            ("Email", "cyan", {"max_width": 35, "overflow": "ignore"}),
+            ("Name", "green", {"max_width": 12, "overflow": "ignore"}),
+        )
         for u in plan.users_to_create:
             table.add_row(u["email"], u.get("name", "-"))
         console.print(table)
 
     if plan.users_to_update:
-        table = compact_table("Users to Update", ("ID", "dim"), ("Name", "green"))
+        table = compact_table("Users to Update", ("ID", "dim", {"max_width": 12, "overflow": "ellipsis"}), ("Name", "green", {"max_width": 12, "overflow": "ignore"}))
         for u in plan.users_to_update:
-            table.add_row(u["id"][:8] + "...", u["name"])
+            table.add_row(u["id"], u["name"])
         console.print(table)
 
     if plan.user_ids_to_remove:
@@ -285,10 +311,17 @@ def user_cmd(
     async def run(client: PoolsideIdentityClient):
         if action == "list":
             users = await client.list_users()
-            table = compact_table("Users", ("ID", "dim"), ("Email", "cyan"), ("Name", "green"), ("Status", "yellow"))
+            table = compact_table(
+                "Users",
+                ("ID", "dim", {"max_width": 12, "overflow": "ellipsis"}),
+                ("Email", "cyan", {"max_width": 35, "overflow": "ignore"}),
+                ("Name", "green", {"max_width": 12, "overflow": "ignore"}),
+                ("Status", "yellow", {"max_width": 10}),
+            )
             for u in users:
-                table.add_row(u.id[:8] + "...", u.email, u.name or "-", u.status)
+                table.add_row(u.id, u.email, u.name or "-", u.status)
             console.print(table)
+            display_count_summary("Users", users, count_attr="status")
 
         elif action == "create":
             if not email:
@@ -310,7 +343,13 @@ def user_cmd(
                 raise typer.Exit(1)
             try:
                 user = await client.get_user(user_id)
-                table = compact_table("User", ("ID", "dim"), ("Email", "cyan"), ("Name", "green"), ("Status", "yellow"))
+                table = compact_table(
+                    "User",
+                    ("ID", "dim"),
+                    ("Email", "cyan", {"max_width": 35, "overflow": "ignore"}),
+                    ("Name", "green", {"max_width": 12, "overflow": "ignore"}),
+                    ("Status", "yellow", {"max_width": 10}),
+                )
                 table.add_row(user.id, user.email, user.name or "-", user.status)
                 console.print(table)
             except Exception as e:
@@ -341,10 +380,15 @@ def team_cmd(
     async def run(client: PoolsideIdentityClient):
         if action == "list":
             teams = await client.list_teams()
-            table = compact_table("Teams", ("ID", "dim"), ("Name", "cyan"))
+            table = compact_table(
+                "Teams",
+                ("ID", "dim", {"max_width": 12, "overflow": "ellipsis"}),
+                ("Name", "cyan", {"max_width": 20, "overflow": "ignore"}),
+            )
             for t in teams:
-                table.add_row(t.id[:8] + "...", t.name)
+                table.add_row(t.id, t.name)
             console.print(table)
+            display_count_summary("Teams", teams)
 
         elif action == "members":
             if not identifier:
@@ -355,10 +399,16 @@ def team_cmd(
                 console.print(f"[red]Error:[/red] Team not found: {identifier}")
                 raise typer.Exit(1)
             members = await client.list_team_members(team.id)
-            table = compact_table(f"Members of {team.name}", ("Email", "cyan"), ("Name", "green"), ("Status", "yellow"))
+            table = compact_table(
+                f"Members of {team.name}",
+                ("Email", "cyan", {"max_width": 35, "overflow": "ignore"}),
+                ("Name", "green", {"max_width": 12, "overflow": "ignore"}),
+                ("Status", "yellow", {"max_width": 10}),
+            )
             for m in members:
                 table.add_row(m.email, m.name or "-", m.status or "active")
             console.print(table)
+            display_count_summary("Users", members, count_attr="status")
 
         else:
             console.print(f"[red]Error:[/red] Unknown action: {action}")
