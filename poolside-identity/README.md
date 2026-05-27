@@ -31,6 +31,30 @@ export POOLSIDE_API_BASE="https://api.poolside.ai"  # Your Poolside API URL
 export POOLSIDE_API_KEY="your-api-key"               # Service account API key
 ```
 
+### Environment Profiles
+
+If you have multiple Poolside environments (e.g., production and sandbox), you can configure profiles in your `.env` file:
+
+```bash
+# Production (default)
+POOLSIDE_API_BASE=https://chat.poolsi.de
+POOLSIDE_API_KEY=your-production-key
+
+# Sandbox environment
+POOLSIDE_API_BASE_SANDBOX=https://combine-sandbox.poolsi.de
+POOLSIDE_API_KEY_SANDBOX=your-sandbox-key
+```
+
+Use the `--env` flag to target a specific profile:
+
+```bash
+# Use production (default, or when POOLSIDE_API_BASE/POOLSIDE_API_KEY are set)
+poolside-id team list
+
+# Use sandbox profile
+poolside-id --env sandbox team members admins
+```
+
 ## CLI Usage
 
 ### List Teams
@@ -48,8 +72,11 @@ poolside-id team members engineering
 ### Sync Users (Dry-Run Preview)
 
 ```bash
-# Preview changes without making them
+# Preview changes without making them (single team mode)
 poolside-id sync engineering users.csv
+
+# Multi-team mode (omit team argument, specify teams per user in file)
+poolside-id sync users-multi-team.csv
 
 # With JSON input
 poolside-id sync engineering users.json
@@ -61,6 +88,19 @@ poolside-id sync engineering users.json
 # Apply the changes
 poolside-id sync engineering users.csv --execute
 ```
+
+### Multi-Team Sync
+
+When syncing multiple teams, omit the team argument and include a `teams` column in your file:
+
+```csv
+email,name,teams
+user1@example.com,User One,team-a,team-b
+user2@example.com,User Two,team-a
+user3@example.com,User Three,team-b
+```
+
+Each user will be added to their specified teams. Users not in the desired list for a team will be removed.
 
 ### Create a User
 
@@ -82,12 +122,27 @@ poolside-id user delete --id <user-id>
 
 ## Input File Formats
 
-### CSV Format
+### CSV Format (with headers)
 
 ```csv
 email,name
 alice@example.com,Alice Smith
 bob@example.com,Bob Jones
+```
+
+### CSV Format (without headers)
+
+```csv
+alice@example.com,Alice Smith
+bob@example.com,Bob Jones
+```
+
+### CSV Format (multi-team)
+
+```csv
+email,name,teams
+alice@example.com,Alice Smith,engineering,product
+bob@example.com,Bob Jones,engineering
 ```
 
 ### JSON Format
@@ -96,6 +151,15 @@ bob@example.com,Bob Jones
 [
   {"email": "alice@example.com", "name": "Alice Smith"},
   {"email": "bob@example.com", "name": "Bob Jones"}
+]
+```
+
+### JSON Format (multi-team)
+
+```json
+[
+  {"email": "alice@example.com", "name": "Alice Smith", "teams": ["engineering", "product"]},
+  {"email": "bob@example.com", "name": "Bob Jones", "teams": ["engineering"]}
 ]
 ```
 

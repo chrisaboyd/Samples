@@ -5,7 +5,7 @@ import pytest_httpx
 
 from poolside_identity import PoolsideIdentityClient
 from poolside_identity.exceptions import NotFoundError
-from poolside_identity.models import User, Team, BulkStats
+from poolside_identity.models import TeamMember, User, Team, BulkStats
 
 
 @pytest.fixture
@@ -134,6 +134,41 @@ class TestPoolsideIdentityClient:
         assert teams[0].name == "Engineering"
 
     @pytest.mark.asyncio
+    async def test_list_team_members_success(self, client, httpx_mock):
+        """Test listing team members."""
+        httpx_mock.add_response(
+            json={
+                "users": [
+                    {"id": "user-123", "email": "member@example.com", "name": "Team Member"},
+                ],
+                "links": {"next": None},
+            }
+        )
+
+        members = await client.list_team_members("team-123")
+        assert len(members) == 1
+        assert isinstance(members[0], TeamMember)
+        assert members[0].email == "member@example.com"
+
+    @pytest.mark.asyncio
+    async def test_list_team_members_with_schema(self, client, httpx_mock):
+        """Test listing team members with schema field (sandbox format)."""
+        httpx_mock.add_response(
+            json={
+                "users": [
+                    {"id": "user-456", "email": "sandbox@example.com", "name": "Sandbox User"},
+                ],
+                "links": {"next": None},
+                "$schema": "https://combine-sandbox.poolsi.de/schemas/ListTeamMembersPage.json",
+            }
+        )
+
+        members = await client.list_team_members("team-456")
+        assert len(members) == 1
+        assert isinstance(members[0], TeamMember)
+        assert members[0].id == "user-456"
+
+    @pytest.mark.asyncio
     async def test_set_team_members_success(self, client, httpx_mock):
         """Test setting team members."""
         httpx_mock.add_response(
@@ -186,3 +221,59 @@ class TestPoolsideIdentityClient:
 
         with pytest.raises(NotFoundError):
             await client.resolve_team("NonExistent")
+
+
+class TestTeamMember:
+    """Tests for TeamMember model."""
+
+    def test_team_member_required_fields(self):
+        """Test TeamMember requires only id and email."""
+        member = TeamMember(id="user-123", email="test@example.com")
+        assert member.id == "user-123"
+        assert member.email == "test@example.com"
+        assert member.status is None
+        assert member.name is None
+
+    def test_team_member_optional_fields(self):
+        """Test TeamMember accepts optional fields."""
+        member = TeamMember(
+            id="user-123",
+            email="test@example.com",
+            name="Test User",
+            status="active",
+        )
+        assert member.name == "Test User"
+        assert member.status == "active"
+
+    def test_team_member_ignores_extra_fields(self):
+        """Test TeamMember ignores extra fields like $schema."""
+        member = TeamMember(
+            id="user-123",
+            email="test@example.com",
+            extra_field="ignored",
+        )
+        assert not hasattr(member, "extra_field")
+
+
+class TestGetClientFromEnv:
+    """Tests for get_client_from_env with profile support."""
+
+    def test_default_env_variables(self, monkeypatch):
+        """Test default environment variables are used."""
+        monkeypatch.setenv("POOLSIDE_API_BASE", "https://api.example.com")
+        monkeypatch.setenv("POOLSIDE_API_KEY", "test-key")
+
+        from poolside_identity.client import get_client_from_env
+        client = get_client_from_env()
+        assert client.base_url == "https://api.example.com"
+
+    def test_sandbox_profile_env_variables(self, monkeypatch):
+        """Test sandbox profile environment variables are used."""
+        monkeypatch.setenv("POOLSIDE_API_BASE", "https://api.example.com")
+        monkeypatch.setenv("POOLSIDE_API_KEY", "production-key")
+        monkeypatch.setenv("POOLSIDE_API_BASE_SANDBOX", "https://sandbox.example.com")
+        monkeypatch.setenv("POOLSIDE_API_KEY_SANDBOX", "sandbox-key")
+
+        from poolside_identity.client import get_client_from_env
+        client = get_client_from_env(env="sandbox")
+        assert client.base_url == "https://sandbox.example.com"

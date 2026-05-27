@@ -26,6 +26,7 @@ from poolside_identity.models import (
     SyncPlan,
     SyncResult,
     Team,
+    TeamMember,
     User,
     UserIdentifiers,
 )
@@ -36,6 +37,7 @@ __all__ = [
     "get_client_from_env",
     "User",
     "Team",
+    "TeamMember",
     "BulkStats",
     "UserIdentifiers",
     "ListUsersPage",

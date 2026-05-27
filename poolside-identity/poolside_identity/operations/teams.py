@@ -5,6 +5,7 @@ from typing import Optional
 from poolside_identity.models import (
     BulkStats,
     Team,
+    TeamMember,
     User,
     UserIdentifiers,
 )
@@ -85,7 +86,7 @@ async def find_team_by_name(client, identifier: str) -> Optional[Team]:
     return None
 
 
-async def list_team_members(client, team_id: str) -> list[User]:
+async def list_team_members(client, team_id: str) -> list[TeamMember]:
     """List members of a team.
 
     Args:
@@ -93,12 +94,12 @@ async def list_team_members(client, team_id: str) -> list[User]:
         team_id: The team's unique identifier
 
     Returns:
-        List of User objects who are team members
+        List of TeamMember objects who are team members
     """
     response = await client._request("GET", f"/poolside/v1/teams/{team_id}/members")
-    from poolside_identity.models import ListUsersPage
+    from poolside_identity.models import ListTeamMembersPage
 
-    page = ListUsersPage.model_validate(response)
+    page = ListTeamMembersPage.model_validate(response)
     return page.users
 
 

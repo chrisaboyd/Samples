@@ -1,6 +1,7 @@
 """Poolside Identity V1 API client."""
 
 import os
+from pathlib import Path
 from typing import Optional
 
 import httpx
@@ -13,6 +14,7 @@ from poolside_identity.exceptions import (
 from poolside_identity.models import (
     BulkStats,
     Team,
+    TeamMember,
     UpdateUserBody,
     User,
 )
@@ -245,7 +247,7 @@ class PoolsideIdentityClient:
             raise NotFoundError(f"Team not found: {identifier}")
         return team.id
 
-    async def list_team_members(self, team_id: str) -> list[User]:
+    async def list_team_members(self, team_id: str) -> list[TeamMember]:
         """List team members."""
         return await teams.list_team_members(self, team_id)
 
@@ -262,12 +264,25 @@ class PoolsideIdentityClient:
         return await teams.remove_team_members(self, team_id, user_ids)
 
 
-def get_client_from_env() -> PoolsideIdentityClient:
+def get_client_from_env(env: Optional[str] = None) -> PoolsideIdentityClient:
     """Create a client from environment variables.
 
     Required environment variables:
         POOLSIDE_API_BASE: Base URL for the Poolside API
         POOLSIDE_API_KEY: API key for authentication
+
+    For environment profiles (e.g., sandbox, production):
+        POOLSIDE_API_BASE_SANDBOX: Sandbox base URL
+        POOLSIDE_API_KEY_SANDBOX: Sandbox API key
+
+    This function automatically loads environment variables from:
+        1. .env file in the current working directory
+        2. ~/.env file in your home directory
+
+    Args:
+        env: Optional environment profile name (e.g., "sandbox", "production").
+             When provided, looks for POOLSIDE_API_BASE_{PROFILE} and
+             POOLSIDE_API_KEY_{PROFILE} first.
 
     Returns:
         Configured PoolsideIdentityClient
@@ -275,10 +290,61 @@ def get_client_from_env() -> PoolsideIdentityClient:
     Raises:
         APIKeyError: If required environment variables are missing
     """
-    base_url = os.getenv("POOLSIDE_API_BASE")
-    api_key = os.getenv("POOLSIDE_API_KEY")
+    # Auto-load .env files for convenience
+    try:
+        from dotenv import load_dotenv
+
+        # Load .env from current directory (if exists)
+        load_dotenv(".env", override=False)
+        # Also check ~/.env as a fallback
+        load_dotenv(Path.home() / ".env", override=False)
+    except ImportError:
+        pass  # python-dotenv not available, use existing env vars
+
+    # Determine env prefix for profile-specific variables
+    env_upper = env.upper() if env else None
+    prefix = f"POOLSIDE_API_"
+
+    # Try profile-specific variables first if env is provided
+    if env_upper:
+        base_url = (
+            os.getenv(f"{prefix}BASE_{env_upper}")
+            or os.getenv(f"{prefix}BASE_URL_{env_upper}")
+            or os.getenv(f"POOLSIDE_BASE_URL_{env_upper}")
+            or os.getenv(f"POOLSIDE_BASE_{env_upper}")
+        )
+        api_key = os.getenv(f"{prefix}KEY_{env_upper}")
+
+        # If profile-specific variables not found but default env vars exist, don't fall back
+        # This ensures invalid profiles error out instead of silently using defaults
+        if not base_url or not api_key:
+            if not base_url:
+                raise APIKeyError(
+                    f"POOLSIDE_API_BASE_{env_upper} environment variable is required for profile '{env}'. "
+                    f"Set it or create a .env file with POOLSIDE_API_BASE_{env_upper}=<url>"
+                )
+            if not api_key:
+                raise APIKeyError(
+                    f"POOLSIDE_API_KEY_{env_upper} environment variable is required for profile '{env}'. "
+                    f"Set it or create a .env file with POOLSIDE_API_KEY_{env_upper}=<key>"
+                )
+    else:
+        base_url = None
+        api_key = None
+
+    # Fall back to default variables (only when no profile specified)
+    base_url = base_url or os.getenv("POOLSIDE_API_BASE") or os.getenv("POOLSIDE_BASE_URL")
+    api_key = api_key or os.getenv("POOLSIDE_API_KEY")
 
     if not base_url:
-        raise APIKeyError("POOLSIDE_API_BASE environment variable is required")
+        if env:
+            raise APIKeyError(
+                f"POOLSIDE_API_BASE_{env_upper} environment variable is required for profile '{env}'. "
+                f"Set it or create a .env file with POOLSIDE_API_BASE_{env_upper}=<url>"
+            )
+        raise APIKeyError(
+            "POOLSIDE_API_BASE environment variable is required. "
+            "Set it or create a .env file with POOLSIDE_API_BASE=<url>"
+        )
 
     return PoolsideIdentityClient(base_url=base_url, api_key=api_key)

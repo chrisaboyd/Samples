@@ -40,7 +40,7 @@ async def list_users(
 
     while next_url:
         response = await client._request("GET", next_url, params=params)
-        raw_items = response.get("users", [])
+        raw_items = response.get("users") or []
         items.extend([User.model_validate(item) for item in raw_items])
 
         next_url = response.get("links", {}).get("next")

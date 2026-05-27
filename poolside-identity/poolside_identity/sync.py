@@ -44,6 +44,10 @@ async def plan_sync(
 
         if team_identifier:
             # Single team mode - all users go into the specified team
+            team = await client.find_team(team_identifier)
+            if team:
+                plan.team_name = team.name
+                plan.team_id = team.id
             team_id = await client.resolve_team(team_identifier)
             if team_id not in team_membership:
                 team_membership[team_id] = []
@@ -56,6 +60,20 @@ async def plan_sync(
                     if team.id not in team_membership:
                         team_membership[team.id] = []
                     team_membership[team.id].append({"email": email, "name": name})
+                else:
+                    # Team not found in multi-team mode - this is an error
+                    from poolside_identity.exceptions import NotFoundError
+                    raise NotFoundError(f"Team not found: {team_name}")
+
+    # For single-team mode, always initialize the team membership even if user_data is empty
+    # This allows us to compute what members to remove when syncing an empty user list
+    if team_identifier and not team_membership:
+        team = await client.find_team(team_identifier)
+        if team:
+            plan.team_name = team.name
+            plan.team_id = team.id
+        team_id = await client.resolve_team(team_identifier)
+        team_membership[team_id] = []
 
     # For each team, calculate what needs to change
     for team_id, team_users in team_membership.items():
@@ -95,6 +113,10 @@ async def plan_sync(
             "user_ids_to_remove": user_ids_to_remove,
         }
 
+        # For single-team mode, also set user_ids_to_remove on the plan for display
+        if team_identifier:
+            plan.user_ids_to_remove = user_ids_to_remove
+
     return plan
 
 
@@ -103,6 +125,7 @@ async def execute_sync(
     team_identifier: Optional[str] = None,
     user_data: Optional[list[dict]] = None,
     create_missing: bool = True,
+    force_empty: bool = False,
 ) -> SyncResult:
     """Execute a sync operation.
 
@@ -113,6 +136,7 @@ async def execute_sync(
         team_identifier: Single team name or ID (for backward compatibility)
         user_data: List of user dicts with 'email' and optional 'name', 'teams'
         create_missing: Whether to create users that don't exist
+        force_empty: Allow sync to result in empty team membership
 
     Returns:
         SyncResult with execution statistics
@@ -146,6 +170,14 @@ async def execute_sync(
     total_removed = 0
 
     for team_id, team_plan in plan.team_syncs.items():
+        # Safety check: Warn if this would wipe all team members
+        if not team_plan["user_ids_to_add"] and team_plan["user_ids_to_remove"] and not force_empty:
+            # This would result in an empty team - warn but allow it
+            from poolside_identity.exceptions import PoolsideIdentityError
+            raise PoolsideIdentityError(
+                f"Sync would remove all members from team. Use --force-empty to confirm destructive team wipe."
+            )
+
         if team_plan["user_ids_to_add"] or team_plan["user_ids_to_remove"]:
             memberships = await teams.set_team_members(
                 client,

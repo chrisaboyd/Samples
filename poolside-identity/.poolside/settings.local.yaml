@@ -1,0 +1,10 @@
+tools:
+    shell:
+        allow:
+            - poolside-id team members *
+            - cd *
+            - .venv/bin/python *
+paths:
+    allow:
+        - path: /Users/chris.boyd/gitrepos/Samples/poolside-identity/poolside_identity/**
+          write: true

@@ -89,6 +89,28 @@ class ListTeamsPage(BaseModel):
     links: Links
 
 
+class TeamMember(BaseModel):
+    """Represents a user in team member context (may have fewer fields)."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    id: str
+    email: EmailStr
+    status: Optional[Literal["created", "active", "suspended", "deleted"]] = None
+    name: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+
+class ListTeamMembersPage(BaseModel):
+    """Paginated list of team members."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    users: list[TeamMember]
+    links: Optional[Links] = None
+
+
 class CreateUserBody(BaseModel):
     """Request body for creating a user."""
 
@@ -120,7 +142,7 @@ class UserIdentifiers(BaseModel):
 class BulkStats(BaseModel):
     """Result of bulk membership operations."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     added: int
     removed: int
@@ -153,12 +175,18 @@ class SyncPlan(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    # Team identifier for single-team mode (used for display)
+    team_name: Optional[str] = None
+    team_id: Optional[str] = None
+
     # Per-team sync plans
     team_syncs: dict[str, dict] = {}  # team_id -> {user_ids_to_add, user_ids_to_remove}
     # Users to create (with optional team assignments)
     users_to_create: list[dict] = []
     # Users to update
     users_to_update: list[dict] = []
+    # User IDs to remove (for single-team mode display)
+    user_ids_to_remove: list[str] = []
 
 
 class SyncResult(BaseModel):
