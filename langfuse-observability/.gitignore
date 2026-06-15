@@ -1,0 +1,4 @@
+# Generated locally; contains real secrets. Never commit.
+values-secret.yaml
+tls.crt
+tls.key

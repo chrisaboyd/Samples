@@ -1,0 +1,22 @@
+# Overlay applied on top of the litellm-helm chart's own values to route LiteLLM
+# request/response logs into Langfuse. Deep-merges with the chart defaults, so the
+# existing model_list and general_settings are preserved.
+#
+#   helm upgrade litellm <path-to>/deploy/charts/litellm-helm \
+#     --namespace litellm \
+#     --reuse-values \
+#     -f litellm-langfuse-values.yaml
+#
+# LANGFUSE_PUBLIC_KEY / LANGFUSE_SECRET_KEY are injected from the litellm-langfuse
+# secret (environmentSecrets). LANGFUSE_HOST points at the in-cluster service so
+# traffic never leaves the namespace (no TLS/DNS dependency).
+
+proxy_config:
+  litellm_settings:
+    success_callback: ["langfuse"]
+
+envVars:
+  LANGFUSE_HOST: "http://langfuse-web.litellm.svc.cluster.local:3000"
+
+environmentSecrets:
+  - litellm-langfuse
