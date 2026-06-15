@@ -1,0 +1,142 @@
+# Langfuse Helm values for the poolside-c2e-march EKS cluster.
+# Deployed into the existing `litellm` namespace alongside LiteLLM.
+#
+# This file contains NO secrets. Secrets (salt, nextauth secret, encryption key,
+# and the datastore passwords) live in values-secret.yaml, which is gitignored and
+# generated locally. Deploy with both files:
+#
+#   helm upgrade --install langfuse langfuse/langfuse \
+#     --namespace litellm \
+#     -f values.yaml -f values-secret.yaml
+#
+# Chart: langfuse/langfuse 1.5.34 (Langfuse app v3.179.1)
+
+global:
+  # The bundled datastores use the bitnamilegacy/* images (Bitnami moved the free
+  # tags there after their 2025 registry migration). This flag must stay true to
+  # allow those images.
+  security:
+    allowInsecureImages: true
+  # Only `gp2` (EBS) exists on this cluster and it is not marked default, so pin it
+  # for every subchart PVC.
+  defaultStorageClass: gp2
+
+langfuse:
+  nodeEnv: production
+
+  # Canonical browser URL. Must match the ingress host and TLS cert SAN.
+  nextauth:
+    url: https://langfuse.poolsi.de
+    secret:
+      value: "" # set in values-secret.yaml
+
+  salt:
+    value: "" # set in values-secret.yaml
+  encryptionKey:
+    value: "" # set in values-secret.yaml
+
+  features:
+    telemetryEnabled: true
+    # Leave sign-up open so you can create the first admin user in the browser,
+    # then set this to true and re-deploy to lock it down.
+    signUpDisabled: false
+
+  # Headless initialization: seed an org, project, admin user, and a deterministic
+  # API key pair on first boot so the deploy is reproducible and LiteLLM can be wired
+  # without clicking through the UI. The sensitive values (project keys + admin
+  # password) come from the `langfuse-init` secret via additionalEnvFrom.
+  # See https://langfuse.com/self-hosting/headless-initialization
+  additionalEnv:
+    - name: LANGFUSE_INIT_ORG_ID
+      value: "litellm-observability"
+    - name: LANGFUSE_INIT_ORG_NAME
+      value: "LiteLLM Observability"
+    - name: LANGFUSE_INIT_PROJECT_ID
+      value: "litellm-proxy"
+    - name: LANGFUSE_INIT_PROJECT_NAME
+      value: "litellm-proxy"
+    - name: LANGFUSE_INIT_USER_EMAIL
+      value: "admin@poolsi.de"
+    - name: LANGFUSE_INIT_USER_NAME
+      value: "Langfuse Admin"
+  additionalEnvFrom:
+    - secretRef:
+        name: langfuse-init
+
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      # Langfuse media uploads can be large; don't let nginx cap the body size.
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    hosts:
+      - host: langfuse.poolsi.de
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      enabled: true
+      secretName: langfuse-tls
+
+# --- Bundled PostgreSQL (Langfuse OLTP store) ---
+postgresql:
+  deploy: true
+  auth:
+    username: postgres
+    database: postgres_langfuse
+    password: "" # set in values-secret.yaml
+  primary:
+    persistence:
+      enabled: true
+      storageClass: gp2
+      size: 10Gi
+
+# --- Bundled Valkey/Redis (queue + cache) ---
+redis:
+  deploy: true
+  auth:
+    password: "" # set in values-secret.yaml
+  primary:
+    persistence:
+      enabled: true
+      storageClass: gp2
+      size: 8Gi
+
+# --- Bundled ClickHouse (OLAP store for traces/observations) ---
+# Single-node: replicaCount 1 + clusterEnabled false means non-replicated MergeTree
+# tables, so no ClickHouse Keeper / ZooKeeper is required. (replicaCount 1 with
+# clusterEnabled true crashes the web pod: langfuse-k8s issue #60.)
+clickhouse:
+  deploy: true
+  replicaCount: 1
+  clusterEnabled: false
+  auth:
+    username: default
+    password: "" # set in values-secret.yaml
+  zookeeper:
+    enabled: false
+  persistence:
+    enabled: true
+    storageClass: gp2
+    size: 20Gi
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "2Gi"
+    limits:
+      cpu: "2"
+      memory: "4Gi"
+
+# --- Bundled MinIO (S3-compatible blob storage for event/media/export payloads) ---
+s3:
+  deploy: true
+  # bucket auto-resolves to the MinIO defaultBuckets value ("langfuse") and the
+  # endpoint/credentials are wired from s3.auth when deploy=true.
+  forcePathStyle: true
+  auth:
+    rootUser: minio
+    rootPassword: "" # set in values-secret.yaml
+  persistence:
+    enabled: true
+    storageClass: gp2
+    size: 20Gi
