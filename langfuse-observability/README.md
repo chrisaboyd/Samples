@@ -272,6 +272,92 @@ Traces live under the `litellm-proxy` project. After your first login you can se
 `langfuse.features.signUpDisabled: true` in `values.yaml` and re-run the Langfuse
 `helm upgrade` to close public sign-up.
 
+## Optional: trace direct-to-inference calls (bypassing LiteLLM)
+
+You do not have to route through LiteLLM to get traces. The inference server here
+(`inference-laguna` in the `poolside-models` namespace) is a vLLM instance exposing an
+OpenAI-compatible `/v1` endpoint, so a client can call it directly and still send traces to
+the same Langfuse project.
+
+The important concept: Langfuse tracing is instrumentation, not packet capture. The
+inference server does not push anything to Langfuse on its own, so when LiteLLM is out of the
+path, the trace has to be created by the caller. There are two ways to do that.
+
+### Option A: instrument the client with the Langfuse SDK (recommended)
+
+Because laguna speaks the OpenAI API, the Langfuse drop-in wrapper for the OpenAI SDK traces
+every call with no other changes. This was verified against this cluster: a direct call to
+laguna produced a trace named `direct-laguna-call` with the prompt and response captured.
+
+```bash
+pip install "langfuse>=3" openai
+```
+
+```python
+import os
+# Reuse the same project keys LiteLLM uses (the litellm-langfuse secret), or mint a
+# fresh pair under Settings -> API Keys in the UI.
+os.environ["LANGFUSE_PUBLIC_KEY"] = "pk-lf-..."
+os.environ["LANGFUSE_SECRET_KEY"] = "sk-lf-..."
+os.environ["LANGFUSE_HOST"] = "https://langfuse.poolsi.de"  # or http://localhost:3001 via port-forward
+
+# Drop-in replacement: same OpenAI client, auto-traced
+from langfuse.openai import openai
+from langfuse import get_client
+
+client = openai.OpenAI(
+    base_url="http://inference-laguna.poolside-models.svc.cluster.local/v1",  # in-cluster
+    api_key="not-needed",  # laguna does not require a key
+)
+
+resp = client.chat.completions.create(
+    model="LagunaXS",
+    messages=[{"role": "user", "content": "Hello from a direct call"}],
+    name="direct-laguna-call",            # shows up as the trace name
+    metadata={"path": "client-direct"},   # arbitrary trace metadata
+)
+print(resp.choices[0].message.content)
+get_client().flush()  # flush before a short-lived script exits
+```
+
+From a laptop outside the cluster, port-forward both services and point the URLs at
+localhost:
+
+```bash
+kubectl port-forward -n poolside-models svc/inference-laguna 8080:80 &
+kubectl port-forward -n litellm svc/langfuse-web 3001:3000 &
+# base_url=http://localhost:8080/v1   LANGFUSE_HOST=http://localhost:3001
+```
+
+This captures the same data you get through LiteLLM: input messages, output, model, token
+usage, and latency. For code that is not a single OpenAI call (a RAG chain, an agent, custom
+pre/post-processing), wrap your own functions with the `@observe` decorator instead, and the
+OpenAI calls inside them nest under that trace automatically. The same integration exists for
+the JS/TS SDK and for LangChain, LlamaIndex, and others.
+
+The trade-off versus the LiteLLM callback: instrumentation now lives in each client, so every
+caller that should be traced must use the SDK. The LiteLLM path traces everything centrally
+regardless of who calls it.
+
+### Option B: export OpenTelemetry spans from vLLM (advanced, client-agnostic)
+
+Langfuse also ingests OpenTelemetry traces at `/api/public/otel/v1/traces` (verified present
+on this deployment). vLLM can emit request spans over OTLP, so you can trace centrally at the
+server without touching any client by setting vLLM's `--otlp-traces-endpoint` (or
+`OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`) on the laguna deployment:
+
+```
+--otlp-traces-endpoint=https://langfuse.poolsi.de/api/public/otel/v1/traces
+# OTLP auth header: Basic base64("<public-key>:<secret-key>")
+OTEL_EXPORTER_OTLP_TRACES_HEADERS=Authorization=Basic <base64 pk:sk>
+```
+
+Caveats before you reach for this: it requires editing the laguna deployment (managed by the
+separate `inference-stack` Helm release, not this folder), and vLLM's OTel spans carry less
+prompt/response detail than the SDK wrapper, so traces are thinner than Option A or the
+LiteLLM path. Prefer Option A unless you specifically need server-side, client-agnostic
+capture.
+
 ## Design choices and gotchas
 
 - Single-node ClickHouse. The chart defaults to 3 replicas in cluster mode with ZooKeeper.
