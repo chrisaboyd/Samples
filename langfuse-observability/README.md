@@ -75,6 +75,7 @@ them. If you pin an older chart you may hit `ImagePullBackOff` on the datastores
 | `values-secret.example.yaml` | Template showing the secret keys you must provide. | yes |
 | `values-secret.yaml` | Real generated secrets for the bundled datastores and Langfuse. | no (gitignored) |
 | `litellm-langfuse-values.yaml` | Overlay that adds the `langfuse` success callback and env to the LiteLLM release. | yes |
+| `examples/` | Runnable example for tracing a direct-to-inference call without LiteLLM, with its own README. | yes |
 
 ## Deploy, step by step
 
@@ -334,6 +335,9 @@ usage, and latency. For code that is not a single OpenAI call (a RAG chain, an a
 pre/post-processing), wrap your own functions with the `@observe` decorator instead, and the
 OpenAI calls inside them nest under that trace automatically. The same integration exists for
 the JS/TS SDK and for LangChain, LlamaIndex, and others.
+
+- A runnable, verified version using `@observe` with a plain `requests` client (for when you
+  are not using the OpenAI SDK) is in [`examples/`](examples/README.md).
 
 The trade-off versus the LiteLLM callback: instrumentation now lives in each client, so every
 caller that should be traced must use the SDK. The LiteLLM path traces everything centrally
