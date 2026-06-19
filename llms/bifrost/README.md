@@ -19,13 +19,13 @@ Postgres), the dev profile here is just **one pod and one volume**. The gateway,
 the `/health` probe, and `/metrics` all share port `8080`.
 
 ```
-                         ┌──────────────── bifrost namespace ────────────────┐
-                         │                                                   │
-  client ──► /v1/chat/completions ─────────► bifrost-0 (pod) ──► upstream LLM providers
-   (with a virtual key)                          │  port 8080      (OpenAI, Anthropic, …)
-                         │                       │                           │
-   browser ──(https://bifrost.poolsi.de ─────────┘                           │
-            via nginx ingress)                   └── SQLite on /app/data (10Gi gp2 PVC)
+                         ┌──────────────── bifrost namespace ─────────────────────────────┐
+                         │                                                                │
+  client ──► /v1/chat/completions ─────────► bifrost-0 (pod) ─────────► upstream LLM providers
+   (with a virtual key)                          │  port 8080             (OpenAI, Anthropic, …)
+                         │                       │                                        │
+   browser ──(https://bifrost.poolsi.de ─────────┘                                        │
+            via nginx ingress)                   └── SQLite on /app/data (10Gi gp2 PVC)   |
                          │                            config store + request logs         │
                          └────────────────────────────────────────────────────────────────┘
 ```
