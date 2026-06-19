@@ -20,13 +20,13 @@ the `/health` probe, and `/metrics` all share port `8080`.
 
 ```
                          ┌──────────────── bifrost namespace ────────────────┐
-                         │                                                    │
+                         │                                                   │
   client ──► /v1/chat/completions ─────────► bifrost-0 (pod) ──► upstream LLM providers
    (with a virtual key)                          │  port 8080      (OpenAI, Anthropic, …)
-                         │                       │                            │
-  browser ──(https://bifrost.poolsi.de ─────────┘                            │
+                         │                       │                           │
+   browser ──(https://bifrost.poolsi.de ─────────┘                           │
             via nginx ingress)                   └── SQLite on /app/data (10Gi gp2 PVC)
-                         │                            config store + request logs           │
+                         │                            config store + request logs         │
                          └────────────────────────────────────────────────────────────────┘
 ```
 
@@ -39,17 +39,13 @@ production (see [Design choices](#design-choices-and-gotchas)).
 ## Prerequisites
 
 1. `kubectl` and `helm` (v3.8+) pointed at the target cluster. Confirm with
-   `kubectl config current-context`. This was built against
-   `arn:aws:eks:us-east-2:992382466748:cluster/poolside-c2e-march`.
-2. A namespace. This guide uses `bifrost` (already created). Set it as your default or pass
-   `-n bifrost` on every command.
+   `kubectl config current-context`.
+2. This guide uses the `bifrost` namespace - already created.
 3. A StorageClass for the SQLite volume. This cluster only has `gp2` (EBS) and it is not
    marked default, so `values.yaml` pins `gp2` explicitly under `storage.persistence`. Change
    that one line if your cluster differs.
 4. An ingress controller for the browser URL. This cluster runs `ingress-nginx` (ingress
    class `nginx`) fronted by an AWS ELB. The ingress is enabled for host `bifrost.poolsi.de`.
-5. DNS control for `bifrost.poolsi.de` — point it at the nginx ELB (see step 5). Until then
-   you can reach the UI by port-forward.
 6. `openssl` locally to generate the encryption key and a self-signed TLS cert. This cluster
    has **no cert-manager**, so TLS is a self-signed secret, matching the litellm/langfuse
    setup here. Swap in a real cert (or cert-manager) for anything beyond a demo.
@@ -137,7 +133,7 @@ A record) to that hostname is all you need.
 ```bash
 kubectl get ingress bifrost -n bifrost \
   -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
-# afb05d15a4876419da6a1b86b86060a5-19d4b33ae5871027.elb.us-east-2.amazonaws.com
+# <redacted>.elb.us-east-2.amazonaws.com
 ```
 
 You can confirm the ingress works before DNS propagates by overriding the host:
