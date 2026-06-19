@@ -32,7 +32,7 @@ A high-level description of what they want to build or plan.
 
 ### 2. Creator model generates structured plan
 
-The creator model produces a plan in this format:
+The creator model produces a plan in ~/plans/ with this format:
 
 ```markdown
 # Plan: [Title]

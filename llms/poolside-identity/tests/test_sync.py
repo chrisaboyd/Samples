@@ -175,3 +175,77 @@ class TestCSVParsing:
         assert user_data[0]["email"] == "user1@example.com"
         assert user_data[0]["teams"] == ["team-a", "team-b"]
         assert user_data[1]["teams"] == ["team-a"]
+
+    def test_sync_deduplicates_user_ids(self, tmp_path):
+        """Test that sync deduplicates user IDs to prevent API errors."""
+        import asyncio
+        from unittest.mock import AsyncMock, patch
+        from poolside_identity.models import Team, User
+        from poolside_identity.sync import plan_sync
+
+        async def run_test():
+            async with PoolsideIdentityClient(
+                base_url="https://api.test.poolside.ai",
+                api_key="test-api-key",
+            ) as client:
+                with patch.object(client, 'find_team', new_callable=AsyncMock) as mock_find:
+                    mock_find.return_value = Team(id="team-123", name="test-team")
+                    
+                    with patch.object(client, 'resolve_team', new_callable=AsyncMock) as mock_resolve:
+                        mock_resolve.return_value = "team-123"
+                        
+                        with patch.object(client, '_request', new_callable=AsyncMock) as mock_request:
+                            mock_request.side_effect = [
+                                {"users": [], "links": {}},  # list_team_members - empty
+                                {  # list_users for colin - user exists
+                                    "users": [{
+                                        "id": "user-colin",
+                                        "email": "colin@example.com",
+                                        "status": "created",
+                                        "created_at": "2024-01-01T00:00:00Z",
+                                        "updated_at": "2024-01-01T00:00:00Z",
+                                        "teams": {"teams": [], "links": {}},
+                                    }],
+                                    "links": {},
+                                },
+                                {  # list_users second call - same user (duplicate in input)
+                                    "users": [{
+                                        "id": "user-colin",
+                                        "email": "colin@example.com",
+                                        "status": "created",
+                                        "created_at": "2024-01-01T00:00:00Z",
+                                        "updated_at": "2024-01-01T00:00:00Z",
+                                        "teams": {"teams": [], "links": {}},
+                                    }],
+                                    "links": {},
+                                },
+                                {  # list_users for other - user exists
+                                    "users": [{
+                                        "id": "user-other",
+                                        "email": "other@example.com",
+                                        "status": "created",
+                                        "created_at": "2024-01-01T00:00:00Z",
+                                        "updated_at": "2024-01-01T00:00:00Z",
+                                        "teams": {"teams": [], "links": {}},
+                                    }],
+                                    "links": {},
+                                },
+                            ]
+
+                            # Create user data with duplicate email (Colin appears twice)
+                            plan = await plan_sync(
+                                client,
+                                team_identifier="team-123",
+                                user_data=[
+                                    {"email": "colin@example.com"},
+                                    {"email": "colin@example.com"},  # Duplicate!
+                                    {"email": "other@example.com"},
+                                ],
+                            )
+                            
+                            # Check that user_ids_to_add is deduplicated
+                            user_ids = plan.team_syncs["team-123"]["user_ids_to_add"]
+                            assert len(user_ids) == 2  # colin + other, not 3
+                            assert user_ids.count("user-colin") == 1, "Colin should appear only once"
+
+        asyncio.run(run_test())
