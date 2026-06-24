@@ -108,6 +108,10 @@ async def plan_sync(
             if member.email.lower() not in desired_emails_for_team:
                 user_ids_to_remove.append(member.id)
 
+        # Deduplicate user_ids_to_add to prevent API errors with duplicate IDs
+        user_ids_to_add = list(dict.fromkeys(user_ids_to_add))
+        user_ids_to_remove = list(dict.fromkeys(user_ids_to_remove))
+
         plan.team_syncs[team_id] = {
             "user_ids_to_add": user_ids_to_add,
             "user_ids_to_remove": user_ids_to_remove,

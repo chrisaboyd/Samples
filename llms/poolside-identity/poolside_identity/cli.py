@@ -299,18 +299,27 @@ def user_cmd(
     email: Optional[str] = typer.Option(None, "--email", help="User email"),
     name: Optional[str] = typer.Option(None, "--name", help="User name"),
     user_id: Optional[str] = typer.Option(None, "--id", help="User ID"),
+    status: Optional[str] = typer.Option(None, "--status", help="Filter by status (active, created, suspended, deleted)"),
+    active_only: bool = typer.Option(False, "--active-only", help="Show only active users"),
 ):
     """Manage users.
 
     Examples:
         poolside-id user list
+        poolside-id user list --active-only
+        poolside-id user list --status active
         poolside-id user create --email user@example.com --name "User Name"
         poolside-id user get --id 019dda90...
         poolside-id user delete --id 019dda90...
     """
     async def run(client: PoolsideIdentityClient):
         if action == "list":
-            users = await client.list_users()
+            status_filter = None
+            if active_only:
+                status_filter = "active"
+            elif status:
+                status_filter = status
+            users = await client.list_users(status=status_filter)
             table = compact_table(
                 "Users",
                 ("ID", "dim", {"max_width": 12, "overflow": "ellipsis"}),

@@ -1,0 +1,77 @@
+# Bifrost AI Gateway — dev deployment values for EKS (poolside-c2e-march, us-east-2).
+# Self-contained, in-cluster, single node. SQLite on a gp2 PVC is the only datastore
+# (no Postgres/Redis needed for a dev gateway). The web UI + OpenAI-compatible API +
+# /health all share port 8080. Exposed at https://bifrost.poolsi.de via nginx ingress.
+#
+# No secrets live in this file. The encryption key and TLS cert are supplied out-of-band
+# as Kubernetes secrets (see README steps 1-2). Provider API keys are added at runtime
+# through the web UI, so they are encrypted at rest by Bifrost.
+
+# REQUIRED by the chart — there is no default image tag.
+image:
+  tag: "v1.5.15"
+
+# Dev-sized requests. The chart's 2 vCPU / 2Gi limits are kept; requests trimmed so the
+# pod schedules easily on the existing nodes.
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: "2"
+    memory: 2Gi
+
+# SQLite config + logs store on a persistent gp2 volume. With persistence enabled the
+# chart renders a StatefulSet so the database survives pod restarts. The cluster's only
+# StorageClass (gp2) is not marked default, so it is pinned explicitly here.
+storage:
+  mode: sqlite
+  persistence:
+    enabled: true
+    storageClass: gp2
+    size: 10Gi
+
+# In-cluster Postgres/Redis are intentionally OFF — SQLite covers a dev gateway. To move
+# to Postgres later: set storage.mode=postgres and postgresql.enabled=true (chart ships a
+# Postgres subchart) and the StatefulSet collapses back to a Deployment.
+postgresql:
+  enabled: false
+vectorStore:
+  enabled: false
+
+# Expose the gateway + UI through the shared nginx ingress at bifrost.poolsi.de.
+# proxy-body-size: "0" disables nginx's request size cap (large prompts/payloads),
+# matching the litellm ingress on this cluster. TLS uses the self-signed bifrost-tls
+# secret created in README step 2 (no cert-manager in this cluster).
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+  hosts:
+    - host: bifrost.poolsi.de
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: bifrost-tls
+      hosts:
+        - bifrost.poolsi.de
+
+bifrost:
+  appDir: /app/data
+  port: 8080
+  logLevel: info
+
+  # Encryption key for provider keys stored in the DB. Sourced from the bifrost-encryption-key
+  # secret (README step 1) — the chart injects it as BIFROST_ENCRYPTION_KEY and references it
+  # from config.json, so the raw key never lands in values or the chart's own secret.
+  encryptionKeySecret:
+    name: bifrost-encryption-key
+    key: encryption-key
+
+  client:
+    # Keep the chart's secure default: inference endpoints require a virtual key. Create one
+    # in the UI (Virtual Keys) after first login. Set this to false for a fully open dev
+    # gateway with no key required.
+    enforceAuthOnInference: true

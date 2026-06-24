@@ -69,6 +69,37 @@ class TestPoolsideIdentityClient:
         assert users[0].email == "specific@example.com"
 
     @pytest.mark.asyncio
+    async def test_list_users_with_status_filter(self, client, httpx_mock):
+        """Test listing users with status filter."""
+        httpx_mock.add_response(
+            json={
+                "users": [
+                    {
+                        "id": "user-123",
+                        "email": "active@example.com",
+                        "status": "active",
+                        "created_at": "2024-01-01T00:00:00Z",
+                        "updated_at": "2024-01-01T00:00:00Z",
+                        "teams": {"teams": [], "links": {}},
+                    },
+                    {
+                        "id": "user-456",
+                        "email": "active2@example.com",
+                        "status": "active",
+                        "created_at": "2024-01-01T00:00:00Z",
+                        "updated_at": "2024-01-01T00:00:00Z",
+                        "teams": {"teams": [], "links": {}},
+                    },
+                ],
+                "links": {},
+            }
+        )
+
+        users = await client.list_users(status="active")
+        assert len(users) == 2
+        assert all(u.status == "active" for u in users)
+
+    @pytest.mark.asyncio
     async def test_get_user_success(self, client, httpx_mock):
         """Test getting a user by ID."""
         httpx_mock.add_response(
