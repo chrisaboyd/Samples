@@ -1,0 +1,23 @@
+langfuse:
+  web:
+    replicaCount: 1
+    image:
+      repository: langfuse/langfuse
+      tag: latest
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+  
+  worker:
+    replicaCount: 1
+    image:
+      repository: langfuse/langfuse-worker
+      tag: latest
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+
+  ingress:
+    enabled: false

@@ -1,0 +1,13 @@
+# NGINX Ingress values for dev
+controller:
+  service:
+    type: NodePort
+    nodePorts:
+      http: 30080
+      https: 30443
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+admissionWebhooks:
+  enabled: false

@@ -1,0 +1,8 @@
+image:
+  repository: nvcr.io/nvidia/nemo-guardrails
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080

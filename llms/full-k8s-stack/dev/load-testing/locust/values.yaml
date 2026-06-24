@@ -1,0 +1,16 @@
+image:
+  repository: locustio/locust
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8089
+
+worker:
+  replicas: 2
+
+env:
+  TARGET_HOST: "http://litellm.gateway.svc.cluster.local:8000"
+  USERS: "100"
+  SPAWN_RATE: "10"

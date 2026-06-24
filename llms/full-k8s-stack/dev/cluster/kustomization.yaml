@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - manifests/namespaces.yaml
+  - manifests/storageclass.yaml
+  - manifests/prometheus-crds.yaml
+  - manifests/gpu-operator.yaml
+  - manifests/ingress-nginx.yaml
+
+configMapGenerator:
+  - name: cluster-config
+    literals:
+      - NAMESPACE_PLATFORM=platform
+      - NAMESPACE_GATEWAY=gateway
+      - NAMESPACE_GUARDRAILS=guardrails
+      - NAMESPACE_OBSERVABILITY=observability
+      - NAMESPACE_INFERENCE=inference
+      - NAMESPACE_LOAD_TESTING=load-testing

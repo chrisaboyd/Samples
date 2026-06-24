@@ -1,0 +1,14 @@
+tempo:
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /data/tempo
+  config:
+    limits:
+      per_tenant_limit: 10000
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: local-path

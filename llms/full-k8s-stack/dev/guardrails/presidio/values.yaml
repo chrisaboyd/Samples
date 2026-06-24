@@ -1,0 +1,13 @@
+analyzer:
+  image:
+    repository: mcr.microsoft.com/presidio/presidio-analyzer
+    tag: latest
+  service:
+    type: ClusterIP
+
+anonymizer:
+  image:
+    repository: mcr.microsoft.com/presidio/presidio-anonymizer
+    tag: latest
+  service:
+    type: ClusterIP

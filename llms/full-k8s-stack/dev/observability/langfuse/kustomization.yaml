@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: observability
+
+resources:
+  - manifests/langfuse-web.yaml
+  - manifests/langfuse-worker.yaml
+  - secrets/langfuse-secrets.yaml

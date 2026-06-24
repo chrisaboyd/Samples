@@ -1,0 +1,9 @@
+image:
+  repository: nvcr.io/nvidia/k8s/dcgm-exporter
+  tag: "3.3.5"
+  pullPolicy: IfNotPresent
+
+serviceMonitor:
+  enabled: true
+  namespace: observability
+  interval: 30s
