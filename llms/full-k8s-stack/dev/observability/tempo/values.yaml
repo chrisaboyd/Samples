@@ -7,8 +7,17 @@ tempo:
   config:
     limits:
       per_tenant_limit: 10000
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+            http:
+    server:
+      http_listen_port: 3200
+      grpc_listen_port: 4317
 
 persistence:
   enabled: true
   size: 10Gi
-  storageClass: local-path
+  storageClass: gp2

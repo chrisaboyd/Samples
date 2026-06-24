@@ -37,8 +37,6 @@ spec:
           image: grafana/loki:3.0.0
           args:
             - -config.file=/etc/loki/local-config.yaml
-            - -storage.filesystem chunks_directory=/data/loki/chunks
-            - -storage.filesystem rules_directory=/data/loki/rules
           ports:
             - containerPort: 3100
               name: http
@@ -54,6 +52,8 @@ spec:
             limits:
               cpu: 500m
               memory: 1Gi
+          securityContext:
+            runAsUser: 0
           readinessProbe:
             httpGet:
               path: /ready
@@ -75,7 +75,7 @@ spec:
         name: data
       spec:
         accessModes: [ "ReadWriteOnce" ]
-        storageClassName: local-path
+        storageClassName: gp2
         resources:
           requests:
             storage: 10Gi
@@ -90,6 +90,8 @@ data:
     auth_enabled: false
     server:
       http_listen_port: 3100
+    limits_config:
+      allow_structured_metadata: false
     common:
       path_prefix: /data/loki
       storage:

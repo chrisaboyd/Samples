@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: analyzer
-          image: mcr.microsoft.com/presidio/presidio-analyzer:latest
+          image: mcr.microsoft.com/presidio/presidio-analyzer:2.1
           ports:
             - containerPort: 3000
               name: http

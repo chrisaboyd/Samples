@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: nemo-guardrails
-          image: nvcr.io/nvidia/nemo-guardrails:latest
+          image: ghcr.io/protectai/nemo-guardrails:latest
           ports:
             - containerPort: 8080
               name: http

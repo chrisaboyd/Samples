@@ -24,7 +24,9 @@ spec:
             - locust
             - --worker
             - --master-host
-            - locust-master.load-testing.svc.cluster.local
+            - locust.load-testing.svc.cluster.local
+            - --locustfile
+            - /locust/locustfile.py
           resources:
             requests:
               cpu: 200m
@@ -32,3 +34,13 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
+          volumeMounts:
+            - name: locustfile
+              mountPath: /locust
+      volumes:
+        - name: locustfile
+          configMap:
+            name: locustfile
+            items:
+              - key: locustfile.py
+                path: locustfile.py

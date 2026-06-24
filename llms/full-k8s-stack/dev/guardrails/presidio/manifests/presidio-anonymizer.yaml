@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: anonymizer
-          image: mcr.microsoft.com/presidio/presidio-anonymizer:latest
+          image: mcr.microsoft.com/presidio/presidio-anonymizer:2.1
           ports:
             - containerPort: 3001
               name: http

@@ -20,7 +20,7 @@ spec:
           image: ghcr.io/open-webui/open-webui:main
           env:
             - name: OPENAI_API_BASE_URL
-              value: "http://litellm.gateway.svc.cluster.local:8000"
+              value: "http://litellm.litellm.svc.cluster.local:4000"
             - name: WEBUI_AUTH
               value: "false"
             - name: WEBUI_NAME
@@ -34,10 +34,10 @@ spec:
           resources:
             requests:
               cpu: 200m
-              memory: 512Mi
+              memory: 1Gi
             limits:
               cpu: 500m
-              memory: 1Gi
+              memory: 2Gi
           readinessProbe:
             httpGet:
               path: /
@@ -78,7 +78,7 @@ metadata:
   namespace: gateway
 spec:
   accessModes: [ "ReadWriteOnce" ]
-  storageClassName: local-path
+  storageClassName: gp2
   resources:
     requests:
       storage: 5Gi

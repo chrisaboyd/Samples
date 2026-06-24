@@ -37,9 +37,9 @@ spec:
     spec:
       containers:
         - name: tempo
-          image: grafana/tempo:2.5.0
+          image: grafana/tempo:latest
           args:
-            - -config.file=/etc/tempo.yaml
+            - -config.file=/etc/tempo/tempo.yaml
           ports:
             - containerPort: 3200
               name: http
@@ -49,7 +49,7 @@ spec:
             - name: data
               mountPath: /data/tempo
             - name: config
-              mountPath: /etc
+              mountPath: /etc/tempo
           resources:
             requests:
               cpu: 200m
@@ -57,6 +57,8 @@ spec:
             limits:
               cpu: 500m
               memory: 1Gi
+          securityContext:
+            runAsUser: 0
           readinessProbe:
             httpGet:
               path: /ready
@@ -78,7 +80,7 @@ spec:
         name: data
       spec:
         accessModes: [ "ReadWriteOnce" ]
-        storageClassName: local-path
+        storageClassName: gp2
         resources:
           requests:
             storage: 10Gi
@@ -92,25 +94,18 @@ data:
   tempo.yaml: |
     server:
       http_listen_port: 3200
-      grpc_listen_port: 4317
     distributor:
       receivers:
         otlp:
           protocols:
-            grpc:
             http:
-    querier:
-      frontend:
-        grpc:
+            grpc:
     query_frontend:
-      search:
-        duration: 1h
-    ingester:
-      lifecycler:
-        ring:
-          kvstore:
-            store: inmemory
-          replication_factor: 1
-        final_sleep: 0s
-    limits:
-      per_tenant_limit: 10000
+      max_batch_size: 1000
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /data/tempo
+        wal:
+          path: /data/tempo/wal
