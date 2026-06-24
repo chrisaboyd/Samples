@@ -24,3 +24,16 @@ Service: `clickhouse.observability.svc.cluster.local:8123` (HTTP), `9000` (nativ
 
 - UTC timezone enforced
 - `CLICKHOUSE_CLUSTER_ENABLED=false` for single-node dev
+
+## Individual Deployment
+
+```bash
+kubectl apply -k .
+```
+
+## Verification
+
+```bash
+kubectl -n observability port-forward svc/clickhouse 8123:8123
+curl http://localhost:8123/ping
+```

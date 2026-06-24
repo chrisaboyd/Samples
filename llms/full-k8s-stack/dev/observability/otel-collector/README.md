@@ -24,3 +24,24 @@ Observability: Tempo, Prometheus.
 - Tempo (traces)
 - Prometheus (metrics)
 - Loki (logs)
+
+## Files
+
+- `values.yaml` - Configuration reference
+- `manifests/` - Raw Kubernetes manifests
+
+## Individual Deployment
+
+```bash
+kubectl apply -k .
+```
+
+## Verification
+
+```bash
+# Check pods are running
+kubectl get pods -n observability -l app.kubernetes.io/name=otel-collector
+
+# View collected metrics in Prometheus
+kubectl -n observability port-forward svc/kube-prometheus-stack-prometheus 9090:9090
+```

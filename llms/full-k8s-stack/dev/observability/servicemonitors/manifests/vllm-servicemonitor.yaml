@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: vllm
+  namespace: observability
+  labels:
+    app.kubernetes.io/name: vllm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vllm
+  namespaceSelector:
+    matchNames:
+      - inference
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics

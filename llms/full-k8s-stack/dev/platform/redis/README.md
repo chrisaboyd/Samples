@@ -19,3 +19,16 @@ Service: `redis.platform.svc.cluster.local:6379`
 | Service | Port |
 |---------|------|
 | redis | 6379 |
+
+## Individual Deployment
+
+```bash
+kubectl apply -k .
+```
+
+## Verification
+
+```bash
+kubectl -n platform exec -it deployment/redis -- redis-cli ping
+# Should return: PONG
+```

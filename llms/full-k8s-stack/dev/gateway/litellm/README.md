@@ -33,3 +33,42 @@ Service: `litellm.gateway.svc.cluster.local:8000`
 | Service | Port |
 |---------|------|
 | litellm | 8000 (API), 8001 (Metrics) |
+
+## Files
+
+- `values.yaml` - Helm values for LiteLLM
+- `secrets/` - Template files for credentials
+- `manifests/` - Raw Kubernetes manifests
+
+## Individual Deployment
+
+```bash
+# Apply secrets first
+kubectl apply -k .
+
+# Deploy
+kubectl apply -k .
+```
+
+## Verification
+
+```bash
+# Port-forward to access API
+kubectl -n gateway port-forward svc/litellm 8000:8000
+
+# Test health endpoint
+curl http://localhost:8000/health
+
+# Test with an API key
+curl http://localhost:8000/v1/chat/completions \
+  -H "Authorization: Bearer $LITELLM_MASTER_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "Hello"}]}'
+```
+
+## Guardrail Integration
+
+Configure guardrails in the LiteLLM config to point to:
+- Presidio: `http://presidio-analyzer.guardrails.svc.cluster.local:3000`
+- LLM Guard: `http://llm-guard.guardrails.svc.cluster.local:8000`
+- NeMo Guardrails: `http://nemo-guardrails.guardrails.svc.cluster.local:8080`

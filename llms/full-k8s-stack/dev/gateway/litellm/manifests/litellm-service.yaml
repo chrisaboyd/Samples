@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: litellm
+  namespace: gateway
+  labels:
+    app.kubernetes.io/name: litellm
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+    - name: metrics
+      port: 8001
+      targetPort: 8001
+  selector:
+    app.kubernetes.io/name: litellm

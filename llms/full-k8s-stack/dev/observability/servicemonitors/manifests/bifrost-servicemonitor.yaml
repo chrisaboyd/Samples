@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: bifrost
+  namespace: observability
+  labels:
+    app.kubernetes.io/name: bifrost
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: bifrost
+  namespaceSelector:
+    matchNames:
+      - gateway
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics

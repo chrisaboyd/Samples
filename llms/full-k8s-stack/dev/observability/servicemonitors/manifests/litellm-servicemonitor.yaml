@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: litellm
+  namespace: observability
+  labels:
+    app.kubernetes.io/name: litellm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: litellm
+  namespaceSelector:
+    matchNames:
+      - gateway
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics

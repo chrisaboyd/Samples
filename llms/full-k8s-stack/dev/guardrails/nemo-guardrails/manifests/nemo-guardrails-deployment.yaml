@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nemo-guardrails
+  namespace: guardrails
+  labels:
+    app.kubernetes.io/name: nemo-guardrails
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nemo-guardrails
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nemo-guardrails
+      annotations:
+        # NeMo Guardrails typically uses 8080 for the server
+    spec:
+      containers:
+        - name: nemo-guardrails
+          image: nvcr.io/nvidia/nemo-guardrails:latest
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: GUARDRAILS_CONFIG_PATH
+              value: "/config"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 1
+              memory: 2Gi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 30
+      volumes:
+        - name: config
+          configMap:
+            name: nemo-guardrails-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nemo-guardrails
+  namespace: guardrails
+  labels:
+    app.kubernetes.io/name: nemo-guardrails
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: nemo-guardrails
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nemo-guardrails-config
+  namespace: guardrails
+data:
+  # Default guardrail config - configure based on your needs
+  config.yaml: |
+    rails:
+      input:
+        flows:
+          - self check input
+      output:
+        flows:
+          - self check output

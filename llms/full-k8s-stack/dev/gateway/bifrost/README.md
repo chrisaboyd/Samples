@@ -23,3 +23,38 @@ Service: `bifrost.gateway.svc.cluster.local:8000`
 ## Configuration
 
 SQLite-on-PVC for dev, Postgres mode for prod HA.
+
+## Files
+
+- `values.yaml` - Helm values for Bifrost
+- `secrets/` - Template files for encryption key
+- `manifests/` - Raw Kubernetes manifests
+
+## Individual Deployment
+
+```bash
+# Apply secrets first
+kubectl apply -k .
+
+# Deploy
+kubectl apply -k .
+```
+
+## Verification
+
+```bash
+# Port-forward to access API
+kubectl -n gateway port-forward svc/bifrost 8000:8000
+
+# Test health endpoint
+curl http://localhost:8000/health
+
+# Access metrics
+kubectl -n gateway port-forward svc/bifrost 8080:8080
+curl http://localhost:8080/metrics
+```
+
+## OpenTelemetry
+
+Bifrost sends traces to the OTel Collector at:
+`http://otel-collector.observability.svc.cluster.local:4317`

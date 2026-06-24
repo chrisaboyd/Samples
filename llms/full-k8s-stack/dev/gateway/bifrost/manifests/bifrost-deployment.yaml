@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bifrost
+  namespace: gateway
+  labels:
+    app.kubernetes.io/name: bifrost
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: bifrost
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: bifrost
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+        - name: bifrost
+          image: ghcr.io/maximhq/bifrost:latest
+          env:
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: bifrost-encryption
+                  key: encryption-key
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://otel-collector.observability.svc.cluster.local:4317"
+            - name: REDIS_URL
+              value: "redis://redis.platform.svc.cluster.local:6379"
+            - name: DATABASE_URL
+              value: "sqlite:/data/bifrost.db"
+          ports:
+            - containerPort: 8000
+              name: http
+            - containerPort: 8080
+              name: metrics
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: bifrost-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bifrost
+  namespace: gateway
+  labels:
+    app.kubernetes.io/name: bifrost
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+    - name: metrics
+      port: 8080
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: bifrost
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bifrost-data
+  namespace: gateway
+spec:
+  accessModes: [ "ReadWriteOnce" ]
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 5Gi

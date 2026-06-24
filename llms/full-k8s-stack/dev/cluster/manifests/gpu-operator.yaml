@@ -1,0 +1,14 @@
+# NVIDIA GPU Operator - for GPU nodes
+# Note: If gpu-operator already exists in cluster, this will be skipped
+# Apply with: kubectl apply -f https://github.com/NVIDIA/gpu-operator/raw/main/deployments/gpu-operator.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gpu-operator
+---
+# GPU Operator is typically installed via Helm or direct manifest
+# This file serves as a marker/placeholder - in practice, use:
+# helm repo add nvidia-gpu-operator https://nvidia.github.io/gpu-operator
+# helm install gpu-operator nvidia-gpu-operator/gpu-operator --namespace gpu-operator --create-namespace
+#
+# For dev environments with existing GPU Operator, leave empty or skip.
