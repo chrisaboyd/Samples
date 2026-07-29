@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: litellm-config
+  namespace: gateway
+data:
+  config.yaml: |
+    # LiteLLM proxy config (dev).
+    # The inference backend is OpenAI-compatible. By default it points at the
+    # in-cluster vLLM (inference/vllm), which serves `--served-model-name lagunaxs-3`.
+    # To use an existing backend instead, change INFERENCE_API_BASE in the
+    # litellm Deployment (e.g. http://inference-stack-laguna.poolside-models.svc.cluster.local/v1).
+    model_list:
+      - model_name: lagunaxs-3
+        litellm_params:
+          model: openai/lagunaxs-3
+          api_base: os.environ/INFERENCE_API_BASE
+          api_key: os.environ/INFERENCE_API_KEY
+
+    litellm_settings:
+      drop_params: true
+      # LLM trace/cost/latency telemetry to Langfuse. Keys come from env
+      # (LANGFUSE_PUBLIC_KEY / LANGFUSE_SECRET_KEY / LANGFUSE_HOST).
+      success_callback: ["langfuse"]
+      failure_callback: ["langfuse"]
+
+    # Guardrails are orchestrated through LiteLLM's hook surface.
+    # Presidio masks PII before the call (pre_call). The NeMo and LLM Guard
+    # services are also deployed (guardrails/) and can be added here — see
+    # gateway/litellm/CONFIGURATION.md for the full placement matrix.
+    guardrails:
+      - guardrail_name: "presidio-pii-mask"
+        litellm_params:
+          guardrail: presidio
+          mode: "pre_call"
+          # Applied to every request. Requires guardrails/presidio to be running.
+          # Set to false to make it opt-in (per-request `guardrails` param) instead.
+          default_on: true
+          presidio_analyzer_api_base: "http://presidio-analyzer.guardrails.svc.cluster.local:3000"
+          presidio_anonymizer_api_base: "http://presidio-anonymizer.guardrails.svc.cluster.local:3001"
+
+    general_settings:
+      master_key: os.environ/LITELLM_MASTER_KEY
+      database_url: os.environ/DATABASE_URL
