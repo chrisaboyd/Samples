@@ -1,6 +1,8 @@
 # Cluster Foundation
 
-Namespaces, StorageClass, Prometheus Operator CRDs, NVIDIA GPU Operator, and ingress controller.
+Namespaces, StorageClass, NVIDIA GPU Operator, and ingress controller.
+
+Prometheus Operator CRDs are **not** part of this layer -- see CONFIGURATION.md.
 
 ## Purpose
 
@@ -24,12 +26,12 @@ None (Layer 0).
 
 ## Files
 
-- `manifests/` - Raw Kubernetes manifests for CRDs and operators
+- `manifests/` - Raw Kubernetes manifests for namespaces, storage, and operators
 - `values.yaml` - Helm values for ingress controller
 
 ## Individual Deployment
 
-Apply the kustomization for namespaces and CRDs:
+Apply the kustomization for namespaces and storage:
 
 ```bash
 kubectl apply -k .

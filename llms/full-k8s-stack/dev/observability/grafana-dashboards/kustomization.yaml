@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: observability
+
+# The Grafana dashboard sidecar (kiwigrid/k8s-sidecar) watches every namespace for
+# ConfigMaps labelled grafana_dashboard=1 and provisions their JSON into Grafana.
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    grafana_dashboard: "1"
+
+configMapGenerator:
+  - name: grafana-dashboard-vllm
+    files:
+      - dashboards/vllm-overview.json
+  - name: grafana-dashboard-dcgm
+    files:
+      - dashboards/dcgm-gpu.json

@@ -3,7 +3,7 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: local-path
+          storageClassName: gp2
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
@@ -17,6 +17,20 @@ grafana:
       enabled: true
     datasources:
       enabled: true
+  # Exposed through the shared nginx ingress, same pattern as bifrost/litellm.
+  # grafana-tls is a self-signed cert created out-of-band (see CONFIGURATION.md);
+  # there is no cert-manager in this cluster.
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - grafana.poolsi.de
+    path: /
+    pathType: Prefix
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana.poolsi.de
 
 alertmanager:
   enabled: true

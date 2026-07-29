@@ -25,4 +25,18 @@ Deploys NVIDIA driver, container toolkit, and device plugin for GPU workloads.
 
 ## Prometheus CRDs
 
-Installs ServiceMonitor, PodMonitor, and related CRDs for Prometheus Operator.
+Not installed here. The Prometheus Operator CRDs ship with the `kube-prometheus-stack`
+chart in Layer 5, and that is the only place they should come from.
+
+Do not add hand-written "minimal" CRD stubs to this layer. Helm skips CRDs that already
+exist, so a stub applied at Layer 0 is never replaced by the real one. Worse, an
+`openAPIV3Schema` that omits fields causes the API server to **prune** them on write:
+a `Prometheus` object silently loses its entire `spec`, the operator then generates an
+empty scrape config, and Prometheus collects nothing while appearing healthy.
+
+The CRDs are large (the `prometheuses` CRD is ~830KB), which makes client-side
+`kubectl apply` fail with `metadata.annotations: Too long`. Use server-side apply:
+
+```bash
+kubectl apply --server-side --force-conflicts -f <crd>.yaml
+```

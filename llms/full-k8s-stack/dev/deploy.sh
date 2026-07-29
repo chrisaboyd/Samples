@@ -70,6 +70,7 @@ kubectl apply -k observability/tempo/
 kubectl apply -k observability/otel-collector/
 kubectl apply -k observability/langfuse/
 kubectl apply -k observability/servicemonitors/
+kubectl apply -k observability/grafana-dashboards/
 
 # Layer 6: Load Testing
 echo "Layer 6: Load testing..."

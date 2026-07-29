@@ -6,13 +6,17 @@ metadata:
   labels:
     app.kubernetes.io/name: vllm
 spec:
+  # Poolside inference-stack (atlas) serves vLLM metrics on its main http port.
+  # Selecting on component/part-of picks up every model service in the namespace
+  # (laguna, lagunaxs2, ...) rather than pinning to one model name.
   selector:
     matchLabels:
-      app.kubernetes.io/name: vllm
+      app.kubernetes.io/component: inference
+      app.kubernetes.io/part-of: poolside-deployment
   namespaceSelector:
     matchNames:
-      - inference
+      - poolside-models
   endpoints:
-    - port: metrics
+    - port: http
       interval: 30s
       path: /metrics

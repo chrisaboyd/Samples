@@ -4,7 +4,11 @@ kind: Kustomization
 resources:
   - manifests/namespaces.yaml
   - manifests/storageclass.yaml
-  - manifests/prometheus-crds.yaml
+  # Prometheus Operator CRDs are intentionally NOT defined here. They ship with the
+  # kube-prometheus-stack chart (Layer 5). Applying hand-written stubs at Layer 0 wins
+  # permanently -- Helm never overwrites an existing CRD -- and a stub with an
+  # incomplete openAPIV3Schema makes the API server prune every field it omits,
+  # silently gutting Prometheus/ServiceMonitor specs.
   - manifests/gpu-operator.yaml
   - manifests/ingress-nginx.yaml
 
