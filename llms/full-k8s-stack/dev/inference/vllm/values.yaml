@@ -1,0 +1,29 @@
+# vLLM values for dev
+image:
+  repository: vllm/vllm
+  tag: latest
+  pullPolicy: IfNotPresent
+
+model:
+  name: mistral-7b
+  hfId: mistralai/Mistral-7B-v0.1
+  gpuMemoryUtilization: 0.8
+  maxModelLen: 4096
+
+resources:
+  requests:
+    nvidia.com/gpu: 1
+    cpu: 2
+    memory: 4Gi
+
+service:
+  type: ClusterIP
+  ports:
+    http: 8000
+    metrics: 8001
+
+autoscaling:
+  enabled: false
+
+nodeSelector:
+  nvidia.com/gpu.present: "true"

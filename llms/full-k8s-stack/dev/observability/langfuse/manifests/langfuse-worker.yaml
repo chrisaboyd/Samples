@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: langfuse-worker
+  namespace: observability
+  labels:
+    app.kubernetes.io/name: langfuse-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: langfuse-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: langfuse-worker
+    spec:
+      containers:
+        - name: worker
+          image: langfuse/langfuse-worker:latest
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://langfuse:langfuse-password@postgres.platform.svc.cluster.local:5432/langfuse"
+            - name: CLICKHOUSE_URL
+              value: "clickhouse.observability.svc.cluster.local"
+            - name: REDIS_CONNECTION_STRING
+              value: "redis://redis.platform.svc.cluster.local:6379"
+            - name: S3_ENDPOINT
+              value: "seaweedfs-filer.platform.svc.cluster.local:8333"
+            - name: S3_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: seaweedfs-secret
+                  key: s3-access-key
+            - name: S3_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: seaweedfs-secret
+                  key: s3-secret-key
+            - name: LANGFUSE_HOST
+              value: "http://langfuse.observability.svc.cluster.local"
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          readinessProbe:
+            exec:
+              command:
+                - node
+                - -e
+                - "process.exit(0)"
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - node
+                - -e
+                - "process.exit(0)"
+            initialDelaySeconds: 30
+            periodSeconds: 30

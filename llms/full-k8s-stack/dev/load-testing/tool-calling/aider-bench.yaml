@@ -1,0 +1,205 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aider-bench-tasks
+  namespace: aider-bench
+data:
+  tasks.txt: |
+    Add an optional strict_slashes parameter to the redirect helper in src/flask/helpers.py that defaults to False; update the docstring.
+    In src/flask/wrappers.py add type hints to the Response.max_cookie_size property; document the return type.
+    Enhance the error message in src/flask/blueprints.py open_resource method to include the attempted resource path when a ValueError is raised.
+    Add a new parameter include_empty defaulting to False to get_flashed_messages in src/flask/helpers.py; when True include categories with no messages.
+    In src/flask/ctx.py add type hints to _AppCtxGlobals.setdefault return annotation to be more specific than t.Any.
+    Create a helper function has_error_handler in src/flask/helpers.py that checks whether an error handler is registered for a specific error code returning a boolean.
+    In src/flask/testing.py add an optional verify_ssl parameter to EnvironBuilder with default True and pass it through to parent class init.
+    Update the RuntimeError message in src/flask/ctx.py after_this_request to be more descriptive and include the name of the decorated function.
+    Add a log_level parameter to src/flask/app.py create_app factory that sets the Flask app logger level; default to WARNING.
+    In src/flask/templating.py add a get_template_mtime helper that returns the modification time of a template file as a float.
+    Add a cache_timeout class variable to src/flask/views.py MethodView defaulting to None; mention it in the docstring.
+    In src/flask/sessions.py add a is_expired method to SecureCookieSession that returns True if the session has passed its lifetime.
+    Add a max_redirects parameter to src/flask/testing.py FlaskClient defaulting to 10; raise RuntimeError if exceeded.
+    In src/flask/wrappers.py add a json_errors property to Request that returns True if the request prefers JSON error responses.
+    Add an on_error callback parameter to src/flask/helpers.py send_file that is called with the exception if the file cannot be opened.
+    In src/flask/blueprints.py add a url_defaults_for method that returns the url_defaults dict for a specific endpoint name.
+    Add a register_error_handler_for_all_codes helper to src/flask/app.py that takes a list of codes and a single handler function.
+    In src/flask/ctx.py improve the docstring of push on AppContext to describe what happens when called multiple times.
+    Add a has_static_folder property to src/flask/blueprints.py Blueprint that returns True when static_folder is set.
+    In src/flask/helpers.py add a safe_join_url helper that joins URL path segments and raises ValueError on path traversal attempts.
+    In src/flask/app.py add a get_send_file_max_age_default method that returns the SEND_FILE_MAX_AGE_DEFAULT config value or 0.
+    In src/flask/testing.py add a content_length property to EnvironBuilder that returns the value of CONTENT_LENGTH from environ.
+    Add a deferred_functions_count property to src/flask/blueprints.py Blueprint returning the number of registered deferred setup functions.
+    In src/flask/sessions.py add a keys_modified property to SecureCookieSession listing which keys were changed since the session was loaded.
+    Add an explicit __all__ list to src/flask/helpers.py exporting only the public API symbols.
+    In src/flask/wrappers.py add a is_multipart property to Request returning True when the content type is multipart/form-data.
+    Add a teardown_count property to src/flask/app.py Flask returning total number of registered teardown functions across all contexts.
+    In src/flask/ctx.py add a __repr__ to RequestContext showing the method and path of the current request.
+    Add a from_mapping classmethod to src/flask/config.py Config that accepts keyword arguments in addition to a dict.
+    In src/flask/blueprints.py add a registered_in property to Blueprint that returns the list of app names it has been registered with.
+    In src/flask/app.py add a count_routes method that returns the total number of URL rules registered on the app.
+    In src/flask/helpers.py add a flash_and_redirect helper that flashes a message and returns a redirect response in one call.
+    Add a validate_config method to src/flask/app.py Flask that checks required config keys are set and raises RuntimeError listing missing ones.
+    In src/flask/sessions.py add a to_dict method to SecureCookieSession that returns the session data as a plain dict.
+    In src/flask/blueprints.py add a before_app_first_request method that registers a function to run before the first request to the app.
+    Add a get_or_404 helper to src/flask/helpers.py that wraps get() on a model and calls abort(404) if result is None.
+    In src/flask/ctx.py add a copy method to AppContext that returns a new AppContext bound to the same app.
+    In src/flask/views.py add a required_methods class variable to View that merges with the methods list automatically.
+    Add a silent parameter to src/flask/helpers.py send_file defaulting to False; when True swallow FileNotFoundError and return a 404.
+    In src/flask/templating.py add a render_template_or_404 helper that renders a template if it exists or calls abort(404).
+    In src/flask/app.py add a registered_blueprints property that returns a list of all registered blueprint names.
+    In src/flask/wrappers.py add a is_json_request property to Request returning True when content type is application/json.
+    Add a teardown_appcontext_funcs_count property to src/flask/app.py Flask that returns the count of registered teardown functions.
+    In src/flask/sessions.py add a age method to SecureCookieSession returning how many seconds the session has been alive.
+    In src/flask/ctx.py add a depth property to _AppCtxGlobals returning how many times push() has been called.
+    Add a url_for_static helper to src/flask/helpers.py that returns the URL for a static file given its filename.
+    In src/flask/blueprints.py add a has_url_prefix property to Blueprint that returns True when url_prefix is set and non-empty.
+    In src/flask/app.py add a make_shell_context method stub that returns an empty dict; document that subclasses should override it.
+    In src/flask/testing.py add a get_json helper to FlaskClient that makes a GET request and returns parsed JSON response.
+    In src/flask/wrappers.py add a accept_mimetypes_quality method to Request returning the quality for a given mimetype.
+    Add a config_from_env helper to src/flask/helpers.py that reads config values from environment variables by prefix.
+    In src/flask/sessions.py add a mark_all_modified method to SecureCookieSession that forces all keys to be considered modified.
+    In src/flask/blueprints.py add a child_blueprints property to Blueprint that returns the list of blueprints registered on it.
+    Add a after_this_response helper to src/flask/helpers.py that registers a callback to run after the current response is sent.
+    In src/flask/ctx.py add an is_active property to AppContext returning True when the context is currently pushed.
+    In src/flask/app.py add a get_registered_hooks method that returns a dict mapping hook names to their registered functions.
+    In src/flask/views.py add a get_decorators class variable to View that applies a list of decorators to the dispatch method.
+    In src/flask/templating.py add a get_all_templates helper that returns a sorted list of all template names in the loader.
+    Add a permanent_session_lifetime_seconds property to src/flask/app.py Flask returning the lifetime as an integer number of seconds.
+    In src/flask/wrappers.py add a full_path_with_query property to Request returning path plus query string.
+    In src/flask/helpers.py add a is_safe_url helper that checks whether a URL is safe to redirect to (same host only).
+    In src/flask/blueprints.py add a error_handler_count property to Blueprint returning how many error handlers are registered.
+    Add a get_flashed_messages_count helper to src/flask/helpers.py returning the total number of pending flash messages.
+    In src/flask/sessions.py add a rotate method to SecureCookieSession that clears the session and re-sets all keys to trigger re-signing.
+    In src/flask/ctx.py add a request_count class variable to RequestContext that tracks how many requests have been pushed.
+    In src/flask/app.py add a has_blueprint method that returns True if a blueprint with the given name is registered.
+    In src/flask/testing.py add a patch helper to FlaskClient that makes a PATCH request with JSON body.
+    Add a send_file_max_age helper to src/flask/helpers.py that returns the max_age for a given filename based on its extension.
+    In src/flask/wrappers.py add a remote_addr_list property to Request that parses X-Forwarded-For into a list.
+    In src/flask/blueprints.py add a merge_url_defaults method that merges url_defaults from parent app with blueprint defaults.
+    In src/flask/views.py add a cache_control class variable to View that sets Cache-Control header on the response.
+    In src/flask/templating.py add a template_exists helper that returns True if a template with the given name can be found.
+    Add a request_id property to src/flask/wrappers.py Request that returns X-Request-ID header or generates a UUID fallback.
+    In src/flask/app.py add a signal_exception method that emits the got_request_exception signal; document parameters.
+    In src/flask/sessions.py add a copy method to SecureCookieSession that returns a shallow copy of the session as a plain dict.
+    In src/flask/ctx.py add a url property to RequestContext that returns the current request URL as a string.
+    Add a json_response helper to src/flask/helpers.py that creates a JSON response with a given status code.
+    In src/flask/blueprints.py add an endpoint_prefix property to Blueprint returning the name used to prefix endpoint names.
+    In src/flask/testing.py add a delete helper to FlaskClient that makes a DELETE request and returns the response.
+    In src/flask/app.py add a log_exception_info method that logs exception details at ERROR level using the app logger.
+    In src/flask/wrappers.py add a content_md5 property to Request that returns the Content-MD5 header value or None.
+    Add a make_response_from_dict helper to src/flask/helpers.py that builds a JSON response from a dict with optional status.
+    In src/flask/sessions.py add a __contains__ method to SecureCookieSession that checks if a key exists in the session.
+    In src/flask/ctx.py add a pop_all class method to AppContext that pops all pushed contexts from the current stack.
+    In src/flask/blueprints.py add a static_url_path_for method that returns the static URL path for a given filename.
+    In src/flask/views.py add a response_class class variable to View that overrides the response class used to build responses.
+    Add a format_exception helper to src/flask/helpers.py that formats an exception as a string with traceback.
+    In src/flask/templating.py add a render_string helper that renders a Jinja2 template from a string rather than a file.
+    In src/flask/app.py add a count_error_handlers method that returns the total number of registered error handlers.
+    In src/flask/wrappers.py add a is_xhr property to Request returning True when X-Requested-With is XMLHttpRequest.
+    In src/flask/sessions.py add a permanent property setter to SecureCookieSession that also updates the modified flag.
+    In src/flask/ctx.py add a get_current_app helper function that returns the current app from the app context or raises RuntimeError.
+    Add a chunk_response helper to src/flask/helpers.py that streams an iterable as a chunked HTTP response.
+    In src/flask/blueprints.py add a deferred_count property to Blueprint returning the count of deferred setup functions.
+    In src/flask/testing.py add an options helper to FlaskClient that makes an OPTIONS request and returns the response.
+    In src/flask/app.py add a max_content_length property that returns the MAX_CONTENT_LENGTH config value or None.
+    In src/flask/wrappers.py add a scheme property to Request that returns the URL scheme (http or https).
+    In src/flask/views.py add a strict_slashes class variable to View that controls URL trailing slash behavior.
+    In src/flask/templating.py add a list_templates helper that returns all templates matching a given glob pattern.
+    Add a response_headers_defaults dict to src/flask/app.py Flask that gets merged into every response automatically.
+    In src/flask/sessions.py add a get_expiry method to SecureCookieSession returning the expiry datetime or None if permanent is False.
+    In src/flask/app.py add a get_logger method that returns the app logger and accepts an optional name suffix.
+    In src/flask/wrappers.py add a is_secure property to Request returning True when the request was made over HTTPS.
+    In src/flask/blueprints.py add a has_error_handlers property to Blueprint returning True if any error handlers are registered.
+    In src/flask/helpers.py add a make_redirect helper that wraps redirect() and appends query params from a dict.
+    In src/flask/sessions.py add a touch method to SecureCookieSession that resets the modified flag without changing data.
+    In src/flask/ctx.py add a with_appcontext decorator that pushes an app context for the duration of the decorated function.
+    In src/flask/views.py add a default_methods class variable to View used when methods is not explicitly set.
+    In src/flask/templating.py add a render_template_with_globals helper that merges extra globals before rendering.
+    In src/flask/app.py add a route_count_by_method method returning a dict of HTTP method to number of routes.
+    In src/flask/wrappers.py add a forwarded_for property to Request returning the first IP in X-Forwarded-For or remote_addr.
+    In src/flask/blueprints.py add a teardown_count property to Blueprint returning how many teardown functions are registered.
+    In src/flask/helpers.py add a stream_with_context_json helper that streams a list of dicts as newline-delimited JSON.
+    In src/flask/sessions.py add a diff method to SecureCookieSession returning keys that changed since the session was loaded.
+    In src/flask/ctx.py add a current_app_safe helper that returns the current app or None if no app context is active.
+    In src/flask/app.py add a has_static_folder property that returns True when the static folder is configured.
+    In src/flask/views.py add a methods_with_defaults class variable to View listing methods that return a default response.
+    In src/flask/wrappers.py add a path_segments property to Request returning the URL path split by slash into a list.
+    In src/flask/blueprints.py add a root_path property to Blueprint returning the absolute path to the blueprint root.
+    In src/flask/helpers.py add a abort_if helper that calls abort with the given code if a condition is True.
+    In src/flask/sessions.py add a ttl property to SecureCookieSession returning seconds remaining until the session expires.
+    In src/flask/ctx.py add a ensure_appcontext helper that pushes an app context only if one is not already active.
+    In src/flask/app.py add a config_get helper that reads a config key with a type cast and optional default value.
+    In src/flask/wrappers.py add a content_charset property to Request returning the charset from the content-type header.
+    In src/flask/blueprints.py add a url_values_preprocessors_count property returning number of registered URL value preprocessors.
+    In src/flask/helpers.py add a send_from_directory_safe that wraps send_from_directory and returns 404 on OSError.
+    In src/flask/sessions.py add a merge method to SecureCookieSession that updates session keys from a dict without overwriting existing ones.
+    In src/flask/templating.py add a get_template_source helper that returns the raw source string of a named template.
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: aider-bench
+  namespace: aider-bench
+spec:
+  completions: 128
+  parallelism: PARALLELISM_PLACEHOLDER
+  completionMode: Indexed
+  backoffLimit: 127
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: clone
+          image: alpine/git:latest
+          command:
+            - sh
+            - -c
+            - |
+              export HOME=/tmp
+              git config --global user.email "aider@bench.local"
+              git config --global user.name "Aider Bench"
+              git clone --depth=1 https://github.com/pallets/flask.git /workspace
+              chmod -R a+w /workspace
+          env:
+            - name: HOME
+              value: /tmp
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+      containers:
+        - name: pool
+          image: ubuntu:24.04
+          command:
+            - sh
+            - -c
+            - |
+              IDX=${JOB_COMPLETION_INDEX:-0}
+              TASK=$(sed -n "$((IDX + 1))p" /tasks/tasks.txt)
+              echo "=== Pod $IDX: $TASK ==="
+              # Install curl and download pool binary
+              apt-get update -qq && apt-get install -y -qq curl ca-certificates
+              curl -fsSL https://github.com/poolsideai/pool/releases/download/v1.0.5/pool-linux-amd64.tar.gz \
+                | tar -xz -C /usr/local/bin
+              mv /usr/local/bin/pool-linux-amd64 /usr/local/bin/pool
+              chmod +x /usr/local/bin/pool
+              cd /workspace
+              pool exec -p "$TASK" --unsafe-auto-allow
+          env:
+            - name: POOLSIDE_API_KEY
+              value: "sk-poolside-litellm"
+            - name: POOLSIDE_STANDALONE_BASE_URL
+              value: "http://litellm.litellm.svc.cluster.local:4000/v1"
+            - name: POOLSIDE_STANDALONE_MODEL
+              value: "laguna"
+            - name: HOME
+              value: /tmp
+          volumeMounts:
+            - name: workspace
+              mountPath: /workspace
+            - name: tasks
+              mountPath: /tasks
+      volumes:
+        - name: workspace
+          emptyDir: {}
+        - name: tasks
+          configMap:
+            name: aider-bench-tasks

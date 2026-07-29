@@ -1,0 +1,23 @@
+image:
+  repository: ghcr.io/maximhq/bifrost
+  tag: latest
+  pullPolicy: IfNotPresent
+
+storage:
+  type: sqlite
+  sqlite:
+    path: /data/bifrost.db
+
+service:
+  type: ClusterIP
+  port: 8000
+
+telemetry:
+  enabled: true
+  otel:
+    endpoint: "otel-collector.observability.svc.cluster.local:4317"
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi

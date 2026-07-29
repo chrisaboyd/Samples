@@ -1,0 +1,32 @@
+# ClickHouse values for dev
+statefulset:
+  replicaCount: 1
+  
+config:
+  timezone: UTC
+  cluster_enabled: false
+  
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: local-path
+  
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 1
+    memory: 2Gi
+
+service:
+  type: ClusterIP
+  ports:
+    http: 8123
+    native: 9000
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    namespace: observability

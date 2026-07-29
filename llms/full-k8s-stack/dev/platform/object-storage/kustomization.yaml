@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: platform
+
+resources:
+  - manifests/seaweedfs-master.yaml
+  - manifests/seaweedfs-volume.yaml
+  - manifests/seaweedfs-filer.yaml
+  - manifests/bucket-langfuse.yaml
+  - secrets/seaweedfs-secret.yaml

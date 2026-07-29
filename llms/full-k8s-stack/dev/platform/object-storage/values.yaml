@@ -1,0 +1,43 @@
+# SeaweedFS values for dev
+master:
+  replicaCount: 1
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: local-path
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+volume:
+  replicaCount: 1
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: local-path
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+filer:
+  replicaCount: 1
+  s3: true
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: local-path
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+service:
+  master:
+    type: ClusterIP
+  volume:
+    type: ClusterIP
+  filer:
+    type: ClusterIP
+    s3Port: 8333

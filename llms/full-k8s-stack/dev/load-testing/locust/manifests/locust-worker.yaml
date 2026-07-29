@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust-worker
+  namespace: load-testing
+  labels:
+    app.kubernetes.io/name: locust-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: worker
+      app.kubernetes.io/name: locust
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/name: locust
+    spec:
+      containers:
+        - name: locust
+          image: locustio/locust:latest
+          command:
+            - locust
+            - --worker
+            - --master-host
+            - locust.load-testing.svc.cluster.local
+            - --locustfile
+            - /locust/locustfile.py
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: locustfile
+              mountPath: /locust
+      volumes:
+        - name: locustfile
+          configMap:
+            name: locustfile
+            items:
+              - key: locustfile.py
+                path: locustfile.py

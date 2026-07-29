@@ -1,0 +1,26 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: bifrost
+  namespace: observability
+  labels:
+    app.kubernetes.io/name: bifrost
+spec:
+  # Bifrost serves Prometheus metrics unauthenticated on its main http port (8080).
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: bifrost
+  namespaceSelector:
+    matchNames:
+      - bifrost
+  endpoints:
+    - port: http
+      interval: 30s
+      path: /metrics
+      relabelings:
+        # `bifrost` and `bifrost-headless` carry identical labels and back the same
+        # pod, so a label selector alone matches both and every series is scraped
+        # twice. Keep only the ClusterIP service.
+        - sourceLabels: [__meta_kubernetes_service_name]
+          regex: bifrost
+          action: keep

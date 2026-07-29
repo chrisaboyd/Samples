@@ -1,0 +1,41 @@
+# LiteLLM values for dev
+image:
+  repository: ghcr.io/berriai/litellm
+  tag: main-latest
+  pullPolicy: IfNotPresent
+
+env:
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: litellm-postgres
+        key: database-url
+  - name: LITELLM_MASTER_KEY
+    valueFrom:
+      secretKeyRef:
+        name: litellm-secrets
+        key: master-key
+
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 1
+    memory: 2Gi
+
+service:
+  type: ClusterIP
+  ports:
+    http: 8000
+
+prometheus:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    namespace: observability
+
+guardrails:
+  enabled: true

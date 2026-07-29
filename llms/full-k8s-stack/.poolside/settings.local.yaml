@@ -1,0 +1,7 @@
+tools:
+    shell:
+        allow:
+            - mkdir *
+            - find *
+            - ls *
+            - kubectl *

@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - manifests/namespaces.yaml
+  - manifests/storageclass.yaml
+  # Prometheus Operator CRDs are intentionally NOT defined here. They ship with the
+  # kube-prometheus-stack chart (Layer 5). Applying hand-written stubs at Layer 0 wins
+  # permanently -- Helm never overwrites an existing CRD -- and a stub with an
+  # incomplete openAPIV3Schema makes the API server prune every field it omits,
+  # silently gutting Prometheus/ServiceMonitor specs.
+  - manifests/gpu-operator.yaml
+  - manifests/ingress-nginx.yaml
+
+configMapGenerator:
+  - name: cluster-config
+    literals:
+      - NAMESPACE_PLATFORM=platform
+      - NAMESPACE_GATEWAY=gateway
+      - NAMESPACE_GUARDRAILS=guardrails
+      - NAMESPACE_OBSERVABILITY=observability
+      - NAMESPACE_INFERENCE=inference
+      - NAMESPACE_LOAD_TESTING=load-testing

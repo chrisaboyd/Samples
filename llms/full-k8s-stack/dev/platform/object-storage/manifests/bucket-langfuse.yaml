@@ -1,0 +1,14 @@
+# Langfuse bucket configuration
+# This is a placeholder - SeaweedFS S3 will be used by Langfuse for:
+# - Raw ingestion events
+# - Multimodal payloads
+# - Export files
+#
+# Bucket name: langfuse
+# Access via: seaweedfs-filer.platform.svc.cluster.local:8333
+# 
+# Langfuse environment variables (to be set in langfuse deployment):
+# S3_ENDPOINT=seaweedfs-filer.platform.svc.cluster.local:8333
+# S3_BUCKET=langfuse
+# S3_ACCESS_KEY_ID=<from seaweedfs-secret>
+# S3_SECRET_ACCESS_KEY=<from seaweedfs-secret>

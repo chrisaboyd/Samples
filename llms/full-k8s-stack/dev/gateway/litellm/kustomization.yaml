@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: gateway
+
+resources:
+  - manifests/litellm-deployment.yaml
+  - manifests/litellm-service.yaml
+  - secrets/litellm-postgres.yaml
+  - secrets/litellm-secrets.yaml

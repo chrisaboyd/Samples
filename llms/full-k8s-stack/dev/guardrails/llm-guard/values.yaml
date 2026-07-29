@@ -1,0 +1,8 @@
+image:
+  repository: ghcr.io/protectai/llm-guard
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8000

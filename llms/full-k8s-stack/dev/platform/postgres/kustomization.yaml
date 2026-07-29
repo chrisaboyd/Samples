@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: platform
+
+resources:
+  - secrets/postgres-secret.yaml
+  
+# PostgreSQL is deployed via Helm in deploy.sh
+# This file ensures the namespace and secrets are in place
+# Helm command: helm install postgresql oci://registry-1.docker.io/bitnamicharts/postgresql --namespace platform

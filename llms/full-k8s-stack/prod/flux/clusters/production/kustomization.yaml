@@ -1,0 +1,19 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: production
+  namespace: flux-system
+spec:
+  path: ./prod/flux/clusters/production
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  prune: true
+  wait: true
+  timeout: 10m
+  
+  # Order: infrastructure → platform → applications
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: production-config
