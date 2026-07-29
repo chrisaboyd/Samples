@@ -31,6 +31,11 @@ Headline stats (running, queued, KV cache, prompt/output tok/s, finished req/s),
 latency (TTFT, inter-token latency, end-to-end, and a queue/prefill/decode p95
 breakdown), throughput, scheduler state, and cache effectiveness.
 
+The bottom section breaks each latency histogram out into its own p50/p95/p99 panel —
+queue, prefill, decode, inference (prefill + decode, excluding queue wait), and time
+per output token. All are Prometheus histograms, so read the p95/p99 series rather than
+the average; the p50 is there only for contrast.
+
 `vllm:kv_cache_usage_perc` is a 0–1 fraction despite the `_perc` suffix, so those
 panels use Grafana's `percentunit`.
 

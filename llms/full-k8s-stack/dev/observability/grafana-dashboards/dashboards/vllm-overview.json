@@ -5,7 +5,7 @@
   "tags": ["vllm", "inference", "llm"],
   "editable": true,
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "30s",
   "time": { "from": "now-1h", "to": "now" },
   "timezone": "browser",
@@ -538,6 +538,207 @@
           "datasource": { "type": "prometheus", "uid": "${ds}" },
           "expr": "sum by (finished_reason) (rate(vllm:request_success_total{model_name=~\"$model\"}[$__rate_interval]))",
           "legendFormat": "{{finished_reason}}"
+        }
+      ]
+    },
+
+    {
+      "id": 19,
+      "type": "timeseries",
+      "title": "Queue Time",
+      "description": "Time a request waits in the scheduler queue before prefill starts. Rising p99 means the engine is admission-limited.",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 36 },
+      "datasource": { "type": "prometheus", "uid": "${ds}" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "custom": { "lineWidth": 2, "fillOpacity": 0, "showPoints": "never", "spanNulls": true }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "showLegend": true, "displayMode": "list", "placement": "bottom", "calcs": [] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(vllm:request_queue_time_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p50"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_queue_time_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p95"
+        },
+        {
+          "refId": "C",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(vllm:request_queue_time_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "type": "timeseries",
+      "title": "Prefill Time",
+      "description": "Time spent in the prefill phase. Scales with prompt length and is reduced by prefix-cache hits.",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 36 },
+      "datasource": { "type": "prometheus", "uid": "${ds}" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "custom": { "lineWidth": 2, "fillOpacity": 0, "showPoints": "never", "spanNulls": true }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "showLegend": true, "displayMode": "list", "placement": "bottom", "calcs": [] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(vllm:request_prefill_time_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p50"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_prefill_time_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p95"
+        },
+        {
+          "refId": "C",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(vllm:request_prefill_time_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "Decode Time",
+      "description": "Time spent in the decode phase. Grows with output length and with batch contention.",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
+      "datasource": { "type": "prometheus", "uid": "${ds}" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "custom": { "lineWidth": 2, "fillOpacity": 0, "showPoints": "never", "spanNulls": true }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "showLegend": true, "displayMode": "list", "placement": "bottom", "calcs": [] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(vllm:request_decode_time_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p50"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_decode_time_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p95"
+        },
+        {
+          "refId": "C",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(vllm:request_decode_time_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "type": "timeseries",
+      "title": "Inference Time",
+      "description": "Time in the running phase (prefill + decode), excluding queue wait. Compare against end-to-end latency to isolate queueing.",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 44 },
+      "datasource": { "type": "prometheus", "uid": "${ds}" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "custom": { "lineWidth": 2, "fillOpacity": 0, "showPoints": "never", "spanNulls": true }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "showLegend": true, "displayMode": "list", "placement": "bottom", "calcs": [] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(vllm:request_inference_time_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p50"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_inference_time_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p95"
+        },
+        {
+          "refId": "C",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(vllm:request_inference_time_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "type": "timeseries",
+      "title": "Time Per Output Token",
+      "description": "Decode cost normalized per generated token — length-independent, so it isolates engine slowdown from longer responses.",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 52 },
+      "datasource": { "type": "prometheus", "uid": "${ds}" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "custom": { "lineWidth": 2, "fillOpacity": 0, "showPoints": "never", "spanNulls": true }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "showLegend": true, "displayMode": "list", "placement": "bottom", "calcs": [] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(vllm:request_time_per_output_token_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p50"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_time_per_output_token_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p95"
+        },
+        {
+          "refId": "C",
+          "datasource": { "type": "prometheus", "uid": "${ds}" },
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(vllm:request_time_per_output_token_seconds_bucket{model_name=~\"$model\"}[$__rate_interval])))",
+          "legendFormat": "p99"
         }
       ]
     }
