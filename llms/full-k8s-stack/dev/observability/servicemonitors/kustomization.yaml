@@ -3,9 +3,10 @@ kind: Kustomization
 
 namespace: observability
 
+# Only services that actually expose a Prometheus endpoint belong here. A ServiceMonitor
+# aimed at a non-existent endpoint produces a permanently down target, not "no data".
+# LiteLLM and Langfuse are deliberately absent -- see CONFIGURATION.md.
 resources:
-  - manifests/litellm-servicemonitor.yaml
   - manifests/bifrost-servicemonitor.yaml
-  - manifests/langfuse-servicemonitor.yaml
   - manifests/vllm-servicemonitor.yaml
   - manifests/dcgm-servicemonitor.yaml

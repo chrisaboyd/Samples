@@ -1,13 +1,26 @@
+# NOTE: neither class below is marked default on purpose.
+#
+# `local-path` is only usable on a cluster running Rancher/k3s local-path-provisioner;
+# the provisioner does not exist on EKS, so PVCs bound to it never provision. It
+# previously carried `storageclass.kubernetes.io/is-default: "true"`, which is a
+# misspelling of `storageclass.kubernetes.io/is-default-class` and therefore had no
+# effect. Correcting the key rather than removing it would have been actively harmful on
+# EKS: it would promote an unusable class to cluster default and leave every PVC that
+# omits a storageClassName stuck Pending.
+#
+# Components therefore pin storageClassName explicitly rather than relying on a default.
+# On EKS that means `gp2`, which the cluster provides and which is itself NOT annotated
+# as default -- so omitting the class fails with "no persistent volumes available for
+# this claim and no storage class is set".
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: local-path
-  annotations:
-    storageclass.kubernetes.io/is-default: "true"
 provisioner: k3s.io/local-path
 reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 ---
+# Requires the aws-ebs-csi-driver addon to be installed on the cluster.
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:

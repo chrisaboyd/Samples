@@ -1,6 +1,11 @@
+# Reference values only -- this component deploys raw manifests (see kustomization.yaml),
+# so nothing here is consumed by kustomize or Helm. Keep it in sync with
+# manifests/dcgm-exporter-daemonset.yaml by hand.
 image:
   repository: nvcr.io/nvidia/k8s/dcgm-exporter
-  tag: "3.3.5"
+  # Matches the DaemonSet. ":latest" on nvcr.io resolves to this same build
+  # (digest sha256:a1d913783fd185d78ed8b725334f75adc86eb594afe82961a73aa63c5d0ef423).
+  tag: "2.3.4-2.6.4-ubuntu20.04"
   pullPolicy: IfNotPresent
 
 serviceMonitor:

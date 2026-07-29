@@ -22,7 +22,11 @@ spec:
         nvidia.com/gpu.present: "true"
       containers:
         - name: dcgm-exporter
-          image: nvcr.io/nvidia/k8s/dcgm-exporter:latest
+          # Pinned deliberately: ":latest" on nvcr.io currently resolves to this same
+          # build (digest sha256:a1d9137...ef423), so pinning is not a version change --
+          # it just removes the nondeterminism of an unpinned tag.
+          # Note this predates DCGM's profiling module, so DCGM_FI_PROF_* is unavailable.
+          image: nvcr.io/nvidia/k8s/dcgm-exporter:2.3.4-2.6.4-ubuntu20.04
           args:
             - "-address=:8080"
           ports:
