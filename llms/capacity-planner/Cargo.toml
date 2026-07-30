@@ -1,0 +1,11 @@
+# LLM Capacity Planner — Rust workspace.
+# `lib` is the portable calculation core (Phase 1). A `ui` member (Tauri) is
+# added in Phase 2 and will depend on this library via path.
+[workspace]
+members = ["lib"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+version = "0.1.0"
+license = "BUSL-1.1"

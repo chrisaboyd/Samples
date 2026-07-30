@@ -1,0 +1,38 @@
+tools:
+    shell:
+        allow:
+            - cd *
+            - find *
+            - head *
+            - git log *
+            - echo *
+            - git branch *
+            - git status
+            - ls *
+            - rustc *
+            - cargo *
+            - node *
+            - npm *
+            - python3 *
+            - which tauri
+            - which rustup
+            - rustup *
+            - which brew
+            - pip3 *
+            - git *
+            - curl *
+            - sh *
+            - tail *
+            - wc *
+            - source *
+            - which cargo *
+            - mkdir *
+            - cp *
+            - grep *
+            - sed *
+            - cut *
+            - ./target/release/capacity-planner *
+            - sort
+paths:
+    allow:
+        - path: /tmp/**

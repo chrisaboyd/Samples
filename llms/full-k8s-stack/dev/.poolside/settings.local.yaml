@@ -1,0 +1,15 @@
+tools:
+    shell:
+        allow:
+            - cd *
+            - git status
+            - echo *
+            - git branch *
+            - git log *
+            - git remote *
+            - grep *
+            - git rev-list *
+            - git diff *
+            - tail *
+            - which gh
+            - gh auth *
