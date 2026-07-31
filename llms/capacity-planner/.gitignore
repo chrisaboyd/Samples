@@ -1,0 +1,15 @@
+# Rust workspace build artifacts (shared target dir at repo root)
+/target
+ui/src-tauri/target/
+
+# Frontend build outputs and Tauri codegen
+node_modules/
+ui/dist/
+ui/src-tauri/gen/
+ui/gen/
+
+# IDEs / OS
+*.swp
+.idea/
+.vscode/
+.DS_Store

@@ -1,0 +1,560 @@
+{
+  "verdict": "comfortable",
+  "memory": {
+    "weightGiBPerGpu": 65.4487693971023,
+    "checkpointStorageGiB": 61.16707420349121,
+    "checkpointPrecisionLabel": "Hypothetical quantization estimate — NVFP4",
+    "runtimeGiBPerGpu": 1.0,
+    "kvGiBPerAverageSequence": 0.78515625,
+    "kvGiBPerMaximumSequence": 24.03515625,
+    "freeGiBPerGpu": 84.42548769060522,
+    "memoryConcurrencyAverage": 107,
+    "memoryConcurrencyMaximum": 3,
+    "physicalGiBPerGpu": 167.63806343078613
+  },
+  "performance": {
+    "prefillTokensPerSecond": {
+      "min": 47225.104254895756,
+      "max": 102321.0592189408,
+      "unit": "tokens/s"
+    },
+    "decodeTokensPerSecondPerRequest": {
+      "min": 587.3879098771878,
+      "max": 1027.9288422850786,
+      "unit": "tokens/s"
+    },
+    "aggregateDecodeTokensPerSecond": {
+      "min": 1336.8351207855092,
+      "max": 2339.461461374641,
+      "unit": "tokens/s"
+    },
+    "estimatedTTFT": {
+      "min": 0.3212197102470863,
+      "max": 0.6955706930416933,
+      "unit": "seconds"
+    },
+    "estimatedStepLatency": {
+      "min": 0.0009728299847847513,
+      "max": 0.0017024524733733146,
+      "unit": "seconds"
+    },
+    "sloConcurrency": 34,
+    "note": "Analytical roofline (PRD §16.2). Three efficiency tiers (pessimistic/expected/optimistic, §16.3). Decode is bandwidth-limited at batch 1 on this GPU. Per-request decode and step latency are single-stream; aggregate throughput is at the SLO batch of 34 per group × 1 replica(s), where continuous batching amortises the weight read across the batch (§18.2)."
+  },
+  "practicalCapacity": {
+    "comfortableActiveRequests": 3,
+    "intermittentAgents": null,
+    "humanUsers": null,
+    "note": "Agent/user translation deferred to Phase 3 (requires agent duty cycle, §19). SLO concurrency now computed (§18.2)."
+  },
+  "topology": {
+    "tensorParallel": 1,
+    "dataParallel": 1,
+    "expertParallel": true,
+    "explanation": [
+      "Topology optimizer deferred to Phase 3 (PRD §31 §20)."
+    ],
+    "alternatives": [],
+    "note": "Phase 3"
+  },
+  "confidence": {
+    "memory": "analytical",
+    "performance": "analytical",
+    "concurrency": "analytical",
+    "analyzeLevel": "c",
+    "reasons": [
+      "Architecture-derived (Level C) from config.json",
+      "KV cache rounded to 128-token vLLM blocks",
+      "TP sharding: KV and weights divided by tensor_parallel=1",
+      "Roofline compute peak: 4000 TFLOPS",
+      "Roofline bandwidth: 8000 GB/s",
+      "SLO concurrency (§18.2): 34",
+      "Analytical roofline — ranges not calibrated (PRD §17)."
+    ],
+    "primaryUncertainty": "Analytical roofline with broad efficiency ranges; hypothetical quantization adds weight-load uncertainty (PRD §16.3/§33)"
+  },
+  "provenance": {
+    "formulaVersion": "0.1.0",
+    "hardwareDataRevision": "PRD §9",
+    "modelSourceRevision": null,
+    "gpuSku": "B200 SXM 180 GB"
+  },
+  "evidence": [
+    {
+      "what": "physical VRAM",
+      "value": "167.6381 GiB",
+      "source": "PRD §9"
+    },
+    {
+      "what": "utilization U",
+      "value": "90.00",
+      "source": "GPU-catalog default"
+    },
+    {
+      "what": "loaded weight/rank",
+      "value": "65.4488 GiB",
+      "source": "weight::loaded_weight_bytes_per_rank"
+    },
+    {
+      "what": "KV avg exact",
+      "value": "843055104 bytes",
+      "source": "kv::bytes_per_sequence_exact"
+    },
+    {
+      "what": "KV avg rounded",
+      "value": "843055104 bytes",
+      "source": "kv::bytes_per_sequence_rounded"
+    },
+    {
+      "what": "KV max exact",
+      "value": "25807552512 bytes",
+      "source": "kv::bytes_per_sequence_exact"
+    },
+    {
+      "what": "compute peak",
+      "value": "4000 TFLOPS",
+      "source": "PRD §9 GPU catalog"
+    },
+    {
+      "what": "memory bandwidth",
+      "value": "8000 GB/s",
+      "source": "PRD §9 GPU catalog"
+    },
+    {
+      "what": "decode TPS (analytical range)",
+      "value": "587–1028 tok/s",
+      "source": "performance::roofline (§16.2)"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "m-avail",
+      "description": "M_available = M_physical * U with U from GPU memory utilization (Phase-1 conservative profile).",
+      "scope": "memory"
+    },
+    {
+      "id": "runtime-reserve",
+      "description": "Fixed runtime reserve absorbs per-scheduler-token/sequence overhead (§14) in the conservative profile.",
+      "scope": "memory"
+    },
+    {
+      "id": "kv-block",
+      "description": "vLLM KV blocksize = 128 tokens; rounded within one block.",
+      "scope": "memory"
+    },
+    {
+      "id": "gb-to-gib",
+      "description": "Marketeted GB converted to GiB via 1e9/2^30 (exact for these magnitudes).",
+      "scope": "memory"
+    },
+    {
+      "id": "roofline-efficiency",
+      "description": "Analytical roofline uses broad efficiency tiers (BW: 0.40/0.55/0.70, compute: 0.30/0.50/0.65) per PRD §16.3; values are ranges, not precise predictions.",
+      "scope": "performance"
+    },
+    {
+      "id": "slo-queue-model",
+      "description": "SLO concurrency (§18.2) is the largest batch B where T_prefill + avg_output × T_step(B) ≤ target, times the DP replica count. T_step(B) reads weights once per step and scales only KV and activation traffic with B (continuous batching); MoE routed experts are weighted by 1 − (1 − k/E)^B. Duty cycle and burst factors (§19) are not applied yet.",
+      "scope": "concurrency"
+    },
+    {
+      "id": "c-memory-worst-case",
+      "description": "C_memory takes the *minimum* of the average- and maximum-context concurrencies, i.e. it assumes every concurrent request may simultaneously occupy its maximum context. This is deliberately conservative; a mixed-length workload supports more.",
+      "scope": "concurrency"
+    },
+    {
+      "id": "no-collective-overhead",
+      "description": "Tensor parallelism is modelled as linear scaling of bandwidth and compute. NVLink/PCIe all-reduce latency between ranks is not subtracted, so multi-GPU TP figures are optimistic.",
+      "scope": "performance"
+    }
+  ],
+  "warnings": [
+    "Hypothetical quantization — weights use a format not present in the checkpoint; treat as an estimate."
+  ],
+  "derivations": [
+    {
+      "id": "m-physical",
+      "label": "Physical VRAM per GPU",
+      "meaning": "The card's advertised memory, converted from decimal GB (what vendors market) to binary GiB (what allocators report).",
+      "formula": "M_physical = marketed_GB × 10^9 / 2^30",
+      "substitution": "180 GB × 10^9 / 2^30\n= 180,000,000,000 bytes / 1,073,741,824",
+      "result": "167.64 GiB"
+    },
+    {
+      "id": "m-available",
+      "label": "Allocatable VRAM per GPU",
+      "meaning": "How much of the card the inference engine is allowed to claim. The remainder is left to the driver and fragmentation headroom, so the engine never runs the card to its literal limit.",
+      "formula": "M_available = M_physical × U",
+      "substitution": "167.64 GiB × 0.90\n(U = memory utilization ceiling, B200 SXM 180 GB catalog default)",
+      "result": "150.87 GiB"
+    },
+    {
+      "id": "m-checkpoint",
+      "label": "Checkpoint storage",
+      "meaning": "On-disk size of the weights at the selected precision — what you would download. NVFP4 is not exactly half a byte per parameter: each group of weights carries an extra FP8 scale byte.",
+      "formula": "M_checkpoint = sum over components of  N × bytes(P)  +  ceil(N / G) scale bytes for NVFP4",
+      "substitution": "  embeddings               308.28M × 0.5 B (nvfp4) + 19.27M scale bytes = 0.161 GiB\n  output head              308.28M × 0.5 B (nvfp4) + 19.27M scale bytes = 0.161 GiB\n  attention projections      2.00B × 0.5 B (nvfp4) + 125.04M scale bytes = 1.048 GiB\n  dense MLP                113.25M × 0.5 B (nvfp4) + 7.08M scale bytes = 0.05933 GiB\n  routed experts           113.55B × 0.5 B (nvfp4) + 7.10B scale bytes = 59.48 GiB\n  shared experts           443.55M × 0.5 B (nvfp4) + 27.72M scale bytes = 0.232 GiB\n  routers                   36.96M × 0.5 B (nvfp4) + 2.31M scale bytes = 0.01936 GiB\n  norms                     298.0K × 2 B (bf16) = 0.00056 GiB\n  total                    116.76B params                   61.17 GiB",
+      "result": "61.17 GiB"
+    },
+    {
+      "id": "m-weights",
+      "label": "Weights resident per GPU",
+      "meaning": "VRAM the model parameters occupy once loaded. Larger than the checkpoint because the engine needs repack/dequantization buffers, and divided by TP because tensor parallelism splits the model across ranks.",
+      "formula": "M_weights = M_checkpoint × loadFactor(P_weight) / TP",
+      "substitution": "61.17 GiB × 1.07 / 1\n(load factor 1.07 for NVFP4; TP = 1)",
+      "result": "65.45 GiB"
+    },
+    {
+      "id": "m-runtime",
+      "label": "Runtime reserve per GPU",
+      "meaning": "Fixed allowance for the CUDA context, memory allocator, and compiled kernels. Held back before any KV cache is budgeted.",
+      "formula": "M_runtime = per-SKU fixed reserve",
+      "substitution": "B200 SXM 180 GB catalog default",
+      "result": "1.00 GiB"
+    },
+    {
+      "id": "m-free",
+      "label": "Free for KV cache",
+      "meaning": "What is left on each GPU after weights and runtime overhead. This is the entire budget available to hold conversation context for concurrent requests — it is what caps concurrency.",
+      "formula": "M_freeForKV = M_available - M_weights - M_runtime - M_draft",
+      "substitution": "150.87 GiB - 65.45 GiB - 1.00 GiB - 0.00 GiB",
+      "result": "84.43 GiB"
+    },
+    {
+      "id": "kv-avg",
+      "label": "KV cache per sequence @ average context",
+      "meaning": "Memory one in-flight request holds to keep its attention cache at the average context length. Every concurrent request pays this.",
+      "formula": "KV_seq = 2 × H_kv × D_head × B_kv × (L_full × S + L_sliding × min(S, W)) / TP",
+      "substitution": "2 × 8 × 128 × 1 B (fp8) × (12 × 32,768 + 36 × min(32,768, 512)) / 1\n= 2 × 8 × 128 × 1 × (411,648) / 1\n= 843,055,104 bytes exact\nalready block-aligned (128-token vLLM blocks)",
+      "result": "0.785 GiB"
+    },
+    {
+      "id": "kv-max",
+      "label": "KV cache per sequence @ maximum context",
+      "meaning": "The same cost for a request that has filled the context window — the worst case a single request can cost.",
+      "formula": "KV_seq = 2 × H_kv × D_head × B_kv × (L_full × S + L_sliding × min(S, W)) / TP",
+      "substitution": "2 × 8 × 128 × 1 B (fp8) × (12 × 1,048,576 + 36 × min(1,048,576, 512)) / 1\n= 2 × 8 × 128 × 1 × (12,601,344) / 1\n= 25,807,552,512 bytes exact\nalready block-aligned (128-token vLLM blocks)",
+      "result": "24.04 GiB"
+    },
+    {
+      "id": "c-mem-avg",
+      "label": "Memory ceiling (avg ctx)",
+      "meaning": "How many requests fit in VRAM at once if each holds an average-length context. A pure memory limit — it ignores whether the GPU is fast enough to serve them within your latency target.",
+      "formula": "C_memory(avg) = floor( M_freeForKV / KV_seq(avg) )",
+      "substitution": "floor( 84.43 GiB / 0.785 GiB )\n= floor( 90,651,177,145 bytes / 843,055,104 bytes )",
+      "result": "107 concurrent requests"
+    },
+    {
+      "id": "c-mem-max",
+      "label": "Memory ceiling (max ctx)",
+      "meaning": "The same count in the worst case, where every concurrent request has filled the full context window simultaneously. Usually much smaller — it is the floor under which the deployment cannot be starved.",
+      "formula": "C_memory(max) = floor( M_freeForKV / KV_seq(max) )",
+      "substitution": "floor( 84.43 GiB / 24.04 GiB )\n= floor( 90,651,177,145 bytes / 25,807,552,512 bytes )",
+      "result": "3 concurrent requests"
+    },
+    {
+      "id": "c-comfortable",
+      "label": "Comfortable active requests",
+      "meaning": "The headline number: requests that can be in flight at the same time while still meeting your latency target. It is the tightest of the three limits — running out of memory and missing the SLO are both failures, so the smallest one governs.",
+      "formula": "C_comfortable = min( C_memory(avg), C_memory(max), C_SLO )",
+      "substitution": "min( 107, 3, 34 )\n  C_memory(avg) = 107 — memory at average context\n  C_memory(max) = 3 — memory at full context\n  C_SLO         = 34 — latency target of 10.0 s",
+      "result": "3 concurrent requests"
+    },
+    {
+      "id": "p-flops-token",
+      "label": "FLOPs per token",
+      "meaning": "Arithmetic one token costs on a forward pass. Sets the compute side of the roofline — the floor on latency even with infinite bandwidth.",
+      "formula": "FLOPs/token = 2 × active_params + 4 × H_q × D_head × sum(L × S_eff)",
+      "substitution": "matmul     2 × 7.65B active params = 15.29B FLOPs\nattention  4 × H_q × D_head × sum(layers × context) = 10.12B FLOPs\ntotal                                             = 25.41B FLOPs",
+      "result": "25.41B FLOPs/token"
+    },
+    {
+      "id": "p-step",
+      "label": "Step latency",
+      "meaning": "Wall-clock time to emit one token for one request. The roofline takes whichever is slower — moving the bytes, or doing the arithmetic.",
+      "formula": "T_step(B) = max( Bytes_step(B) / (BW × eff_bw), B × FLOPs/token / (Compute × eff_c) )\nwhere Bytes_step(B) = W_step(B) + B × (KV_seq + activations)",
+      "substitution": "at B = 1, expected tier (eff_bw = 55%, eff_c = 50%):\nBytes_step = 4.29 GiB weights + 804.00 MiB KV + 2.25 MiB activations = 5.07 GiB\nt_bandwidth = 5.07 GiB / (8,000 GB/s × 1 rank(s) × 0.55) = 1.24 ms\nt_compute   = 25.41B FLOPs / (4,000 TFLOPS × 1 rank(s) × 0.50) = 0.01 ms\nmax(...) → bandwidth-limited",
+      "result": "0.97 ms – 1.70 ms"
+    },
+    {
+      "id": "p-decode",
+      "label": "Decode rate per request",
+      "meaning": "Tokens per second a single request sees once it starts generating. This is the number a user experiences as typing speed.",
+      "formula": "decode_tps = 1 / T_step(1)",
+      "substitution": "1 / 0.97 ms = 1028 tok/s   (optimistic tier)\n1 / 1.70 ms = 587 tok/s   (pessimistic tier)",
+      "result": "587 – 1028 tokens/s"
+    },
+    {
+      "id": "p-prefill",
+      "label": "Prefill rate",
+      "meaning": "Tokens per second while reading the prompt. Much faster than decode because one weight read is amortised across the whole prompt, which usually leaves prefill compute-limited rather than bandwidth-limited.",
+      "formula": "prefill_tps = min( BW × eff_bw / bytes_per_token , Compute × eff_c / FLOPs_per_token )",
+      "substitution": "bytes/token = 65.45 GiB weights / 32,768 ctx + 96.00 KiB KV write + 2.25 MiB activations\n= 4.39 MiB\nbandwidth-bound: 956059 tok/s   compute-bound: 78709 tok/s   (expected tier)",
+      "result": "47225 – 102321 tokens/s"
+    },
+    {
+      "id": "p-ttft",
+      "label": "Time to first token",
+      "meaning": "How long a request waits before the first token appears: read the whole prompt, then run one decode step.",
+      "formula": "TTFT = S / prefill_tps + T_step(1)",
+      "substitution": "32,768 tokens / 102321 tok/s + 0.97 ms = 321.22 ms   (optimistic)\n32,768 tokens / 47225 tok/s + 1.70 ms = 695.57 ms   (pessimistic)",
+      "result": "321.22 ms – 695.57 ms"
+    },
+    {
+      "id": "p-slo",
+      "label": "SLO concurrency",
+      "meaning": "The largest batch that still meets your latency target, times the number of independent replicas. Purely a speed limit — memory is accounted separately.",
+      "formula": "C_SLO = DP × max{ B <= C_memory(avg) : T_prefill + N_out × T_step(B) <= target }",
+      "substitution": "T_prefill = 32,768 tokens / 78709 tok/s = 416.32 ms\nat B = 34: 416.32 ms + 512 output × 18.50 ms = 9.89 s  <=  10.0 s target\nC_SLO = 34 × 1 replica(s)",
+      "result": "34 concurrent requests"
+    },
+    {
+      "id": "p-aggregate",
+      "label": "Aggregate decode throughput",
+      "meaning": "Total tokens per second the whole deployment emits with every slot busy. Continuous batching reads the weights once per step and shares them across the batch, so this is far above one request's rate.",
+      "formula": "aggregate = B_slo / T_step(B_slo) × DP",
+      "substitution": "34 / 14.53 ms × 1 replica(s) = 2339 tok/s   (optimistic)\n34 / 25.43 ms × 1 replica(s) = 1337 tok/s   (pessimistic)",
+      "result": "1337 – 2339 tokens/s"
+    }
+  ],
+  "inputsUsed": [
+    {
+      "group": "Model",
+      "name": "Architecture",
+      "key": "model_type",
+      "value": "laguna",
+      "usedFor": "adapter selection"
+    },
+    {
+      "group": "Model",
+      "name": "Total parameters",
+      "key": null,
+      "value": "116.76B (exact)",
+      "usedFor": "M_checkpoint, FLOPs/token"
+    },
+    {
+      "group": "Model",
+      "name": "Hidden size",
+      "key": "hidden_size",
+      "value": "3,072",
+      "usedFor": "activation traffic"
+    },
+    {
+      "group": "Model",
+      "name": "Layers",
+      "key": "num_hidden_layers",
+      "value": "48",
+      "usedFor": "activation traffic"
+    },
+    {
+      "group": "Model",
+      "name": "Vocabulary size",
+      "key": "vocab_size",
+      "value": "100,352",
+      "usedFor": "embedding + output-head parameters"
+    },
+    {
+      "group": "Model",
+      "name": "MLP intermediate size",
+      "key": "intermediate_size",
+      "value": "12,288",
+      "usedFor": "dense MLP parameters"
+    },
+    {
+      "group": "Model",
+      "name": "Query heads",
+      "key": "num_attention_heads",
+      "value": "48",
+      "usedFor": "H_q — attention-score FLOPs"
+    },
+    {
+      "group": "Model",
+      "name": "KV heads",
+      "key": "num_key_value_heads",
+      "value": "8",
+      "usedFor": "H_kv — KV_seq"
+    },
+    {
+      "group": "Model",
+      "name": "Head dimension",
+      "key": "head_dim",
+      "value": "128",
+      "usedFor": "D_head — KV_seq"
+    },
+    {
+      "group": "Model",
+      "name": "full attention",
+      "key": "layer_types",
+      "value": "12 layers",
+      "usedFor": "L_full / L_sliding / W — KV_seq"
+    },
+    {
+      "group": "Model",
+      "name": "sliding-window attention",
+      "key": "layer_types",
+      "value": "36 layers, window 512",
+      "usedFor": "L_full / L_sliding / W — KV_seq"
+    },
+    {
+      "group": "Model",
+      "name": "Experts",
+      "key": "num_experts",
+      "value": "256",
+      "usedFor": "E — expert activation fraction"
+    },
+    {
+      "group": "Model",
+      "name": "Active experts per token",
+      "key": "num_experts_per_tok",
+      "value": "10",
+      "usedFor": "k — active parameters, weight bytes per step"
+    },
+    {
+      "group": "Model",
+      "name": "Checkpoint precision",
+      "key": "torch_dtype",
+      "value": "BF16",
+      "usedFor": "native weight precision"
+    },
+    {
+      "group": "Model",
+      "name": "Native context window",
+      "key": "max_position_embeddings",
+      "value": "1,048,576",
+      "usedFor": "reference only — not a calculation input"
+    },
+    {
+      "group": "GPU",
+      "name": "SKU",
+      "key": null,
+      "value": "1 × B200 SXM 180 GB",
+      "usedFor": "hardware figures below"
+    },
+    {
+      "group": "GPU",
+      "name": "Marketed memory",
+      "key": null,
+      "value": "180 GB",
+      "usedFor": "M_physical"
+    },
+    {
+      "group": "GPU",
+      "name": "Memory utilization ceiling",
+      "key": null,
+      "value": "90%",
+      "usedFor": "U — M_available"
+    },
+    {
+      "group": "GPU",
+      "name": "Runtime reserve",
+      "key": null,
+      "value": "1.00 GiB",
+      "usedFor": "M_runtime"
+    },
+    {
+      "group": "GPU",
+      "name": "Memory bandwidth",
+      "key": null,
+      "value": "8,000 GB/s",
+      "usedFor": "BW — decode/prefill roofline"
+    },
+    {
+      "group": "GPU",
+      "name": "Compute peak",
+      "key": null,
+      "value": "4,000 TFLOPS @ NVFP4",
+      "usedFor": "Compute — roofline"
+    },
+    {
+      "group": "Workload",
+      "name": "Tensor parallel",
+      "key": null,
+      "value": "1",
+      "usedFor": "TP — divides weights and KV"
+    },
+    {
+      "group": "Workload",
+      "name": "Data-parallel replicas",
+      "key": null,
+      "value": "1",
+      "usedFor": "DP — C_SLO, aggregate throughput"
+    },
+    {
+      "group": "Workload",
+      "name": "Average context",
+      "key": null,
+      "value": "32,768 tokens",
+      "usedFor": "S — KV_seq(avg), attention FLOPs"
+    },
+    {
+      "group": "Workload",
+      "name": "Maximum context",
+      "key": null,
+      "value": "1,048,576 tokens",
+      "usedFor": "S — KV_seq(max)"
+    },
+    {
+      "group": "Workload",
+      "name": "Average output tokens",
+      "key": null,
+      "value": "512",
+      "usedFor": "N_out — C_SLO"
+    },
+    {
+      "group": "Workload",
+      "name": "Latency target",
+      "key": null,
+      "value": "10.0 s",
+      "usedFor": "target — C_SLO"
+    },
+    {
+      "group": "Workload",
+      "name": "Weight precision",
+      "key": null,
+      "value": "NVFP4 (hypothetical)",
+      "usedFor": "P_weight — M_checkpoint, compute peak"
+    },
+    {
+      "group": "Workload",
+      "name": "KV-cache precision",
+      "key": null,
+      "value": "FP8",
+      "usedFor": "B_kv — KV_seq"
+    },
+    {
+      "group": "Engine",
+      "name": "KV block size",
+      "key": null,
+      "value": "128 tokens",
+      "usedFor": "KV_seq rounding"
+    },
+    {
+      "group": "Engine",
+      "name": "Weight load factor",
+      "key": null,
+      "value": "1.07×",
+      "usedFor": "M_weights"
+    },
+    {
+      "group": "Engine",
+      "name": "NVFP4 group size",
+      "key": null,
+      "value": "16 weights per FP8 scale",
+      "usedFor": "G — M_checkpoint scale bytes"
+    },
+    {
+      "group": "Engine",
+      "name": "Bandwidth efficiency tiers",
+      "key": null,
+      "value": "40% / 55% / 70% of peak",
+      "usedFor": "pessimistic / expected / optimistic ranges"
+    },
+    {
+      "group": "Engine",
+      "name": "Compute efficiency tiers",
+      "key": null,
+      "value": "30% / 50% / 65% of peak",
+      "usedFor": "pessimistic / expected / optimistic ranges"
+    }
+  ]
+}

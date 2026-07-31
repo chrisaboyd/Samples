@@ -1,0 +1,8 @@
+vllm:time_to_first_token_seconds	histogram	Time to first token (TTFT), the clearest measure of perceived responsiveness
+vllm:inter_token_latency_seconds	histogram	Gap between successive output tokens (ITL); sets streaming speed after a response starts
+vllm:e2e_request_latency_seconds	histogram	End-to-end request latency, from queue to final token
+vllm:request_time_per_output_token_seconds	histogram	Decode cost normalized per output token
+vllm:request_queue_time_seconds	histogram	Time spent waiting in the queue
+vllm:request_prefill_time_seconds	histogram	Time spent in the prefill phase
+vllm:request_decode_time_seconds	histogram	Time spent in the decode phase
+vllm:request_inference_time_seconds	histogram	Time spent in the running (inference) phase
