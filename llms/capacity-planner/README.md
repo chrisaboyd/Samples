@@ -49,4 +49,33 @@ lib/src/
   sources.rs  optional HF fetcher (feature = `sources`)
 ```
 
+# Desktop UI (Phase 2)
+
+A Tauri 2 + React/TypeScript shell in `ui/` that consumes `lib` as a path dependency
+via one `#[tauri::command] analyze(...)`. It exposes the PRD §21.2 three-pane
+layout: model input (paste / local file / HuggingFace URL), hardware + workload
+controls, and the fit verdict with the §22.1 memory composition bar, evidence and
+assumptions panels, and JSON save/load.
+
+```bash
+cd ui
+npm install            # one-time: React + Vite + Tauri toolchain
+npm run tauri dev      # launch the desktop window (hot reload)
+npm run tauri build    # release bundle (target/release/bundle/...)
+npm run build          # type-check + Vite production bundle only
+```
+
+Verify without the GUI:
+```bash
+cargo test --workspace
+cargo clippy --workspace --all-targets -- -D warnings
+cargo fmt --check
+```
+
+> The native window cannot be launched headlessly here; `cargo check` + `npm run
+> build` prove the stack compiles, and the Rust `analyze_core` unit test pins the
+> Laguna/B200/NVFP4 numbers. Tests, plans, and exact coverage boundaries are in
+> `lib/tests/reference.rs` and the plan file under
+> `~/Library/Application Support/poolside/plans/`.
+
 The mathematical core is feature-gated and network-free; `cargo test` runs entirely offline.

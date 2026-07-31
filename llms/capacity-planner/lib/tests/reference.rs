@@ -299,3 +299,29 @@ fn tiny_llama_fits_and_reports_confidence() {
     assert_eq!(r.confidence.memory, ConfidenceGrade::Analytical);
     assert_eq!(r.confidence.analyze_level, AnalyzeLevel::C);
 }
+
+// ---------------- Golden snapshot (locks §25 schema + numbers) ----------------
+
+#[test]
+fn golden_laguna_b200_nvfp4_snapshot() {
+    // Full pipeline: config -> normalize -> memory::evaluate -> ScenarioResult,
+    // compared (as parsed JSON) against a committed golden file. Catches numeric
+    // drift or schema/field-name regressions as the library evolves.
+    let r = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    let actual: serde_json::Value = serde_json::to_value(&r).expect("serializes");
+    let golden: serde_json::Value =
+        serde_json::from_str(include_str!("assets/laguna-b200-nvfp4.json")).expect("golden parses");
+    assert_eq!(
+        actual, golden,
+        "golden snapshot mismatch (regenerate via CLI)"
+    );
+}

@@ -1,0 +1,115 @@
+{
+  "verdict": "comfortable",
+  "memory": {
+    "weightGiBPerGpu": 65.4487693971023,
+    "checkpointStorageGiB": 61.16707420349121,
+    "checkpointPrecisionLabel": "Hypothetical quantization estimate — NVFP4",
+    "runtimeGiBPerGpu": 1.0,
+    "kvGiBPerAverageSequence": 0.78515625,
+    "kvGiBPerMaximumSequence": 24.03515625,
+    "freeGiBPerGpu": 84.42548769060522,
+    "memoryConcurrencyAverage": 107,
+    "memoryConcurrencyMaximum": 3,
+    "physicalGiBPerGpu": 167.63806343078613
+  },
+  "performance": {
+    "prefillTokensPerSecond": null,
+    "decodeTokensPerSecondPerRequest": null,
+    "aggregateDecodeTokensPerSecond": null,
+    "estimatedTtft": null,
+    "estimatedStepLatency": null,
+    "sloConcurrency": null,
+    "note": "Roofline + vLLM/Ollama profiles deferred to Phase 3 (PRD §31)."
+  },
+  "practicalCapacity": {
+    "comfortableActiveRequests": 3,
+    "intermittentAgents": null,
+    "humanUsers": null,
+    "note": "Agent/user translation deferred to Phase 3 (requires SLO concurrency, PRD §18.2/§19)."
+  },
+  "topology": {
+    "tensorParallel": 1,
+    "dataParallel": 1,
+    "expertParallel": false,
+    "explanation": [
+      "Topology optimizer deferred to Phase 3 (PRD §31 §20)."
+    ],
+    "alternatives": [],
+    "note": "Phase 3"
+  },
+  "confidence": {
+    "memory": "analytical",
+    "performance": "speculative",
+    "concurrency": "analytical",
+    "analyzeLevel": "c",
+    "reasons": [
+      "Architecture-derived (Level C) from config.json",
+      "KV cache rounded to 128-token vLLM blocks",
+      "TP sharding: KV and weights divided by tensor_parallel=1"
+    ],
+    "primaryUncertainty": "Hypothetical quantization; weight-load factor is a broad constant (PRD §33)"
+  },
+  "provenance": {
+    "formulaVersion": "0.1.0",
+    "hardwareDataRevision": "PRD §9",
+    "modelSourceRevision": null,
+    "gpuSku": "B200 SXM 180 GB"
+  },
+  "evidence": [
+    {
+      "what": "physical VRAM",
+      "value": "167.6381 GiB",
+      "source": "PRD §9"
+    },
+    {
+      "what": "utilization U",
+      "value": "90.00",
+      "source": "GPU-catalog default"
+    },
+    {
+      "what": "loaded weight/rank",
+      "value": "65.4488 GiB",
+      "source": "weight::loaded_weight_bytes_per_rank"
+    },
+    {
+      "what": "KV avg exact",
+      "value": "843055104 bytes",
+      "source": "kv::bytes_per_sequence_exact"
+    },
+    {
+      "what": "KV avg rounded",
+      "value": "843055104 bytes",
+      "source": "kv::bytes_per_sequence_rounded"
+    },
+    {
+      "what": "KV max exact",
+      "value": "25807552512 bytes",
+      "source": "kv::bytes_per_sequence_exact"
+    }
+  ],
+  "assumptions": [
+    {
+      "id": "m-avail",
+      "description": "M_available = M_physical * U with U from GPU memory utilization (Phase-1 conservative profile).",
+      "scope": "memory"
+    },
+    {
+      "id": "runtime-reserve",
+      "description": "Fixed runtime reserve absorbs per-scheduler-token/sequence overhead (§14) in the conservative profile.",
+      "scope": "memory"
+    },
+    {
+      "id": "kv-block",
+      "description": "vLLM KV blocksize = 128 tokens; rounded within one block.",
+      "scope": "memory"
+    },
+    {
+      "id": "gb-to-gib",
+      "description": "Marketeted GB converted to GiB via 1e9/2^30 (exact for these magnitudes).",
+      "scope": "memory"
+    }
+  ],
+  "warnings": [
+    "Hypothetical quantization — weights use a format not present in the checkpoint; treat as an estimate."
+  ]
+}
