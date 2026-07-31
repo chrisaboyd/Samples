@@ -33,6 +33,8 @@ tools:
             - cut *
             - ./target/release/capacity-planner *
             - sort
+            - cat *
+            - awk *
 paths:
     allow:
         - path: /tmp/**

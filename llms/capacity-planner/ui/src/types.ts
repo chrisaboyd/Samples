@@ -77,6 +77,29 @@ export interface Provenance {
   gpuSku: string;
 }
 
+/// A published figure shown as formula → substitution → result. Emitted by the
+/// Rust engine from the same values the calculation used, so the UI never
+/// re-derives (and never drifts from) the real math.
+export interface Derivation {
+  id: string;
+  label: string;
+  meaning: string;
+  formula: string;
+  /** May contain newlines — render in a pre-wrap block. */
+  substitution: string;
+  result: string;
+}
+
+/// One input value that actually reaches a formula.
+export interface InputFact {
+  group: string;
+  name: string;
+  /** Originating config.json key, when the value came from one. */
+  key: string | null;
+  value: string;
+  usedFor: string;
+}
+
 export interface ScenarioResult {
   verdict: Verdict;
   memory: MemoryResult;
@@ -88,6 +111,8 @@ export interface ScenarioResult {
   evidence: EvidenceRecord[];
   assumptions: AssumptionRecord[];
   warnings: string[];
+  derivations: Derivation[];
+  inputsUsed: InputFact[];
 }
 
 export type Precision = "fp32" | "fp16" | "bf16" | "fp8" | "nvfp4" | "int8" | "int4";
@@ -102,5 +127,7 @@ export interface AnalyzeInput {
   kvPrecision: Precision;
   avgContextTokens: number;
   maxContextTokens: number;
+  avgOutputTokens: number;
+  sloTargetSeconds: number;
   isHypotheticalWeight: boolean;
 }

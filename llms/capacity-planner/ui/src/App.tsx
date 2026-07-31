@@ -1,8 +1,11 @@
 import type React from "react";
 import { useRef, useState } from "react";
 import { MemoryBar } from "./components/MemoryBar";
+import { Figure, Term } from "./components/Explain";
+import { InputsUsed } from "./components/InputsUsed";
+import { indexDerivations, levelKey } from "./glossary";
 import { useStore, GPU_SKUS } from "./store";
-import type { Precision, ScenarioResult, Verdict } from "./types";
+import type { Precision, Range, ScenarioResult, Verdict } from "./types";
 import { analyze, fetchConfig } from "./lib/invoke";
 import "./App.css";
 
@@ -44,13 +47,33 @@ function NumberInput({
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="stat">
-      <span>{label}</span>
-      <b>{value}</b>
-    </div>
-  );
+
+/// Format one endpoint with enough precision to stay informative at any
+/// magnitude. Fixed 1-decimal formatting rendered sub-second step latencies
+/// (~0.001 s) as a useless "0.0–0.0".
+function formatMagnitude(v: number): string {
+  const abs = Math.abs(v);
+  if (abs >= 100) return Math.round(v).toLocaleString();
+  if (abs >= 10) return v.toFixed(1);
+  if (abs >= 1) return v.toFixed(2);
+  if (abs >= 0.01) return v.toFixed(3);
+  return v.toPrecision(2);
+}
+
+/// Split/join rather than `replace`, which substitutes only the first match and
+/// left the one multi-underscore verdict rendering as "does not_fit".
+/// (`replaceAll` would need an ES2021 lib target.)
+export function formatVerdict(v: Verdict): string {
+  return v.split("_").join(" ");
+}
+
+export function formatRange(r: Range | null): string {
+  if (!r) return "—";
+  // Sub-second durations read far better in milliseconds.
+  if (r.unit === "seconds" && Math.abs(r.max) < 1) {
+    return `${formatMagnitude(r.min * 1000)}–${formatMagnitude(r.max * 1000)} ms`;
+  }
+  return `${formatMagnitude(r.min)}–${formatMagnitude(r.max)} ${r.unit}`;
 }
 
 export default function App() {
@@ -158,9 +181,9 @@ export default function App() {
             onChange={handleLoad}
             style={{ display: "none" }}
           />
-          <button onClick={() => fileRef.current?.click()} disabled={!result}>
-            Load
-          </button>
+          {/* Always enabled: loading a saved scenario is exactly what you do
+              when you have no result yet. */}
+          <button onClick={() => fileRef.current?.click()}>Load</button>
           <button onClick={handleSave} disabled={!result}>
             Save
           </button>
@@ -243,6 +266,16 @@ export default function App() {
               value={inputs.maxContextTokens}
               onChange={(v) => setInputs({ maxContextTokens: v })}
             />
+            <NumberInput
+              label="Avg output tokens"
+              value={inputs.avgOutputTokens}
+              onChange={(v) => setInputs({ avgOutputTokens: Math.max(1, v) })}
+            />
+            <NumberInput
+              label="SLO target (seconds)"
+              value={inputs.sloTargetSeconds}
+              onChange={(v) => setInputs({ sloTargetSeconds: Math.max(0.1, v) })}
+            />
             <label className="field check">
               <input
                 type="checkbox"
@@ -303,28 +336,99 @@ export default function App() {
 
 function ResultView({ r, onCopyJson }: { r: ScenarioResult; onCopyJson: () => void }) {
   const m = r.memory;
+  // Saved scenarios written before derivations existed have no such field, so
+  // every lookup below must tolerate a miss rather than assume one is present.
+  const dv = indexDerivations(r.derivations ?? []);
   return (
     <>
       <div className={`verdict ${verdictClass(r.verdict)}`}>
-        <span className="verdict-badge">{r.verdict.replace("_", " ")}</span>
+        <Term termKey={r.verdict}>
+          <span className="verdict-badge">{formatVerdict(r.verdict)}</span>
+        </Term>
         <span className="confidence">
-          {r.confidence.memory} · Level {r.confidence.analyzeLevel.toUpperCase()}
+          <Term termKey={r.confidence.memory}>{r.confidence.memory}</Term>
+          {" · "}
+          <Term termKey={levelKey(r.confidence.analyzeLevel)}>
+            Level {r.confidence.analyzeLevel.toUpperCase()}
+          </Term>
         </span>
       </div>
 
       <div className="label-sm">{m.checkpointPrecisionLabel}</div>
 
-      <MemoryBar m={m} />
-
-      <div className="stats">
-        <Stat label="Comfortable active (avg ctx)" value={m.memoryConcurrencyAverage} />
-        <Stat label="Comfortable active (max ctx)" value={m.memoryConcurrencyMaximum} />
+      {/* The headline capacity numbers lead; the memory breakdown that produces
+          them follows. Each row expands to the formula that derived it. */}
+      <div className="figures headline">
+        <Figure
+          label="Comfortable active requests"
+          value={r.practicalCapacity.comfortableActiveRequests}
+          derivation={dv["c-comfortable"]}
+        />
+        <Figure
+          label="Memory ceiling (avg ctx)"
+          value={m.memoryConcurrencyAverage}
+          derivation={dv["c-mem-avg"]}
+        />
+        <Figure
+          label="Memory ceiling (max ctx)"
+          value={m.memoryConcurrencyMaximum}
+          derivation={dv["c-mem-max"]}
+        />
       </div>
 
-      <div className="stub-note">
-        Performance, SLO concurrency, and topology recommendation are Phase 3
-        defers (shown as null). See the evidence/assumptions panels for provenance.
-      </div>
+      <h3 className="section-head">Memory per GPU</h3>
+      <MemoryBar m={m} derivations={dv} />
+
+      {r.performance.sloConcurrency === null ? (
+        // Unpopulated performance is a real state (e.g. weights do not fit), and
+        // the note explains why — silently omitting the section hid the reason.
+        <div className="stub-note">{r.performance.note}</div>
+      ) : (
+        <div className="perf">
+          <h3 className="section-head">Performance</h3>
+          <div className="figures">
+            <Figure
+              label="Decode (per request)"
+              value={formatRange(r.performance.decodeTokensPerSecondPerRequest)}
+              derivation={dv["p-decode"]}
+            />
+            <Figure
+              label="Prefill"
+              value={formatRange(r.performance.prefillTokensPerSecond)}
+              derivation={dv["p-prefill"]}
+            />
+            <Figure
+              label="Aggregate decode"
+              value={formatRange(r.performance.aggregateDecodeTokensPerSecond)}
+              derivation={dv["p-aggregate"]}
+            />
+            <Figure
+              label="SLO concurrency"
+              value={r.performance.sloConcurrency}
+              derivation={dv["p-slo"]}
+            />
+            {/* Units come from formatRange (it switches to ms below 1 s), so the
+                label must not hardcode one. */}
+            <Figure
+              label="Step latency"
+              value={formatRange(r.performance.estimatedStepLatency)}
+              derivation={dv["p-step"]}
+            />
+            <Figure
+              label="TTFT"
+              value={formatRange(r.performance.estimatedTTFT)}
+              derivation={dv["p-ttft"]}
+            />
+            <Figure
+              label="FLOPs per token"
+              value={dv["p-flops-token"]?.result ?? "—"}
+              derivation={dv["p-flops-token"]}
+            />
+          </div>
+        </div>
+      )}
+
+      <InputsUsed facts={r.inputsUsed ?? []} />
 
       {!!r.warnings.length && (
         <ul className="warnings">

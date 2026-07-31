@@ -92,9 +92,21 @@ struct Cli {
     #[arg(long, default_value_t = 1_048_576)]
     max_context: u64,
 
+    /// Expected average output tokens per request (PRD §8).
+    #[arg(long, default_value_t = 512)]
+    avg_output: u64,
+
+    /// Target model-step completion time in seconds (PRD §8).
+    #[arg(long, default_value_t = 10.0)]
+    slo_target: f64,
+
     /// Treat the selected weight precision as hypothetical (not present in the
     /// checkpoint). When true the result is labelled per PRD §12.2.
-    #[arg(long, default_value_t = true)]
+    ///
+    /// Takes an explicit value (`--hypothetical false`) rather than acting as a
+    /// bare flag: clap's default flag action can only ever set `true`, so with a
+    /// `true` default the exact-checkpoint path was unreachable.
+    #[arg(long, action = clap::ArgAction::Set, default_value_t = true)]
     hypothetical: bool,
 }
 
@@ -124,6 +136,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         tensor_parallel: cli.tp,
         prefix_cache_enabled: true,
         draft_kv_bytes_per_seq: 0,
+        avg_output_tokens: cli.avg_output,
+        slo_target_seconds: cli.slo_target,
     };
 
     let inputs = Inputs {

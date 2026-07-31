@@ -12,9 +12,11 @@
   "app": {
     "windows": [
       {
-        "title": "ui",
-        "width": 800,
-        "height": 600
+        "title": "LLM Capacity Planner",
+        "width": 1280,
+        "height": 900,
+        "minWidth": 900,
+        "minHeight": 600
       }
     ],
     "security": {

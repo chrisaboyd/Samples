@@ -9,6 +9,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::confidence::{AnalyzeLevel, ConfidenceGrade};
+use crate::explain::{Derivation, InputFact};
 
 /// A half-open numerical range for a non-measured quantity (PRD §35 #6/#9).
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -25,6 +26,22 @@ impl Range {
             min,
             max,
             unit: "GiB".to_string(),
+        }
+    }
+
+    pub fn tokens_per_second(min: f64, max: f64) -> Self {
+        Self {
+            min,
+            max,
+            unit: "tokens/s".to_string(),
+        }
+    }
+
+    pub fn seconds(min: f64, max: f64) -> Self {
+        Self {
+            min,
+            max,
+            unit: "seconds".to_string(),
         }
     }
 }
@@ -91,10 +108,27 @@ pub struct PerformanceResult {
     pub prefill_tokens_per_second: Option<Range>,
     pub decode_tokens_per_second_per_request: Option<Range>,
     pub aggregate_decode_tokens_per_second: Option<Range>,
+    #[serde(rename = "estimatedTTFT")]
     pub estimated_ttft: Option<Range>,
     pub estimated_step_latency: Option<Range>,
     pub slo_concurrency: Option<u64>,
     pub note: String,
+}
+
+impl PerformanceResult {
+    /// All-unpopulated result, for scenarios where no inference run exists to
+    /// characterise (e.g. the weights do not fit). Callers set `note`.
+    pub fn none() -> Self {
+        Self {
+            prefill_tokens_per_second: None,
+            decode_tokens_per_second_per_request: None,
+            aggregate_decode_tokens_per_second: None,
+            estimated_ttft: None,
+            estimated_step_latency: None,
+            slo_concurrency: None,
+            note: String::new(),
+        }
+    }
 }
 
 /// Phase-1 stub: agent/user translation needs SLO concurrency (Phase 3).
@@ -168,6 +202,10 @@ pub struct ScenarioResult {
     pub evidence: Vec<EvidenceRecord>,
     pub assumptions: Vec<AssumptionRecord>,
     pub warnings: Vec<String>,
+    /// Worked derivation of each published figure, keyed by [`Derivation::id`].
+    pub derivations: Vec<Derivation>,
+    /// The input values that actually reach a formula (PRD §22.6 provenance).
+    pub inputs_used: Vec<InputFact>,
 }
 
 /// Bare-minimum result used by the CLI smoke entry point before real inputs.
@@ -228,6 +266,8 @@ impl ScenarioResult {
             evidence: Vec::new(),
             assumptions: Vec::new(),
             warnings: vec!["stub result".to_string()],
+            derivations: Vec::new(),
+            inputs_used: Vec::new(),
         }
     }
 }

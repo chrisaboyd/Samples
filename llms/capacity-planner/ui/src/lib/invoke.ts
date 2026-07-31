@@ -1,21 +1,22 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { AnalyzeInput, ScenarioResult } from "../types";
 
+/// Build the exact IPC argument object for the `analyze` command.
+///
+/// The backend signature is `fn analyze(cmd: AnalyzeCommand)`, and Tauri keys
+/// command arguments by *parameter name*, so the payload must nest the struct
+/// under `cmd` rather than spreading its fields at the top level.
+///
+/// `input` is forwarded whole rather than field-by-field: enumerating fields
+/// here let `avgOutputTokens`/`sloTargetSeconds` silently go missing, which the
+/// backend then rejected as `missing field`. Passing the object through means
+/// adding a field to `AnalyzeInput` cannot drift from the wire again.
+export function analyzeArgs(input: AnalyzeInput): Record<string, unknown> {
+  return { cmd: { ...input } };
+}
+
 export async function analyze(input: AnalyzeInput): Promise<ScenarioResult> {
-  // Tauri's `invoke` args must be `Record<string, unknown>`; an inline literal
-  // satisfies that, whereas the named `AnalyzeInput` type does not carry an
-  // index signature.
-  return invoke<ScenarioResult>("analyze", {
-    configJson: input.configJson,
-    gpu: input.gpu,
-    count: input.count,
-    tensorParallel: input.tensorParallel,
-    weightPrecision: input.weightPrecision,
-    kvPrecision: input.kvPrecision,
-    avgContextTokens: input.avgContextTokens,
-    maxContextTokens: input.maxContextTokens,
-    isHypotheticalWeight: input.isHypotheticalWeight,
-  });
+  return invoke<ScenarioResult>("analyze", analyzeArgs(input));
 }
 
 // Optional HuggingFace fetch (backend uses the lib's sources feature + env token).

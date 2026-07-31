@@ -16,10 +16,12 @@
 pub mod adapter;
 pub mod confidence;
 pub mod error;
+pub mod explain;
 pub mod hardware;
 pub mod kv;
 pub mod memory;
 pub mod model;
+pub mod performance;
 pub mod precision;
 pub mod result;
 pub mod sources;

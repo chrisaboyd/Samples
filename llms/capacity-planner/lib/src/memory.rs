@@ -1,4 +1,4 @@
-//! Memory-fit orchestration (PRD §15) + Phase-1 result assembly.
+//! Memory-fit orchestration (PRD §15) + result assembly.
 //!
 //! Corrected §15 formula: the PRD's rendered equation collapsed to a ratio,
 //! which is dimensionally wrong. The intent (confirmed by §14's overhead model and
@@ -14,15 +14,17 @@
 //! ```
 //!
 //! C_memory is evaluated at average and maximum context (PRD §15 requires ≥ these
-//! two; p95 is a Phase-2 weighting). Performance SLO concurrency and the
-//! agent/user translation (PRD §18.2 / §19) are Phase-3 defers and are emitted as
-//! typed stubs.
+//! two; p95 is a Phase-2 weighting). Performance (roofline + SLO) is computed in
+//! [`performance`] (Phase 3, PRD §16/§18.2). Agent/user translation (§19) and
+//! topology optimization (§20) remain Phase-3 defers as typed stubs.
 
 use crate::confidence::{AnalyzeLevel, Confidence, ConfidenceGrade};
-use crate::error::Result;
+use crate::error::{CalcError, Result};
+use crate::explain;
 use crate::hardware::GpuConfig;
 use crate::kv::{self, derive_kv_config};
 use crate::model::NormalizedModel;
+use crate::performance::{self, PerformanceInputs};
 use crate::precision::Precision;
 use crate::result::{
     AssumptionRecord, ConfidenceSummary, EvidenceRecord, MemoryResult, PerformanceResult,
@@ -48,6 +50,11 @@ pub struct Workload {
     pub prefix_cache_enabled: bool,
     /// KV bytes a draft model occupies per running sequence (speculative stub).
     pub draft_kv_bytes_per_seq: u128,
+    /// Expected output tokens per request (for prefill/decode time estimation,
+    /// PRD §8).
+    pub avg_output_tokens: u64,
+    /// Target model-step completion time in seconds (PRD §8).
+    pub slo_target_seconds: f64,
 }
 
 impl Default for Workload {
@@ -62,6 +69,10 @@ impl Default for Workload {
             tensor_parallel: 1,
             prefix_cache_enabled: true,
             draft_kv_bytes_per_seq: 0,
+            // 512 output tokens is the default for coding-agent workloads (PRD §7.1).
+            avg_output_tokens: 512,
+            // 10 s "Step target" from PRD §21.2 / §8.
+            slo_target_seconds: 10.0,
         }
     }
 }
@@ -83,9 +94,47 @@ fn to_gib(bytes: u128) -> f64 {
     bytes as f64 / GIB_BYTES as f64
 }
 
-/// Run the full memory-fit evaluation. Populates `performance`,
-/// `practical_capacity`, and `topology` as Phase-1 stubs.
+/// Reject scenarios that cannot physically exist before any arithmetic runs.
+///
+/// Both of these previously produced a confident "comfortable" verdict: TP
+/// sharding divided weights and KV across more ranks than there are GPUs, and
+/// an inverted context pair yielded a higher concurrency at maximum context
+/// than at average.
+fn validate(inputs: &Inputs) -> Result<()> {
+    let tp = inputs.workload.tensor_parallel.max(1);
+    let count = inputs.gpu.count;
+    if count == 0 {
+        return Err(CalcError::InvalidInput(
+            "GPU count must be at least 1".into(),
+        ));
+    }
+    if tp > count {
+        return Err(CalcError::InvalidInput(format!(
+            "tensor parallel ({tp}) exceeds GPU count ({count}) — TP shards one model \
+             across {tp} physical GPUs, so at least {tp} are required"
+        )));
+    }
+    let w = &inputs.workload;
+    if w.avg_context_tokens > w.max_context_tokens {
+        return Err(CalcError::InvalidInput(format!(
+            "average context ({}) exceeds maximum context ({})",
+            w.avg_context_tokens, w.max_context_tokens
+        )));
+    }
+    if w.max_context_tokens == 0 {
+        return Err(CalcError::InvalidInput(
+            "maximum context must be at least 1 token".into(),
+        ));
+    }
+    Ok(())
+}
+
+/// Run the full memory-fit evaluation. Populates `performance` via the
+/// roofline engine ([`performance::evaluate`], PRD §16) and `practical_capacity`
+/// with the SLO-aware comfortable concurrency (PRD §18.3). Topology optimization
+/// (§20) and agent/user translation (§19) remain Phase-3 stubs.
 pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
+    validate(inputs)?;
     let gpu = inputs.gpu.gpu()?;
     let tp = inputs.workload.tensor_parallel.max(1);
     let physical = physical_bytes(gpu.memory_marketed_gb);
@@ -124,27 +173,29 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         )
     };
 
-    let kv_bytes_avg = kv_cfg(w.avg_context_tokens)
+    let cfg_avg = kv_cfg(w.avg_context_tokens);
+    let cfg_max = kv_cfg(w.max_context_tokens);
+    let kv_bytes_avg = cfg_avg
         .bytes_per_sequence_rounded(DEFAULT_VLLM_BLOCK_TOKENS)
         .0;
-    let kv_bytes_max = kv_cfg(w.max_context_tokens)
+    let kv_bytes_max = cfg_max
         .bytes_per_sequence_rounded(DEFAULT_VLLM_BLOCK_TOKENS)
         .0;
-    let kv_bytes_avg_exact = kv_cfg(w.avg_context_tokens).bytes_per_sequence_exact();
-    let kv_bytes_max_exact = kv_cfg(w.max_context_tokens).bytes_per_sequence_exact();
+    let kv_bytes_avg_exact = cfg_avg.bytes_per_sequence_exact();
+    let kv_bytes_max_exact = cfg_max.bytes_per_sequence_exact();
 
     let c_avg = kv::memory_concurrency(free_for_kv, kv_bytes_avg);
     let c_max = kv::memory_concurrency(free_for_kv, kv_bytes_max);
 
-    let checkpoint_bytes = {
-        let comps = weight::reassign_precision(
-            inputs.model,
-            w.weight_precision,
-            w.is_hypothetical_weight,
-            w.nvfp4_group_size,
-        );
-        weight::checkpoint_storage_bytes(&comps, w.nvfp4_group_size)
-    };
+    // Kept in scope (rather than scoped to the sum) so the derivation can show
+    // the per-category breakdown that actually produced `checkpoint_bytes`.
+    let components = weight::reassign_precision(
+        inputs.model,
+        w.weight_precision,
+        w.is_hypothetical_weight,
+        w.nvfp4_group_size,
+    );
+    let checkpoint_bytes = weight::checkpoint_storage_bytes(&components, w.nvfp4_group_size);
 
     let verdict = if !weights_fit {
         Verdict::DoesNotFit
@@ -178,9 +229,14 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
             .push("Hypothetical quantization — weights use a format not present in the checkpoint; treat as an estimate.".to_string());
     }
     if !weights_fit {
+        // Report the figure actually compared against (available = physical × U),
+        // not the raw physical capacity — quoting physical "at N% utilization"
+        // read as though physical itself were the budget.
         warnings.push(format!(
-            "Model + runtime reserve ({} GiB) exceed physical VRAM ({} GiB at {}% utilization).",
+            "Model + runtime reserve ({:.2} GiB) exceed the {:.2} GiB available for \
+             allocation ({:.2} GiB physical × {:.0}% utilization).",
             to_gib(run_reserve_and_load),
+            to_gib(available),
             gpu.usable_gib,
             inputs.gpu.utilization()? * 100.0
         ));
@@ -189,11 +245,44 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         warnings.push("Weights fit but no KV-cache room remains at maximum context.".to_string());
     }
 
+    // KV geometry is what the whole capacity number rests on. When the adapter
+    // could not read it, `KvConfig` substitutes 1 head × 1 dim, which yields a
+    // tiny KV/sequence and a huge, meaningless concurrency. Detect that here so
+    // the result is graded Speculative/Level D instead of presenting an invented
+    // number at the same confidence as a fully-parsed model (PRD §10.1).
+    let kv_geometry_known = inputs.model.dimensions.kv_heads.unwrap_or(0) > 0
+        && inputs.model.dimensions.head_dimension.unwrap_or(0) > 0
+        && !inputs.model.attention_layers.is_empty();
+
+    if !kv_geometry_known {
+        warnings.push(
+            "KV-cache geometry (kv_heads / head_dim / attention layers) could not be read \
+             from the config — KV size and every concurrency figure below are placeholders, \
+             not estimates."
+                .to_string(),
+        );
+    }
+    for note in &inputs.model.inferred {
+        warnings.push(format!("Inferred from an incomplete config: {note}"));
+    }
+
     let confidence = Confidence {
-        grade: ConfidenceGrade::Analytical,
-        level: AnalyzeLevel::C,
+        grade: if kv_geometry_known {
+            ConfidenceGrade::Analytical
+        } else {
+            ConfidenceGrade::Speculative
+        },
+        level: if kv_geometry_known {
+            AnalyzeLevel::C
+        } else {
+            AnalyzeLevel::D
+        },
         reasons: vec![
-            "Architecture-derived (Level C) from config.json".to_string(),
+            if kv_geometry_known {
+                "Architecture-derived (Level C) from config.json".to_string()
+            } else {
+                "Generic approximation (Level D) — key architecture fields missing".to_string()
+            },
             format!(
                 "KV cache rounded to {}-token vLLM blocks",
                 DEFAULT_VLLM_BLOCK_TOKENS
@@ -215,7 +304,7 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         },
     };
 
-    let assumptions = vec![
+    let mut assumptions = vec![
         AssumptionRecord {
             id: "m-avail".into(),
             description: "M_available = M_physical * U with U from GPU memory utilization (Phase-1 conservative profile).".into(),
@@ -238,7 +327,7 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         },
     ];
 
-    let evidence = vec![
+    let mut evidence = vec![
         EvidenceRecord {
             what: "physical VRAM".into(),
             value: format!("{:.4} GiB", gpu.usable_gib),
@@ -271,42 +360,175 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         },
     ];
 
+    // --- Performance roofline (PRD §16) ---
+    let perf_inputs = PerformanceInputs {
+        model: inputs.model,
+        gpu,
+        weight_precision: w.weight_precision,
+        kv_precision: w.kv_precision,
+        tensor_parallel: tp,
+        gpu_count: inputs.gpu.count,
+        avg_context_tokens: w.avg_context_tokens,
+        avg_output_tokens: w.avg_output_tokens,
+        slo_target_seconds: w.slo_target_seconds,
+        loaded_weight_bytes_per_rank: loaded_per_rank,
+        memory_concurrency_cap: c_avg,
+    };
+    // A model whose weights do not fit is never resident, so publishing decode
+    // rates for it would be fiction (they would describe a run that cannot
+    // start). Report the memory verdict and leave performance unpopulated.
+    let (performance, performance_derivations) = if weights_fit {
+        performance::evaluate_explained(&perf_inputs)
+    } else {
+        (
+            PerformanceResult {
+                note: "Not estimated — model weights do not fit in available VRAM, \
+                       so no inference run exists to characterise."
+                    .to_string(),
+                ..PerformanceResult::none()
+            },
+            Vec::new(),
+        )
+    };
+
+    // C_comfortable = min(C_memory, C_SLO)  (PRD §18.3)
+    let c_memory = c_avg.min(c_max);
+    let c_slo = performance.slo_concurrency.unwrap_or(c_memory);
+    let c_comfortable = c_memory.min(c_slo);
+
+    let compute_peak = performance::compute_peak_tflops(gpu, w.weight_precision);
+    let decode_range = performance.decode_tokens_per_second_per_request.as_ref();
+
+    evidence.extend(vec![
+        EvidenceRecord {
+            what: "compute peak".into(),
+            value: format!("{} TFLOPS", compute_peak),
+            source: "PRD §9 GPU catalog".into(),
+        },
+        EvidenceRecord {
+            what: "memory bandwidth".into(),
+            value: format!("{} GB/s", gpu.memory_bandwidth_gbs),
+            source: "PRD §9 GPU catalog".into(),
+        },
+        EvidenceRecord {
+            what: "decode TPS (analytical range)".into(),
+            value: match decode_range {
+                Some(r) => format!("{:.0}–{:.0} tok/s", r.min, r.max),
+                None => "n/a".to_string(),
+            },
+            source: "performance::roofline (§16.2)".into(),
+        },
+    ]);
+
+    assumptions.extend(vec![
+        AssumptionRecord {
+            id: "roofline-efficiency".into(),
+            description: "Analytical roofline uses broad efficiency tiers (BW: 0.40/0.55/0.70, compute: 0.30/0.50/0.65) per PRD §16.3; values are ranges, not precise predictions.".into(),
+            scope: "performance".into(),
+        },
+        AssumptionRecord {
+            id: "slo-queue-model".into(),
+            description: "SLO concurrency (§18.2) is the largest batch B where T_prefill + avg_output × T_step(B) ≤ target, times the DP replica count. T_step(B) reads weights once per step and scales only KV and activation traffic with B (continuous batching); MoE routed experts are weighted by 1 − (1 − k/E)^B. Duty cycle and burst factors (§19) are not applied yet.".into(),
+            scope: "concurrency".into(),
+        },
+        AssumptionRecord {
+            id: "c-memory-worst-case".into(),
+            description: "C_memory takes the *minimum* of the average- and maximum-context concurrencies, i.e. it assumes every concurrent request may simultaneously occupy its maximum context. This is deliberately conservative; a mixed-length workload supports more.".into(),
+            scope: "concurrency".into(),
+        },
+        AssumptionRecord {
+            id: "no-collective-overhead".into(),
+            description: "Tensor parallelism is modelled as linear scaling of bandwidth and compute. NVLink/PCIe all-reduce latency between ranks is not subtracted, so multi-GPU TP figures are optimistic.".into(),
+            scope: "performance".into(),
+        },
+    ]);
+
+    // Explanations are built from the same locals the calculation used, so the
+    // math shown in the UI is the math that ran.
+    let ctx = explain::ExplainContext {
+        model: inputs.model,
+        gpu,
+        workload: w,
+        gpu_count: inputs.gpu.count,
+        tp,
+        utilization: inputs.gpu.utilization()?,
+        block_tokens: DEFAULT_VLLM_BLOCK_TOKENS,
+        physical_bytes: physical,
+        available_bytes: available,
+        components,
+        checkpoint_bytes,
+        load_factor: weight::load_factor(w.weight_precision),
+        loaded_per_rank,
+        runtime_bytes,
+        draft_bytes: w.draft_kv_bytes_per_seq,
+        free_for_kv,
+        kv_avg_exact: kv_bytes_avg_exact,
+        kv_avg_rounded: kv_bytes_avg,
+        kv_max_exact: kv_bytes_max_exact,
+        kv_max_rounded: kv_bytes_max,
+        full_layers: cfg_avg.full_layers,
+        sliding_layers: cfg_avg.sliding_layers,
+        sliding_window: cfg_avg.sliding_window,
+        c_avg,
+        c_max,
+        c_slo,
+        c_comfortable,
+        compute_peak_tflops: compute_peak,
+    };
+    let mut derivations = explain::memory_derivations(&ctx);
+    derivations.extend(performance_derivations);
+    let inputs_used = explain::input_facts(&ctx);
+
     Ok(ScenarioResult {
         verdict,
         memory,
-        performance: PerformanceResult {
-            prefill_tokens_per_second: None,
-            decode_tokens_per_second_per_request: None,
-            aggregate_decode_tokens_per_second: None,
-            estimated_ttft: None,
-            estimated_step_latency: None,
-            slo_concurrency: None,
-            note: "Roofline + vLLM/Ollama profiles deferred to Phase 3 (PRD §31).".into(),
-        },
+        performance: performance.clone(),
         practical_capacity: PracticalCapacity {
-            comfortable_active_requests: c_avg.min(c_max),
+            comfortable_active_requests: c_comfortable,
             intermittent_agents: None,
             human_users: None,
-            note: "Agent/user translation deferred to Phase 3 (requires SLO concurrency, PRD §18.2/§19).".into(),
+            note: "Agent/user translation deferred to Phase 3 (requires agent \
+                   duty cycle, §19). SLO concurrency now computed (§18.2)."
+                .into(),
         },
         topology: TopologyResult {
             tensor_parallel: tp,
-            data_parallel: inputs.gpu.count,
-            expert_parallel: inputs.model.model_type == crate::model::ModelType::Moe,
+            // Replicas, not raw GPU count: `count` GPUs split into groups of
+            // `tp`. Reporting count here claimed TP × count GPUs and contradicted
+            // the DP factor the performance model uses.
+            data_parallel: (inputs.gpu.count / tp).max(1),
+            // Laguna-style hybrids are MoE too — the router is what makes expert
+            // parallelism applicable, not whether the MLP stack is uniformly sparse.
+            expert_parallel: inputs.model.moe.is_some(),
             explanation: vec!["Topology optimizer deferred to Phase 3 (PRD §31 §20).".into()],
             alternatives: Vec::new(),
             note: "Phase 3".into(),
         },
         confidence: ConfidenceSummary {
             memory: confidence.grade,
-            performance: ConfidenceGrade::Speculative,
-            concurrency: ConfidenceGrade::Analytical,
+            // Performance and concurrency are downstream of the memory model, so
+            // they can never be graded higher than it.
+            performance: confidence.grade,
+            concurrency: confidence.grade,
             analyze_level: confidence.level,
-            reasons: confidence.reasons.clone(),
-            primary_uncertainty: if hypothesis_warning {
-                "Hypothetical quantization; weight-load factor is a broad constant (PRD §33)".to_string()
+            reasons: {
+                let mut r = confidence.reasons.clone();
+                r.push(format!("Roofline compute peak: {} TFLOPS", compute_peak));
+                r.push(format!(
+                    "Roofline bandwidth: {} GB/s",
+                    gpu.memory_bandwidth_gbs
+                ));
+                r.push(format!("SLO concurrency (§18.2): {}", c_slo));
+                r.push("Analytical roofline — ranges not calibrated (PRD §17).".into());
+                r
+            },
+            primary_uncertainty: if !kv_geometry_known {
+                "KV-cache geometry missing from the config — capacity figures are placeholders (PRD §10.1 Level D)".to_string()
+            } else if hypothesis_warning {
+                "Analytical roofline with broad efficiency ranges; hypothetical quantization adds weight-load uncertainty (PRD §16.3/§33)".to_string()
             } else {
-                "Runtime reserve absorbed per-scheduler overhead; calibration needed (PRD §17)".to_string()
+                "Roofline uses analytical efficiency tiers; no benchmark calibration (PRD §17)"
+                    .to_string()
             },
         },
         provenance: Provenance {
@@ -318,6 +540,8 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         evidence,
         assumptions,
         warnings,
+        derivations,
+        inputs_used,
     })
 }
 

@@ -29,6 +29,8 @@ const DEFAULT_INPUT: AnalyzeInput = {
   kvPrecision: "fp8",
   avgContextTokens: 32768,
   maxContextTokens: 1048576,
+  avgOutputTokens: 512,
+  sloTargetSeconds: 10.0,
   isHypotheticalWeight: true,
 };
 

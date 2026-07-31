@@ -24,6 +24,8 @@ pub struct AnalyzeCommand {
     kv_precision: Precision,
     avg_context_tokens: u64,
     max_context_tokens: u64,
+    avg_output_tokens: u64,
+    slo_target_seconds: f64,
     is_hypothetical_weight: bool,
 }
 
@@ -51,6 +53,8 @@ pub fn analyze_core(cmd: &AnalyzeCommand) -> capacity_planner::Result<ScenarioRe
         tensor_parallel: cmd.tensor_parallel,
         prefix_cache_enabled: true,
         draft_kv_bytes_per_seq: 0,
+        avg_output_tokens: cmd.avg_output_tokens,
+        slo_target_seconds: cmd.slo_target_seconds,
     };
 
     memory::evaluate(&Inputs {
@@ -100,6 +104,8 @@ mod tests {
             kv_precision: Precision::Fp8,
             avg_context_tokens: 32_768,
             max_context_tokens: 1_048_576,
+            avg_output_tokens: 512,
+            slo_target_seconds: 10.0,
             is_hypothetical_weight: true,
         }
     }
@@ -125,8 +131,15 @@ mod tests {
 
     /// Wire-contract test: the exact camelCase payload the React frontend sends
     /// via `invoke("analyze", {...})` must deserialize into `AnalyzeCommand` and
-    /// produce the same Laguna/B200 numbers. Catches field-name drift between
-    /// `ui/src/types.ts` and the Rust struct.
+    /// produce the same Laguna/B200 numbers.
+    ///
+    /// NOTE: this hand-writes the payload, so on its own it proves only that
+    /// *this* JSON is acceptable — it cannot detect that the frontend is sending
+    /// something else. It previously passed while the real `invoke()` call was
+    /// omitting two fields and skipping the `cmd` wrapper entirely. The actual
+    /// drift detection lives in `ui/src/lib/invoke.test.ts`, which reads the
+    /// shape from the production `analyzeArgs()`; the field list below must be
+    /// kept in sync with the `REQUIRED_FIELDS` constant there.
     #[test]
     fn analyze_command_round_trips_camelcase_payload() {
         let config_json = serde_json::to_string(LAGUNA_JSON).unwrap();
@@ -140,6 +153,8 @@ mod tests {
               "kvPrecision": "fp8",
               "avgContextTokens": 32768,
               "maxContextTokens": 1048576,
+              "avgOutputTokens": 512,
+              "sloTargetSeconds": 10.0,
               "isHypotheticalWeight": true
             }}"#
         );
@@ -148,5 +163,51 @@ mod tests {
         assert_eq!(r.memory.memory_concurrency_average, 107);
         assert_eq!(r.memory.memory_concurrency_maximum, 3);
         assert_eq!(r.provenance.gpu_sku, "B200 SXM 180 GB");
+    }
+
+    /// The `analyze` command takes a single `cmd: AnalyzeCommand` parameter, and
+    /// Tauri keys command arguments by *parameter name*. Pin that name here so
+    /// renaming the parameter without updating `analyzeArgs()` fails a test
+    /// rather than only failing at runtime with "missing required key cmd".
+    #[test]
+    fn analyze_argument_is_named_cmd() {
+        let src = include_str!("lib.rs");
+        assert!(
+            src.contains("fn analyze(cmd: AnalyzeCommand)"),
+            "the frontend nests its payload under `cmd`; renaming this parameter \
+             breaks the IPC call — update ui/src/lib/invoke.ts to match"
+        );
+    }
+
+    /// Every field is required: serde has no `#[serde(default)]` here, so a
+    /// payload missing one is a hard IPC error rather than a silent default.
+    /// This is what made the frontend's two omitted fields fatal.
+    #[test]
+    fn every_command_field_is_required() {
+        let config_json = serde_json::to_string(LAGUNA_JSON).unwrap();
+        let full = serde_json::json!({
+            "configJson": serde_json::from_str::<serde_json::Value>(&config_json).unwrap(),
+            "gpu": "B200 SXM 180 GB",
+            "count": 1,
+            "tensorParallel": 1,
+            "weightPrecision": "nvfp4",
+            "kvPrecision": "fp8",
+            "avgContextTokens": 32768,
+            "maxContextTokens": 1048576,
+            "avgOutputTokens": 512,
+            "sloTargetSeconds": 10.0,
+            "isHypotheticalWeight": true,
+        });
+        let keys: Vec<String> = full.as_object().unwrap().keys().cloned().collect();
+        assert_eq!(keys.len(), 11, "AnalyzeCommand field count changed");
+        for key in &keys {
+            let mut partial = full.clone();
+            partial.as_object_mut().unwrap().remove(key);
+            assert!(
+                serde_json::from_value::<AnalyzeCommand>(partial).is_err(),
+                "dropping `{key}` should fail deserialization — if it now defaults, \
+                 the frontend can silently stop sending it"
+            );
+        }
     }
 }

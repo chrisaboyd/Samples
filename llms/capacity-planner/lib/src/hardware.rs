@@ -47,10 +47,17 @@ pub struct Gpu {
     /// Memory bandwidth in GB/s (decimal).
     pub memory_bandwidth_gbs: f64,
     /// BF16/FP16 peak throughput in TFLOPS (theoretical).
+    ///
+    /// These are vendor peak figures and follow one convention consistently
+    /// across the catalog (each precision step doubles where the hardware
+    /// supports it). They are ceilings, never achieved rates — the roofline
+    /// applies efficiency tiers on top (PRD §16.3).
     pub bf16_fp16_tflops: f64,
-    /// FP8 peak throughput in TFLOPS (theoretical).
+    /// FP8 peak throughput in TFLOPS (theoretical). `None` when the architecture
+    /// has no FP8 tensor cores, in which case the BF16 path is used.
     pub fp8_tflops: Option<f64>,
-    /// NVFP4 peak throughput in TFLOPS (theoretical).
+    /// NVFP4 peak throughput in TFLOPS (theoretical). `None` on pre-Blackwell
+    /// parts, which can store NVFP4 weights but must dequantize to compute.
     pub nvfp4_tflops: Option<f64>,
     pub pcie_gen: u32,
     pub pcie_width: u32,
@@ -136,7 +143,11 @@ pub const GPU_CATALOG: &[Gpu] = &[
         usable_gib: gib_from_gb(80.0),
         memory_bandwidth_gbs: 3_300.0, // 3.3 TB/s, PRD §422
         bf16_fp16_tflops: 1_000.0,
-        fp8_tflops: Some(1_000.0),
+        // Hopper's FP8 tensor cores run at 2× the BF16 rate. This was previously
+        // 1_000.0, which flattened FP8 to BF16 and disagreed with the H200 entry
+        // for the same architecture.
+        fp8_tflops: Some(2_000.0),
+        // Hopper has no FP4 tensor cores — NVFP4 falls back to the FP8 path.
         nvfp4_tflops: None,
         pcie_gen: 4,
         pcie_width: 16,
@@ -153,13 +164,17 @@ pub const GPU_CATALOG: &[Gpu] = &[
         manufacturer: "NVIDIA",
         product_family: "H200",
         sku: "H200 SXM 141 GB",
-        architecture: "Blackwell",
+        // H200 is Hopper (an H100 die with HBM3e), not Blackwell. The previous
+        // "Blackwell" label came with an invented NVFP4 figure that made the
+        // part look 4× faster than it is on FP4 workloads it cannot run.
+        architecture: "Hopper",
         memory_marketed_gb: 141.0,
         usable_gib: gib_from_gb(141.0),
         memory_bandwidth_gbs: 4_800.0,
         bf16_fp16_tflops: 1_000.0,
         fp8_tflops: Some(2_000.0),
-        nvfp4_tflops: Some(4_000.0),
+        // No FP4 tensor cores on Hopper — NVFP4 falls back to the FP8 path.
+        nvfp4_tflops: None,
         pcie_gen: 4,
         pcie_width: 16,
         nvlink: Some(Topology::NvLink4),
