@@ -20,6 +20,9 @@ pub struct AnalyzeCommand {
     gpu: String,
     count: u32,
     tensor_parallel: u32,
+    /// `None` fills the machine: floor(count / tensor_parallel).
+    #[serde(default)]
+    replicas: Option<u32>,
     weight_precision: Precision,
     kv_precision: Precision,
     avg_context_tokens: u64,
@@ -39,6 +42,7 @@ pub fn analyze_core(cmd: &AnalyzeCommand) -> capacity_planner::Result<ScenarioRe
         count: cmd.count,
         topology: Topology::PciE,
         tensor_parallel: cmd.tensor_parallel,
+        replicas: cmd.replicas,
         utilization: None,
         runtime_reserve_gib: None,
     };
@@ -100,6 +104,7 @@ mod tests {
             gpu: "B200 SXM 180 GB".to_string(),
             count: 1,
             tensor_parallel: 1,
+            replicas: None,
             weight_precision: Precision::Nvfp4,
             kv_precision: Precision::Fp8,
             avg_context_tokens: 32_768,

@@ -8,6 +8,9 @@
     "kvGiBPerAverageSequence": 0.78515625,
     "kvGiBPerMaximumSequence": 24.03515625,
     "freeGiBPerGpu": 84.42548769060522,
+    "freeGiBAcrossGpusInUse": 84.42548769060522,
+    "kvGiBPerMaximumSequenceAllRanks": 24.03515625,
+    "kvReplicatedAcrossRanks": false,
     "memoryConcurrencyAverage": 107,
     "memoryConcurrencyMaximum": 3,
     "physicalGiBPerGpu": 167.63806343078613
@@ -43,13 +46,16 @@
   },
   "practicalCapacity": {
     "comfortableActiveRequests": 3,
+    "bindingConstraint": "memory_at_maximum_context",
     "intermittentAgents": null,
     "humanUsers": null,
-    "note": "Agent/user translation deferred to Phase 3 (requires agent duty cycle, §19). SLO concurrency now computed (§18.2)."
+    "note": "3 — limited by KV memory at maximum context. Agent/user translation deferred to Phase 3 (requires agent duty cycle, §19)."
   },
   "topology": {
     "tensorParallel": 1,
     "dataParallel": 1,
+    "gpusInUse": 1,
+    "gpusIdle": 0,
     "expertParallel": true,
     "explanation": [
       "Topology optimizer deferred to Phase 3 (PRD §31 §20)."

@@ -76,7 +76,10 @@ pub struct PerformanceInputs<'a> {
     pub weight_precision: Precision,
     pub kv_precision: Precision,
     pub tensor_parallel: u32,
-    pub gpu_count: u32,
+    /// Independent model copies running in parallel. Aggregate throughput and
+    /// SLO concurrency scale with this, not with the raw GPU count — GPUs beyond
+    /// `replicas × tensor_parallel` are idle and contribute nothing.
+    pub replicas: u32,
     pub avg_context_tokens: u64,
     pub avg_output_tokens: u64,
     pub slo_target_seconds: f64,
@@ -356,7 +359,7 @@ pub fn evaluate_explained(inputs: &PerformanceInputs) -> (PerformanceResult, Vec
     // Per-request latency at batch b:  T_prefill + avg_output × T_step(b).
     // T_step is monotonically increasing in b, so the largest satisfying batch
     // is found by binary search, capped by what fits in KV memory (§15).
-    let dp_replicas = ((inputs.gpu_count as f64 / tp).floor().max(1.0)) as u64;
+    let dp_replicas = inputs.replicas.max(1) as u64;
     let t_prefill = ctx as f64 / prefill_tps[1].max(f64::MIN_POSITIVE);
     let out_tokens = inputs.avg_output_tokens.max(1) as f64;
     let meets_slo = |b: u64| -> bool {
@@ -687,7 +690,7 @@ mod tests {
             weight_precision: Precision::Nvfp4,
             kv_precision: Precision::Fp8,
             tensor_parallel: 1,
-            gpu_count: 1,
+            replicas: 1,
             avg_context_tokens: 32_768,
             memory_concurrency_cap: 128,
             avg_output_tokens: 512,
@@ -721,7 +724,7 @@ mod tests {
             weight_precision: Precision::Nvfp4,
             kv_precision: Precision::Fp8,
             tensor_parallel: 1,
-            gpu_count: 1,
+            replicas: 1,
             avg_context_tokens: 32_768,
             memory_concurrency_cap: 128,
             avg_output_tokens: 512,
@@ -755,7 +758,7 @@ mod tests {
             weight_precision: Precision::Nvfp4,
             kv_precision: Precision::Fp8,
             tensor_parallel: 1,
-            gpu_count: 1,
+            replicas: 1,
             avg_context_tokens: 32_768,
             memory_concurrency_cap: 128,
             avg_output_tokens: 512,
@@ -785,7 +788,7 @@ mod tests {
             weight_precision: Precision::Nvfp4,
             kv_precision: Precision::Fp8,
             tensor_parallel: 1,
-            gpu_count: 1,
+            replicas: 1,
             avg_context_tokens: 32_768,
             memory_concurrency_cap: 128,
             avg_output_tokens: 512,
@@ -814,7 +817,7 @@ mod tests {
             weight_precision: Precision::Nvfp4,
             kv_precision: Precision::Fp8,
             tensor_parallel: 1,
-            gpu_count: 1,
+            replicas: 1,
             avg_context_tokens: 4_096,
             memory_concurrency_cap: 128,
             avg_output_tokens: 512,
@@ -831,7 +834,7 @@ mod tests {
             weight_precision: Precision::Nvfp4,
             kv_precision: Precision::Fp8,
             tensor_parallel: 1,
-            gpu_count: 1,
+            replicas: 1,
             avg_context_tokens: 1_048_576,
             memory_concurrency_cap: 128,
             avg_output_tokens: 512,
@@ -866,7 +869,7 @@ mod tests {
             weight_precision: Precision::Nvfp4,
             kv_precision: Precision::Fp8,
             tensor_parallel: 1,
-            gpu_count: 1,
+            replicas: 1,
             avg_context_tokens: 32_768,
             memory_concurrency_cap: 128,
             avg_output_tokens: 512,
@@ -884,7 +887,7 @@ mod tests {
             weight_precision: Precision::Nvfp4,
             kv_precision: Precision::Fp8,
             tensor_parallel: 2,
-            gpu_count: 2,
+            replicas: 2,
             avg_context_tokens: 32_768,
             memory_concurrency_cap: 128,
             avg_output_tokens: 512,

@@ -9,7 +9,7 @@ use capacity_planner::hardware::{GpuConfig, Topology};
 use capacity_planner::memory::{Inputs, Workload};
 use capacity_planner::model::{AttentionKind, NormalizedModel};
 use capacity_planner::precision::Precision;
-use capacity_planner::result::Verdict;
+use capacity_planner::result::{BindingConstraint, Verdict};
 use capacity_planner::ScenarioResult;
 use capacity_planner::GIB_BYTES;
 use serde_json::Value;
@@ -37,6 +37,7 @@ fn run(
         count,
         topology: Topology::PciE,
         tensor_parallel: tp,
+        replicas: None,
         utilization: None,
         runtime_reserve_gib: None,
     };
@@ -356,6 +357,7 @@ fn try_run(
         count,
         topology: Topology::PciE,
         tensor_parallel: tp,
+        replicas: None,
         utilization: None,
         runtime_reserve_gib: None,
     };
@@ -489,6 +491,7 @@ fn dense_70b_on_b200(slo_target_seconds: f64) -> ScenarioResult {
         count: 1,
         topology: Topology::NvLink5,
         tensor_parallel: 1,
+        replicas: None,
         utilization: None,
         runtime_reserve_gib: None,
     };
@@ -692,5 +695,179 @@ fn missing_mlp_width_is_reported_not_silently_zero() {
         m.unresolved.iter().any(|u| u.contains("no MLP width")),
         "unresolved was: {:?}",
         m.unresolved
+    );
+}
+
+// ---- KV sharding, replicas, and the binding constraint ---------------------
+
+#[test]
+fn kv_is_replicated_when_tp_exceeds_kv_heads() {
+    // DeepSeek-V4-Flash has num_key_value_heads = 1. A single KV head cannot be
+    // split across 4 ranks, so TP must not divide per-GPU KV here.
+    let r1 = run(
+        &deepseek_v4(),
+        "RTX PRO 6000 Blackwell Workstation Edition",
+        4,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    let r4 = run(
+        &deepseek_v4(),
+        "RTX PRO 6000 Blackwell Workstation Edition",
+        4,
+        4,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert!(r4.memory.kv_replicated_across_ranks);
+    assert_eq!(
+        r4.memory.kv_gib_per_maximum_sequence, r1.memory.kv_gib_per_maximum_sequence,
+        "TP divided a single KV head across ranks"
+    );
+    assert!(
+        r4.warnings.iter().any(|w| w.contains("KV head cannot be split")),
+        "warnings were: {:?}",
+        r4.warnings
+    );
+}
+
+#[test]
+fn kv_still_shards_when_heads_allow_it() {
+    // Laguna has 8 KV heads, so TP=2 genuinely halves per-rank KV.
+    let r1 = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        2,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    let r2 = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        2,
+        2,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert!(!r2.memory.kv_replicated_across_ranks);
+    assert!(
+        (r2.memory.kv_gib_per_maximum_sequence * 2.0 - r1.memory.kv_gib_per_maximum_sequence).abs()
+            < 1e-9
+    );
+}
+
+#[test]
+fn replicas_default_to_filling_the_machine_and_can_be_capped() {
+    let gpu = |replicas| GpuConfig {
+        sku: "B200 SXM 180 GB".to_string(),
+        count: 8,
+        topology: Topology::NvLink5,
+        tensor_parallel: 4,
+        replicas,
+        utilization: None,
+        runtime_reserve_gib: None,
+    };
+    assert_eq!(gpu(None).replicas(), 2);
+    assert_eq!(gpu(None).gpus_in_use(), 8);
+    // Deliberately running one copy on half the machine.
+    assert_eq!(gpu(Some(1)).replicas(), 1);
+    assert_eq!(gpu(Some(1)).gpus_in_use(), 4);
+}
+
+#[test]
+fn idle_gpus_are_reported_not_silently_assumed_busy() {
+    let model = adapter::normalize(&laguna()).unwrap();
+    let gpu = GpuConfig {
+        sku: "B200 SXM 180 GB".to_string(),
+        count: 8,
+        topology: Topology::NvLink5,
+        tensor_parallel: 4,
+        replicas: Some(1),
+        utilization: None,
+        runtime_reserve_gib: None,
+    };
+    let r = capacity_planner::memory::evaluate(&Inputs {
+        model: &model,
+        gpu,
+        workload: Workload {
+            tensor_parallel: 4,
+            ..Workload::default()
+        },
+    })
+    .expect("evaluates");
+    assert_eq!(r.topology.data_parallel, 1);
+    assert_eq!(r.topology.gpus_in_use, 4);
+    assert_eq!(r.topology.gpus_idle, 4);
+    assert!(
+        r.warnings.iter().any(|w| w.contains("hold no model copy")),
+        "warnings were: {:?}",
+        r.warnings
+    );
+}
+
+#[test]
+fn replicas_beyond_gpu_count_are_rejected() {
+    let model = adapter::normalize(&laguna()).unwrap();
+    let gpu = GpuConfig {
+        sku: "B200 SXM 180 GB".to_string(),
+        count: 4,
+        topology: Topology::NvLink5,
+        tensor_parallel: 2,
+        replicas: Some(3),
+        utilization: None,
+        runtime_reserve_gib: None,
+    };
+    let err = capacity_planner::memory::evaluate(&Inputs {
+        model: &model,
+        gpu,
+        workload: Workload {
+            tensor_parallel: 2,
+            ..Workload::default()
+        },
+    });
+    assert!(err.is_err(), "3 replicas x TP2 needs 6 GPUs, only 4 given");
+}
+
+#[test]
+fn binding_constraint_names_the_limit_that_bound() {
+    // Laguna at 1M max context is memory-bound at 3 sequences.
+    let memory_bound = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert_eq!(
+        memory_bound.practical_capacity.binding_constraint,
+        BindingConstraint::MemoryAtMaximumContext
+    );
+    // Shrink max context until VRAM is no longer the wall and the SLO is.
+    let slo_bound = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        4_096,
+        4_096,
+    );
+    assert_eq!(
+        slo_bound.practical_capacity.binding_constraint,
+        BindingConstraint::SloLatency
     );
 }

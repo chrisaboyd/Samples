@@ -28,7 +28,7 @@ use crate::performance::{self, PerformanceInputs};
 use crate::precision::Precision;
 use crate::result::{
     AssumptionRecord, ConfidenceSummary, EvidenceRecord, MemoryResult, PerformanceResult,
-    PracticalCapacity, Provenance, ScenarioResult, TopologyResult, Verdict,
+    BindingConstraint, PracticalCapacity, Provenance, ScenarioResult, TopologyResult, Verdict,
 };
 use crate::weight;
 use crate::GIB_BYTES;
@@ -112,6 +112,13 @@ fn validate(inputs: &Inputs) -> Result<()> {
         return Err(CalcError::InvalidInput(format!(
             "tensor parallel ({tp}) exceeds GPU count ({count}) — TP shards one model \
              across {tp} physical GPUs, so at least {tp} are required"
+        )));
+    }
+    let replicas = inputs.gpu.replicas();
+    if replicas * tp > count {
+        return Err(CalcError::InvalidInput(format!(
+            "{replicas} replicas × TP {tp} needs {} GPUs but only {count} are configured",
+            replicas * tp
         )));
     }
     let w = &inputs.workload;
@@ -218,6 +225,9 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         kv_gib_per_average_sequence: to_gib(kv_bytes_avg),
         kv_gib_per_maximum_sequence: to_gib(kv_bytes_max),
         free_gib_per_gpu: to_gib(free_for_kv),
+        free_gib_across_gpus_in_use: to_gib(free_for_kv) * inputs.gpu.gpus_in_use() as f64,
+        kv_gib_per_maximum_sequence_all_ranks: to_gib(kv_bytes_max) * tp as f64,
+        kv_replicated_across_ranks: cfg_max.kv_is_replicated(),
         memory_concurrency_average: c_avg,
         memory_concurrency_maximum: c_max,
         physical_gib_per_gpu: gpu.usable_gib,
@@ -243,6 +253,24 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
     }
     if c_max == 0 && weights_fit {
         warnings.push("Weights fit but no KV-cache room remains at maximum context.".to_string());
+    }
+
+    if cfg_max.kv_is_replicated() {
+        warnings.push(format!(
+            "TP {tp} exceeds the model's {} KV head(s) — a KV head cannot be split, so engines \
+             replicate the whole KV cache on every rank. Tensor parallelism does not reduce \
+             per-GPU KV memory here; only weights shard.",
+            inputs.model.dimensions.kv_heads.unwrap_or(0).max(1)
+        ));
+    }
+    let idle = inputs.gpu.count.saturating_sub(inputs.gpu.gpus_in_use());
+    if idle > 0 {
+        warnings.push(format!(
+            "{idle} of {} GPUs hold no model copy ({} replica(s) × TP {tp}) and contribute \
+             nothing to capacity.",
+            inputs.gpu.count,
+            inputs.gpu.replicas()
+        ));
     }
 
     // KV geometry is what the whole capacity number rests on. When the adapter
@@ -379,7 +407,7 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         weight_precision: w.weight_precision,
         kv_precision: w.kv_precision,
         tensor_parallel: tp,
-        gpu_count: inputs.gpu.count,
+        replicas: inputs.gpu.replicas(),
         avg_context_tokens: w.avg_context_tokens,
         avg_output_tokens: w.avg_output_tokens,
         slo_target_seconds: w.slo_target_seconds,
@@ -407,6 +435,17 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
     let c_memory = c_avg.min(c_max);
     let c_slo = performance.slo_concurrency.unwrap_or(c_memory);
     let c_comfortable = c_memory.min(c_slo);
+    // Which of the three ceilings actually bound. Memory wins ties: when SLO and
+    // memory agree, the VRAM wall is the one the user can do something about.
+    let binding_constraint = if c_memory <= c_slo {
+        if c_max <= c_avg {
+            BindingConstraint::MemoryAtMaximumContext
+        } else {
+            BindingConstraint::MemoryAtAverageContext
+        }
+    } else {
+        BindingConstraint::SloLatency
+    };
 
     let compute_peak = performance::compute_peak_tflops(gpu, w.weight_precision);
     let decode_range = performance.decode_tokens_per_second_per_request.as_ref();
@@ -497,18 +536,24 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         performance: performance.clone(),
         practical_capacity: PracticalCapacity {
             comfortable_active_requests: c_comfortable,
+            binding_constraint,
             intermittent_agents: None,
             human_users: None,
-            note: "Agent/user translation deferred to Phase 3 (requires agent \
-                   duty cycle, §19). SLO concurrency now computed (§18.2)."
-                .into(),
+            note: format!(
+                "{} — {}. Agent/user translation deferred to Phase 3 (requires agent \
+                 duty cycle, §19).",
+                c_comfortable,
+                binding_constraint.label()
+            ),
         },
         topology: TopologyResult {
             tensor_parallel: tp,
             // Replicas, not raw GPU count: `count` GPUs split into groups of
             // `tp`. Reporting count here claimed TP × count GPUs and contradicted
             // the DP factor the performance model uses.
-            data_parallel: (inputs.gpu.count / tp).max(1),
+            data_parallel: inputs.gpu.replicas(),
+            gpus_in_use: inputs.gpu.gpus_in_use(),
+            gpus_idle: inputs.gpu.count.saturating_sub(inputs.gpu.gpus_in_use()),
             // Laguna-style hybrids are MoE too — the router is what makes expert
             // parallelism applicable, not whether the MLP stack is uniformly sparse.
             expert_parallel: inputs.model.moe.is_some(),

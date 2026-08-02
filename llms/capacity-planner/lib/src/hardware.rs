@@ -234,6 +234,14 @@ pub struct GpuConfig {
     /// Tensor-parallel size (1 = no TP). Drives weight + KV sharding.
     #[serde(default = "default_one")]
     pub tensor_parallel: u32,
+    /// Independent model copies to run, each occupying `tensor_parallel` GPUs.
+    ///
+    /// `None` means "fill the machine": `floor(count / tensor_parallel)`. Set it
+    /// explicitly to model a deployment that deliberately leaves GPUs idle —
+    /// 8 cards at TP=4 can be 2 replicas or 1 replica with 4 spare, and those
+    /// are different answers for aggregate throughput.
+    #[serde(default)]
+    pub replicas: Option<u32>,
     /// User-overridable memory utilization ceiling (default from SKU).
     pub utilization: Option<f64>,
     /// User-overridable fixed runtime reserve in GiB.
@@ -247,6 +255,18 @@ fn default_one() -> u32 {
 impl GpuConfig {
     pub fn gpu(&self) -> Result<&'static Gpu> {
         find(&self.sku)
+    }
+
+    /// Replicas actually deployed: the explicit setting, else as many whole
+    /// TP groups as the GPU count allows.
+    pub fn replicas(&self) -> u32 {
+        let max_replicas = (self.count / self.tensor_parallel.max(1)).max(1);
+        self.replicas.unwrap_or(max_replicas).max(1)
+    }
+
+    /// GPUs carrying a model copy (`replicas × TP`). The remainder are idle.
+    pub fn gpus_in_use(&self) -> u32 {
+        self.replicas() * self.tensor_parallel.max(1)
     }
 
     pub fn utilization(&self) -> Result<f64> {
