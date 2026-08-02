@@ -117,6 +117,13 @@ pub struct NormalizedModel {
     /// Field names that had to be inferred rather than read verbatim from the
     /// source config, so the UI can surface them as "inferred".
     pub inferred: Vec<String>,
+    /// Architectural facts the math *needs* that could not be determined from
+    /// the config at all. Distinct from [`Self::inferred`]: an inference is a
+    /// defensible substitution, an unresolved entry means a term is missing or
+    /// assumed at a bound. Any entry here forces the result to Level D /
+    /// Speculative (PRD §10.1) so a guess is never graded like a parse.
+    #[serde(default)]
+    pub unresolved: Vec<String>,
 }
 
 impl NormalizedModel {

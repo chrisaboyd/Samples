@@ -262,26 +262,38 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
                 .to_string(),
         );
     }
+    // Readable-but-wrong is the dangerous case: a config can supply every field
+    // this check looks at and still be an architecture we do not model, which
+    // produces a plausible number at full confidence. Adapters record those gaps
+    // in `unresolved`, and any one of them caps the result at Level D.
+    for gap in &inputs.model.unresolved {
+        warnings.push(format!("Not determined from the config: {gap}"));
+    }
+    let architecture_fully_modelled = inputs.model.unresolved.is_empty();
+    let analytical = kv_geometry_known && architecture_fully_modelled;
+
     for note in &inputs.model.inferred {
         warnings.push(format!("Inferred from an incomplete config: {note}"));
     }
 
     let confidence = Confidence {
-        grade: if kv_geometry_known {
+        grade: if analytical {
             ConfidenceGrade::Analytical
         } else {
             ConfidenceGrade::Speculative
         },
-        level: if kv_geometry_known {
+        level: if analytical {
             AnalyzeLevel::C
         } else {
             AnalyzeLevel::D
         },
         reasons: vec![
-            if kv_geometry_known {
+            if analytical {
                 "Architecture-derived (Level C) from config.json".to_string()
-            } else {
+            } else if !kv_geometry_known {
                 "Generic approximation (Level D) — key architecture fields missing".to_string()
+            } else {
+                "Generic approximation (Level D) — architecture not fully modelled".to_string()
             },
             format!(
                 "KV cache rounded to {}-token vLLM blocks",
@@ -524,6 +536,12 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
             },
             primary_uncertainty: if !kv_geometry_known {
                 "KV-cache geometry missing from the config — capacity figures are placeholders (PRD §10.1 Level D)".to_string()
+            } else if !architecture_fully_modelled {
+                format!(
+                    "Architecture not fully modelled — {} unresolved term(s); parameter count and \
+                     KV size are bounds, not estimates (PRD §10.1 Level D)",
+                    inputs.model.unresolved.len()
+                )
             } else if hypothesis_warning {
                 "Analytical roofline with broad efficiency ranges; hypothetical quantization adds weight-load uncertainty (PRD §16.3/§33)".to_string()
             } else {

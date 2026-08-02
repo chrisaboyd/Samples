@@ -601,3 +601,96 @@ fn hopper_parts_have_no_fp4_compute_path() {
         assert_eq!(g.fp8_tflops, Some(g.bf16_fp16_tflops * 2.0), "{sku}");
     }
 }
+
+// ---- generic-adapter regression: sparse models must not report as small dense
+// models (see `adapter::generic`). DeepSeek-V4-Flash has no dedicated adapter,
+// declares its MLP width only as `moe_intermediate_size`, and carries a blanket
+// `sliding_window` with no `layer_types`.
+
+const DEEPSEEK_V4_JSON: &str = include_str!("assets/deepseek-v4-flash-config.json");
+
+fn deepseek_v4() -> Value {
+    serde_json::from_str(DEEPSEEK_V4_JSON).unwrap()
+}
+
+#[test]
+fn generic_adapter_counts_routed_experts() {
+    let m = adapter::normalize(&deepseek_v4()).expect("normalizes");
+    // 256 routed + 1 shared expert, each 3 * 4096 * 2048, over 43 layers.
+    let experts_per_layer: u128 = 257 * 3 * 4096 * 2048;
+    let params = m.parameter_count().expect("has a parameter count");
+    assert!(
+        params > experts_per_layer * 43,
+        "expert tensors omitted: got {params} params"
+    );
+    // The pre-fix generic path reported 7.73B for this config.
+    assert!(params > 250_000_000_000, "got {params} params");
+    let moe = m.moe.as_ref().expect("MoE detected");
+    assert_eq!(moe.expert_count, 256);
+    assert_eq!(moe.active_experts_per_token, 6);
+}
+
+#[test]
+fn blanket_sliding_window_does_not_freeze_kv_against_context() {
+    // `sliding_window: 128` with no per-layer pattern previously capped every
+    // layer at 128 tokens, making KV identical at 32K and 1M context.
+    let r = run(
+        &deepseek_v4(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert!(
+        r.memory.kv_gib_per_maximum_sequence > r.memory.kv_gib_per_average_sequence,
+        "KV did not scale with context: avg {} / max {}",
+        r.memory.kv_gib_per_average_sequence,
+        r.memory.kv_gib_per_maximum_sequence
+    );
+}
+
+#[test]
+fn unmodelled_architecture_is_capped_at_level_d() {
+    let r = run(
+        &deepseek_v4(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    // Every field the KV-geometry check looks at is present and readable here,
+    // so only the `unresolved` gate can catch this.
+    assert_eq!(r.confidence.analyze_level, AnalyzeLevel::D);
+    assert_eq!(r.confidence.memory, ConfidenceGrade::Speculative);
+    assert!(
+        r.warnings
+            .iter()
+            .any(|w| w.contains("no dedicated adapter")),
+        "warnings were: {:?}",
+        r.warnings
+    );
+}
+
+#[test]
+fn missing_mlp_width_is_reported_not_silently_zero() {
+    // Dense config with no `intermediate_size`: the MLP term used to evaluate to
+    // 0 and disappear into a confident-looking parameter count.
+    let raw: Value = serde_json::from_str(
+        r#"{"model_type":"mystery","architectures":["MysteryForCausalLM"],
+            "hidden_size":4096,"num_hidden_layers":32,"vocab_size":32000,
+            "num_attention_heads":32,"num_key_value_heads":8,"head_dim":128}"#,
+    )
+    .unwrap();
+    let m = adapter::normalize(&raw).expect("normalizes");
+    assert!(
+        m.unresolved.iter().any(|u| u.contains("no MLP width")),
+        "unresolved was: {:?}",
+        m.unresolved
+    );
+}
