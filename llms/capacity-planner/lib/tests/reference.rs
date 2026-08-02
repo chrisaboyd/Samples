@@ -871,3 +871,106 @@ fn binding_constraint_names_the_limit_that_bound() {
         BindingConstraint::SloLatency
     );
 }
+
+// ---- cluster-wide vs per-replica concurrency, and unified-memory parts ------
+
+#[test]
+fn memory_ceiling_scales_with_replicas() {
+    // The per-replica ceilings previously fed straight into a comparison with a
+    // cluster-wide SLO figure, so 4 replicas reported the same capacity as 1.
+    let one = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    let four = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        4,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert_eq!(four.topology.data_parallel, 4);
+    // Per-replica figures are identical — one replica's VRAM does not change.
+    assert_eq!(
+        four.memory.memory_concurrency_maximum,
+        one.memory.memory_concurrency_maximum
+    );
+    // Cluster-wide figures scale.
+    assert_eq!(
+        four.memory.memory_concurrency_maximum_total,
+        one.memory.memory_concurrency_maximum * 4
+    );
+    assert_eq!(
+        four.practical_capacity.comfortable_active_requests,
+        one.practical_capacity.comfortable_active_requests * 4
+    );
+}
+
+#[test]
+fn comfortable_never_exceeds_either_cluster_ceiling() {
+    for count in [1u32, 2, 4, 8] {
+        let r = run(
+            &laguna(),
+            "B200 SXM 180 GB",
+            count,
+            1,
+            Precision::Nvfp4,
+            true,
+            32_768,
+            1_048_576,
+        );
+        let c = r.practical_capacity.comfortable_active_requests;
+        assert!(c <= r.memory.memory_concurrency_maximum_total, "{count} GPUs");
+        assert!(c <= r.memory.memory_concurrency_average_total, "{count} GPUs");
+        assert!(
+            c <= r.performance.slo_concurrency.unwrap(),
+            "{count} GPUs: comfortable {c} exceeded the SLO ceiling"
+        );
+    }
+}
+
+#[test]
+fn gb10_parts_are_unified_memory_and_bandwidth_bound() {
+    for sku in ["DGX Spark (GB10)", "Dell Pro Max with GB10"] {
+        let g = capacity_planner::hardware::find(sku).expect("in catalog");
+        assert!(g.unified_memory, "{sku}");
+        // Host OS and serving process come out of the same pool, so neither the
+        // 0.90 ceiling nor the 1 GiB reserve a discrete card gets applies.
+        assert!(g.default_utilization < 0.90, "{sku}");
+        assert!(g.typical_runtime_reserve_gib > 1.0, "{sku}");
+        assert_eq!(g.memory_marketed_gb, 128.0, "{sku}");
+        assert_eq!(g.memory_bandwidth_gbs, 273.0, "{sku}");
+    }
+    // Every discrete part keeps the flag off.
+    for sku in ["B200 SXM 180 GB", "H100 SXM 80 GB", "RTX 6000 Ada"] {
+        assert!(!capacity_planner::hardware::find(sku).unwrap().unified_memory);
+    }
+}
+
+#[test]
+fn unified_memory_is_surfaced_as_a_warning() {
+    let r = run(
+        &laguna(),
+        "DGX Spark (GB10)",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert!(
+        r.warnings.iter().any(|w| w.contains("shares one")),
+        "warnings were: {:?}",
+        r.warnings
+    );
+}

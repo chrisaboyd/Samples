@@ -6,6 +6,14 @@ import type { BindingConstraint } from "./types";
 
 /// Which ceiling produced the comfortable-requests number. Without it the value
 /// duplicates whichever row won and says nothing about what to change.
+/// Request counts are per replica; the cluster total only differs when more
+/// than one replica is deployed, so the qualifier appears only when it matters.
+function concurrency(perReplica: number, total: number): string {
+  return perReplica === total
+    ? `${total}`
+    : `${total} total · ${perReplica} per replica`;
+}
+
 const BINDING_LABEL: Record<BindingConstraint, string> = {
   memory_at_maximum_context: "limited by KV memory at maximum context",
   memory_at_average_context: "limited by KV memory at average context",
@@ -386,14 +394,17 @@ function ResultView({ r, onCopyJson }: { r: ScenarioResult; onCopyJson: () => vo
           value={r.practicalCapacity.comfortableActiveRequests}
           derivation={dv["c-comfortable"]}
         />
+        {/* "Memory ceiling" named the mechanism, not the quantity. These are
+            request counts, and with >1 replica the per-replica and cluster
+            figures differ — showing only one invited exactly that confusion. */}
         <Figure
-          label="Memory ceiling (avg ctx)"
-          value={m.memoryConcurrencyAverage}
+          label="Concurrent requests @ avg context"
+          value={concurrency(m.memoryConcurrencyAverage, m.memoryConcurrencyAverageTotal)}
           derivation={dv["c-mem-avg"]}
         />
         <Figure
-          label="Memory ceiling (max ctx)"
-          value={m.memoryConcurrencyMaximum}
+          label="Concurrent requests @ max context"
+          value={concurrency(m.memoryConcurrencyMaximum, m.memoryConcurrencyMaximumTotal)}
           derivation={dv["c-mem-max"]}
         />
       </div>

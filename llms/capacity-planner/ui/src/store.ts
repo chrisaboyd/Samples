@@ -7,6 +7,8 @@ export const GPU_SKUS = [
   "H100 SXM 80 GB",
   "H200 SXM 141 GB",
   "B200 SXM 180 GB",
+  "DGX Spark (GB10)",
+  "Dell Pro Max with GB10",
 ] as const;
 
 interface UiState {

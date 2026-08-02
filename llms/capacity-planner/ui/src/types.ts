@@ -21,8 +21,11 @@ export interface MemoryResult {
   freeGiBAcrossGpusInUse: number;
   kvGiBPerMaximumSequenceAllRanks: number;
   kvReplicatedAcrossRanks: boolean;
+  /** Per replica (one TP group), not cluster-wide. */
   memoryConcurrencyAverage: number;
   memoryConcurrencyMaximum: number;
+  memoryConcurrencyAverageTotal: number;
+  memoryConcurrencyMaximumTotal: number;
   physicalGiBPerGpu: number;
 }
 

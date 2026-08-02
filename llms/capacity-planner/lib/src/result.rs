@@ -109,8 +109,15 @@ pub struct MemoryResult {
     /// True when TP exceeds the KV head count, so KV is replicated per rank
     /// rather than sharded and TP stops reducing per-GPU KV.
     pub kv_replicated_across_ranks: bool,
+    /// Concurrent sequences one replica (one TP group) holds in KV memory at
+    /// average context. Per replica, not cluster-wide — see the `*_total` pair.
     pub memory_concurrency_average: u64,
     pub memory_concurrency_maximum: u64,
+    /// The same two ceilings across every replica: `per_replica × replicas`.
+    /// This is the figure comparable to `PerformanceResult::slo_concurrency`,
+    /// which is also cluster-wide.
+    pub memory_concurrency_average_total: u64,
+    pub memory_concurrency_maximum_total: u64,
     /// Total physical memory per GPU, GiB (for context).
     #[serde(rename = "physicalGiBPerGpu")]
     pub physical_gib_per_gpu: f64,
@@ -272,6 +279,8 @@ impl ScenarioResult {
                 kv_replicated_across_ranks: false,
                 memory_concurrency_average: 0,
                 memory_concurrency_maximum: 0,
+                memory_concurrency_average_total: 0,
+                memory_concurrency_maximum_total: 0,
                 physical_gib_per_gpu: 0.0,
             },
             performance: PerformanceResult {

@@ -230,6 +230,8 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         kv_replicated_across_ranks: cfg_max.kv_is_replicated(),
         memory_concurrency_average: c_avg,
         memory_concurrency_maximum: c_max,
+        memory_concurrency_average_total: c_avg.saturating_mul(inputs.gpu.replicas() as u64),
+        memory_concurrency_maximum_total: c_max.saturating_mul(inputs.gpu.replicas() as u64),
         physical_gib_per_gpu: gpu.usable_gib,
     };
 
@@ -261,6 +263,19 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
              replicate the whole KV cache on every rank. Tensor parallelism does not reduce \
              per-GPU KV memory here; only weights shard.",
             inputs.model.dimensions.kv_heads.unwrap_or(0).max(1)
+        ));
+    }
+    if gpu.unified_memory {
+        warnings.push(format!(
+            "{} shares one {:.0} GB pool between CPU and GPU — the {:.0}% ceiling and {:.0} GiB \
+             reserve below account for the host OS and serving process, which a discrete card \
+             does not have to fund. Bandwidth ({:.0} GB/s) is the binding limit on decode here, \
+             not capacity.",
+            gpu.sku,
+            gpu.memory_marketed_gb,
+            inputs.gpu.utilization()? * 100.0,
+            reserve_gib,
+            gpu.memory_bandwidth_gbs
         ));
     }
     let idle = inputs.gpu.count.saturating_sub(inputs.gpu.gpus_in_use());
@@ -432,7 +447,15 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
     };
 
     // C_comfortable = min(C_memory, C_SLO)  (PRD §18.3)
-    let c_memory = c_avg.min(c_max);
+    //
+    // Both sides must be cluster-wide. `c_avg`/`c_max` are per replica (free KV
+    // on one rank / KV per sequence on that rank), while `slo_concurrency` is
+    // already multiplied by the replica count. Comparing them directly reported
+    // a 4-replica deployment as serving the same number of requests as one.
+    let replicas = inputs.gpu.replicas() as u64;
+    let c_avg_total = c_avg.saturating_mul(replicas);
+    let c_max_total = c_max.saturating_mul(replicas);
+    let c_memory = c_avg_total.min(c_max_total);
     let c_slo = performance.slo_concurrency.unwrap_or(c_memory);
     let c_comfortable = c_memory.min(c_slo);
     // Which of the three ceilings actually bound. Memory wins ties: when SLO and
@@ -522,6 +545,7 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         sliding_window: cfg_avg.sliding_window,
         c_avg,
         c_max,
+        replicas,
         c_slo,
         c_comfortable,
         compute_peak_tflops: compute_peak,
