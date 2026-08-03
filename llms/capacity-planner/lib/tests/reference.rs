@@ -90,8 +90,10 @@ const TINY_LLAMA: &str = r#"{
 #[test]
 fn laguna_param_count_is_architecture_exact() {
     let m = adapter::normalize(&laguna()).unwrap();
-    // 116,759,497,728 (Level C, derived from config.json alone).
-    assert_eq!(m.parameter_count(), Some(116_759_497_728));
+    // 117,561,965,568 (Level C, derived from config.json alone), including the
+    // attention output gate and an `o_proj` shaped `heads × head_dim → hidden`
+    // rather than `hidden → hidden`.
+    assert_eq!(m.parameter_count(), Some(117_561_965_568));
 }
 
 #[test]
@@ -114,8 +116,8 @@ fn laguna_hybrid_moe_and_hybrid_attention_detected() {
     assert_eq!(sliding.count, 36);
     assert_eq!(sliding.window_size, Some(512));
     // The real config supplies the per-layer head arrays fully, so the exact
-    // 2,000,683,008 attention param count is derived without inference (tested
-    // separately in attention_uses_per_layer_head_counts). Nothing is inferred.
+    // 2,803,138,560 attention param count is derived without inference (tested
+    // separately in attention_uses_per_layer_head_counts_and_projection_shapes).
     assert!(
         m.inferred.is_empty(),
         "config is complete; got inferred: {:?}",
@@ -305,6 +307,159 @@ fn tiny_llama_fits_and_reports_confidence() {
     assert!(r.memory.weight_gib_per_gpu < 0.001);
     assert_eq!(r.confidence.memory, ConfidenceGrade::Analytical);
     assert_eq!(r.confidence.analyze_level, AnalyzeLevel::C);
+}
+
+// ---------------- Quantized-checkpoint end-to-end ----------------
+
+/// The public Laguna config with the `quantization_config` an llm-compressor
+/// NVFP4 run emits: routed experts quantized, attention / embeddings / lm_head /
+/// routers / shared experts / the layer-0 dense MLP / the last 8 layers' experts
+/// all left at BF16.
+fn laguna_nvfp4() -> Value {
+    let mut cfg = laguna();
+    cfg["quantization_config"] = serde_json::json!({
+        "quant_method": "compressed-tensors",
+        "format": "nvfp4-pack-quantized",
+        "quantization_status": "compressed",
+        "config_groups": {
+            "group_0": {
+                "targets": ["re:.*experts\\.[0-9]+\\.(gate_proj|up_proj|down_proj)$"],
+                "weights": { "num_bits": 4, "type": "float", "group_size": 16 }
+            }
+        },
+        "ignore": [
+            "lm_head",
+            "re:.*\\.self_attn\\.q_proj$",
+            "re:.*\\.self_attn\\.k_proj$",
+            "re:.*\\.self_attn\\.v_proj$",
+            "re:.*\\.self_attn\\.o_proj$",
+            "re:.*\\.self_attn\\.g_proj$",
+            "re:.*\\.mlp\\.gate$",
+            "model.layers.0.mlp.gate_proj",
+            "model.layers.0.mlp.up_proj",
+            "model.layers.0.mlp.down_proj",
+            "re:.*\\.mlp\\.shared_expert\\.gate_proj$",
+            "re:.*\\.mlp\\.shared_expert\\.up_proj$",
+            "re:.*\\.mlp\\.shared_expert\\.down_proj$",
+            "re:^model\\.layers\\.4[0-7]\\.mlp\\.experts(\\..*)?$"
+        ]
+    });
+    cfg
+}
+
+/// End to end, the headline regression: a checkpoint that quantized 39 of its
+/// 47 expert layers must be sized from what it actually stores. Reading the
+/// `nvfp4-pack-quantized` format alone and applying it to all 117.56B
+/// parameters reports ~61 GiB for a checkpoint that is ~93 GiB on disk — a 34%
+/// under-count, and the same factor off on every bandwidth-bound decode figure.
+#[test]
+fn quantized_checkpoint_is_sized_from_its_ignore_list() {
+    let exact = run(
+        &laguna_nvfp4(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        false,
+        32_768,
+        1_048_576,
+    );
+    assert_eq!(
+        exact.memory.checkpoint_precision_label,
+        "Exact checkpoint — NVFP4 53% + BF16 47%"
+    );
+    let gib = exact.memory.checkpoint_storage_gib;
+    assert!((92.0..94.0).contains(&gib), "checkpoint storage was {gib}");
+
+    // Same config, precision override on: the blanket-NVFP4 reading.
+    let overridden = run(
+        &laguna_nvfp4(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert!(
+        overridden.memory.checkpoint_storage_gib < gib * 0.7,
+        "the override should differ sharply from the checkpoint; got {} vs {gib}",
+        overridden.memory.checkpoint_storage_gib
+    );
+    // ...and must say so rather than presenting itself as the checkpoint.
+    assert!(
+        overridden
+            .warnings
+            .iter()
+            .any(|w| w.contains("overriding the checkpoint") && w.contains("nvfp4-pack-quantized")),
+        "override warning missing: {:?}",
+        overridden.warnings
+    );
+}
+
+/// The override warning is specific to checkpoints that declare quantization.
+/// An unquantized BF16 config asked for an NVFP4 what-if is an ordinary
+/// estimate, not a contradiction of anything the config said.
+#[test]
+fn unquantized_checkpoint_gets_the_plain_hypothetical_warning() {
+    let r = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert!(!r
+        .warnings
+        .iter()
+        .any(|w| w.contains("overriding the checkpoint")));
+    assert!(r
+        .warnings
+        .iter()
+        .any(|w| w.starts_with("Hypothetical quantization — weights use a format")));
+}
+
+/// Weight memory drives the bandwidth-bound decode estimate, so mis-sizing the
+/// checkpoint mis-reports performance by the same factor.
+#[test]
+fn quantized_checkpoint_lowers_decode_versus_the_blanket_reading() {
+    let exact = run(
+        &laguna_nvfp4(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        false,
+        32_768,
+        1_048_576,
+    );
+    let blanket = run(
+        &laguna_nvfp4(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    let decode = |r: &ScenarioResult| {
+        r.performance
+            .decode_tokens_per_second_per_request
+            .as_ref()
+            .expect("decode range")
+            .max
+    };
+    assert!(
+        decode(&exact) < decode(&blanket),
+        "heavier weights must decode slower: {} vs {}",
+        decode(&exact),
+        decode(&blanket)
+    );
 }
 
 // ---------------- Golden snapshot (locks §25 schema + numbers) ----------------
@@ -730,7 +885,9 @@ fn kv_is_replicated_when_tp_exceeds_kv_heads() {
         "TP divided a single KV head across ranks"
     );
     assert!(
-        r4.warnings.iter().any(|w| w.contains("KV head cannot be split")),
+        r4.warnings
+            .iter()
+            .any(|w| w.contains("KV head cannot be split")),
         "warnings were: {:?}",
         r4.warnings
     );
@@ -929,8 +1086,14 @@ fn comfortable_never_exceeds_either_cluster_ceiling() {
             1_048_576,
         );
         let c = r.practical_capacity.comfortable_active_requests;
-        assert!(c <= r.memory.memory_concurrency_maximum_total, "{count} GPUs");
-        assert!(c <= r.memory.memory_concurrency_average_total, "{count} GPUs");
+        assert!(
+            c <= r.memory.memory_concurrency_maximum_total,
+            "{count} GPUs"
+        );
+        assert!(
+            c <= r.memory.memory_concurrency_average_total,
+            "{count} GPUs"
+        );
         assert!(
             c <= r.performance.slo_concurrency.unwrap(),
             "{count} GPUs: comfortable {c} exceeded the SLO ceiling"
@@ -952,7 +1115,11 @@ fn gb10_parts_are_unified_memory_and_bandwidth_bound() {
     }
     // Every discrete part keeps the flag off.
     for sku in ["B200 SXM 180 GB", "H100 SXM 80 GB", "RTX 6000 Ada"] {
-        assert!(!capacity_planner::hardware::find(sku).unwrap().unified_memory);
+        assert!(
+            !capacity_planner::hardware::find(sku)
+                .unwrap()
+                .unified_memory
+        );
     }
 }
 

@@ -14,7 +14,8 @@ use crate::error::{CalcError, Result};
 use crate::model::{
     AttentionKind, AttentionLayer, Dimensions, Identity, NormalizedModel, WeightComponent,
 };
-use crate::precision::{Precision, QuantizationMetadata};
+use crate::precision::{Precision, QuantizationMetadata, WeightCategory};
+use crate::quant::CheckpointQuantization;
 
 pub mod generic;
 pub mod laguna;
@@ -118,6 +119,94 @@ pub(crate) fn quantization_marker(
     })
 }
 
+/// Describe what the checkpoint itself declares, falling back to the base dtype
+/// when it declares nothing. Never hypothetical — this is what is on disk.
+pub(crate) fn checkpoint_marker(
+    quant: Option<&CheckpointQuantization>,
+    base: Precision,
+) -> Option<QuantizationMetadata> {
+    match quant {
+        Some(q) => Some(QuantizationMetadata {
+            flavor: q.format.clone(),
+            group_size: matches!(q.primary_precision(), Precision::Nvfp4).then(|| q.group_size()),
+            is_hypothetical: false,
+        }),
+        None => quantization_marker(base, false, 16),
+    }
+}
+
+/// Accumulates a model's tensors into `(category, precision)` buckets.
+///
+/// Adapters name each tensor as it is added (`model.layers.3.self_attn.q_proj`)
+/// so the checkpoint's own `ignore`/`targets` rules decide that tensor's stored
+/// precision. Tensors of the same category that resolve to different precisions
+/// become separate [`WeightComponent`]s — which is how a checkpoint with NVFP4
+/// experts in layers 1–39 and BF16 experts in 40–47 is represented without a
+/// per-tensor explosion in the result payload.
+///
+/// Insertion order is preserved so derivations render deterministically.
+pub(crate) struct ComponentBuilder<'a> {
+    quant: Option<&'a CheckpointQuantization>,
+    base: Precision,
+    buckets: Vec<(WeightCategory, Precision, u128)>,
+}
+
+impl<'a> ComponentBuilder<'a> {
+    pub(crate) fn new(quant: Option<&'a CheckpointQuantization>, base: Precision) -> Self {
+        Self {
+            quant,
+            base,
+            buckets: Vec::new(),
+        }
+    }
+
+    /// Add `count` elements of a tensor at module path `module`.
+    pub(crate) fn add(&mut self, category: WeightCategory, module: &str, count: u128) {
+        if count == 0 {
+            return;
+        }
+        let precision = match self.quant {
+            Some(q) => q.precision_for(module, self.base),
+            None => self.base,
+        };
+        match self
+            .buckets
+            .iter_mut()
+            .find(|(c, p, _)| *c == category && *p == precision)
+        {
+            Some((_, _, n)) => *n += count,
+            None => self.buckets.push((category, precision, count)),
+        }
+    }
+
+    /// Add a tensor that no quantization scheme applies to (norms, biases).
+    pub(crate) fn add_unquantized(&mut self, category: WeightCategory, count: u128) {
+        if count == 0 {
+            return;
+        }
+        match self
+            .buckets
+            .iter_mut()
+            .find(|(c, p, _)| *c == category && *p == self.base)
+        {
+            Some((_, _, n)) => *n += count,
+            None => self.buckets.push((category, self.base, count)),
+        }
+    }
+
+    pub(crate) fn finish(self) -> Vec<WeightComponent> {
+        self.buckets
+            .into_iter()
+            .map(|(category, precision, element_count)| WeightComponent {
+                category,
+                element_count,
+                precision,
+                is_hypothetical: false,
+            })
+            .collect()
+    }
+}
+
 /// Standard decoder attention-layer decomposition. Detects full vs sliding
 /// attention when a `sliding_window` field is present.
 pub(crate) fn standard_attention_layers(raw: &Value) -> Vec<AttentionLayer> {
@@ -163,28 +252,69 @@ pub(crate) fn standard_dimensions(raw: &Value, inferred: &mut Vec<String>) -> Re
     })
 }
 
-/// Build NN-VLM embedding/output categories. `tied` mirrors `tie_word_embeddings`
-/// (PRD §29: "Untied or tied embeddings").
-pub(crate) fn embedding_components(
-    vocab: u128,
-    hidden: u128,
-    tied: bool,
-    precision: Precision,
-) -> Vec<WeightComponent> {
+/// Add embedding / output-head categories. `tied` mirrors `tie_word_embeddings`
+/// (PRD §29: "Untied or tied embeddings"). `lm_head` is the module name almost
+/// every `ignore` list uses to keep the output head at full precision.
+pub(crate) fn add_embeddings(b: &mut ComponentBuilder, vocab: u128, hidden: u128, tied: bool) {
     let emb = vocab * hidden;
-    let mut out = vec![WeightComponent {
-        category: crate::precision::WeightCategory::Embeddings,
-        element_count: emb,
-        precision,
-        is_hypothetical: false,
-    }];
+    b.add(WeightCategory::Embeddings, "model.embed_tokens", emb);
     if !tied {
-        out.push(WeightComponent {
-            category: crate::precision::WeightCategory::OutputHead,
-            element_count: emb,
-            precision,
-            is_hypothetical: false,
-        });
+        b.add(WeightCategory::OutputHead, "lm_head", emb);
     }
-    out
+}
+
+/// Add the four standard attention projections for one layer.
+///
+/// `o_proj` maps `heads × head_dim → hidden`, which only equals `hidden × hidden`
+/// when `heads × head_dim == hidden`. Models that over-project attention (a
+/// per-layer head count above `hidden / head_dim`) have a correspondingly larger
+/// `o_proj`, so the two dimensions are kept separate here.
+pub(crate) fn add_attention_projections(
+    b: &mut ComponentBuilder,
+    layer: usize,
+    hidden: u128,
+    heads: u128,
+    kv_heads: u128,
+    head_dim: u128,
+) {
+    let prefix = format!("model.layers.{layer}.self_attn");
+    let q_dim = heads * head_dim;
+    let kv_dim = kv_heads * head_dim;
+    b.add(
+        WeightCategory::Attention,
+        &format!("{prefix}.q_proj"),
+        hidden * q_dim,
+    );
+    b.add(
+        WeightCategory::Attention,
+        &format!("{prefix}.k_proj"),
+        hidden * kv_dim,
+    );
+    b.add(
+        WeightCategory::Attention,
+        &format!("{prefix}.v_proj"),
+        hidden * kv_dim,
+    );
+    b.add(
+        WeightCategory::Attention,
+        &format!("{prefix}.o_proj"),
+        q_dim * hidden,
+    );
+}
+
+/// Add the three dense-MLP projections for one layer.
+pub(crate) fn add_dense_mlp(
+    b: &mut ComponentBuilder,
+    layer: usize,
+    hidden: u128,
+    intermediate: u128,
+) {
+    let prefix = format!("model.layers.{layer}.mlp");
+    for proj in ["gate_proj", "up_proj", "down_proj"] {
+        b.add(
+            WeightCategory::DenseMlp,
+            &format!("{prefix}.{proj}"),
+            hidden * intermediate,
+        );
+    }
 }

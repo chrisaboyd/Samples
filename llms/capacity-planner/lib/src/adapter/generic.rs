@@ -14,14 +14,14 @@ use serde_json::Value;
 
 use crate::error::Result;
 use crate::model::{
-    AttentionKind, AttentionLayer, Context, ModelType, MoeSpec, NormalizedModel, WeightComponent,
-    Weights,
+    AttentionKind, AttentionLayer, Context, ModelType, MoeSpec, NormalizedModel, Weights,
 };
 use crate::precision::WeightCategory;
+use crate::quant::CheckpointQuantization;
 
 use super::{
-    embedding_components, opt_u64, parse_identity, parse_source_precision, quantization_marker,
-    standard_dimensions,
+    add_attention_projections, add_dense_mlp, add_embeddings, checkpoint_marker, opt_u64,
+    parse_identity, parse_source_precision, standard_dimensions, ComponentBuilder,
 };
 
 /// Expert count under any of the spellings in common use.
@@ -128,20 +128,6 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
         .unwrap_or(moe_intermediate);
     let is_moe = experts > 0 && moe_intermediate > 0;
 
-    let mut components: Vec<WeightComponent> = Vec::new();
-    components.extend(embedding_components(vocab, hidden, tied, precision));
-
-    // Dense attention + MLP (GQA/MQA when kv_heads < heads).
-    let q = hidden * heads * head_dim;
-    let kv_each = hidden * kv_heads * head_dim;
-    let o_attn = hidden * hidden;
-    components.push(WeightComponent {
-        category: WeightCategory::Attention,
-        element_count: (q + kv_each + kv_each + o_attn) * layers,
-        precision,
-        is_hypothetical: false,
-    });
-
     if is_moe {
         // Which layers are dense vs sparse is model-specific (`first_k_dense_replace`,
         // `mlp_only_layers`, `decoder_sparse_step`, …). Applying the expert stack to
@@ -158,49 +144,55 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
                 "intermediate_size absent — every layer treated as MoE (no dense MLP)".to_string(),
             );
         }
-        components.push(WeightComponent {
-            category: WeightCategory::RoutedExperts,
-            element_count: experts * 3 * hidden * moe_intermediate * layers,
-            precision,
-            is_hypothetical: false,
-        });
-        if shared_experts > 0 {
-            components.push(WeightComponent {
-                category: WeightCategory::SharedExperts,
-                element_count: shared_experts * 3 * hidden * shared_intermediate * layers,
-                precision,
-                is_hypothetical: false,
-            });
-        }
-        components.push(WeightComponent {
-            category: WeightCategory::Routers,
-            element_count: hidden * experts * layers,
-            precision,
-            is_hypothetical: false,
-        });
-    } else {
-        if intermediate == 0 {
-            unresolved.push(
-                "no MLP width in the config (intermediate_size / moe_intermediate_size) — MLP \
-                 parameters are omitted entirely, so the parameter count is a floor, not an estimate"
-                    .to_string(),
-            );
-        }
-        components.push(WeightComponent {
-            category: WeightCategory::DenseMlp,
-            element_count: 3 * hidden * intermediate * layers,
-            precision,
-            is_hypothetical: false,
-        });
+    } else if intermediate == 0 {
+        unresolved.push(
+            "no MLP width in the config (intermediate_size / moe_intermediate_size) — MLP \
+             parameters are omitted entirely, so the parameter count is a floor, not an estimate"
+                .to_string(),
+        );
     }
 
-    components.push(WeightComponent {
-        category: WeightCategory::Norms,
-        element_count: (2 * layers + 1) * hidden,
-        precision,
-        is_hypothetical: false,
-    });
+    // What the checkpoint says it quantized; `None` leaves every tensor at
+    // `precision`.
+    let quantization = CheckpointQuantization::parse(raw, &mut inferred);
+    let mut builder = ComponentBuilder::new(quantization.as_ref(), precision);
+    add_embeddings(&mut builder, vocab, hidden, tied);
 
+    // Built per layer so an `ignore` list naming specific layers is honoured.
+    // Expert tensors matter most here: they dominate a sparse model's parameter
+    // count, so sizing them at the base dtype when the checkpoint quantized them
+    // is the same class of error as omitting them altogether.
+    for i in 0..layers as usize {
+        add_attention_projections(&mut builder, i, hidden, heads, kv_heads, head_dim);
+        if is_moe {
+            // Expert 0 is representative — compressed-tensors rules select by
+            // layer and projection, never by expert index.
+            for proj in ["gate_proj", "up_proj", "down_proj"] {
+                builder.add(
+                    WeightCategory::RoutedExperts,
+                    &format!("model.layers.{i}.mlp.experts.0.{proj}"),
+                    experts * hidden * moe_intermediate,
+                );
+                if shared_experts > 0 {
+                    builder.add(
+                        WeightCategory::SharedExperts,
+                        &format!("model.layers.{i}.mlp.shared_experts.{proj}"),
+                        shared_experts * hidden * shared_intermediate,
+                    );
+                }
+            }
+            builder.add(
+                WeightCategory::Routers,
+                &format!("model.layers.{i}.mlp.gate"),
+                hidden * experts,
+            );
+        } else {
+            add_dense_mlp(&mut builder, i, hidden, intermediate);
+        }
+    }
+    builder.add_unquantized(WeightCategory::Norms, (2 * layers + 1) * hidden);
+
+    let components = builder.finish();
     let exact: u128 = components.iter().map(|c| c.element_count).sum();
     // Generic path: claim estimate, not exact (Level D).
     let weights = Weights {
@@ -208,7 +200,7 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
         exact_parameter_count: None,
         estimated_parameter_count: Some(exact),
         source_precision: Some(precision.label().to_string()),
-        quantization: quantization_marker(precision, false, 16),
+        quantization: checkpoint_marker(quantization.as_ref(), precision),
     };
 
     Ok(NormalizedModel {
@@ -224,7 +216,8 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
             expert_count: experts as u32,
             active_experts_per_token: opt_u64(raw, "num_experts_per_tok").unwrap_or(1) as u32,
             expert_intermediate_size: moe_intermediate as u64,
-            shared_expert_intermediate_size: (shared_experts > 0).then_some(shared_intermediate as u64),
+            shared_expert_intermediate_size: (shared_experts > 0)
+                .then_some(shared_intermediate as u64),
             shared_expert_parameters: (shared_experts > 0)
                 .then(|| shared_experts * 3 * hidden * shared_intermediate * layers),
         }),

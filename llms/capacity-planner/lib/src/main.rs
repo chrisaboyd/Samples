@@ -105,13 +105,17 @@ struct Cli {
     #[arg(long, default_value_t = 10.0)]
     slo_target: f64,
 
-    /// Treat the selected weight precision as hypothetical (not present in the
-    /// checkpoint). When true the result is labelled per PRD §12.2.
+    /// Override the checkpoint's own precision with `--weight-precision`,
+    /// answering "what if this model were quantized to X?". The result is
+    /// labelled hypothetical per PRD §12.2.
     ///
-    /// Takes an explicit value (`--hypothetical false`) rather than acting as a
-    /// bare flag: clap's default flag action can only ever set `true`, so with a
-    /// `true` default the exact-checkpoint path was unreachable.
-    #[arg(long, action = clap::ArgAction::Set, default_value_t = true)]
+    /// Off by default: the checkpoint's `quantization_config` describes what is
+    /// actually on disk, including which tensors it left unquantized, so
+    /// overriding it silently would report a model that does not exist.
+    ///
+    /// Takes an explicit value (`--hypothetical true`) rather than acting as a
+    /// bare flag, so both paths are reachable.
+    #[arg(long, action = clap::ArgAction::Set, default_value_t = false)]
     hypothetical: bool,
 }
 

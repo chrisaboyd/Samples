@@ -1,46 +1,46 @@
 {
   "verdict": "comfortable",
   "memory": {
-    "weightGiBPerGpu": 65.4487693971023,
-    "checkpointStorageGiB": 61.16707420349121,
+    "weightGiBPerGpu": 65.89856168720871,
+    "checkpointStorageGiB": 61.58747863769531,
     "checkpointPrecisionLabel": "Hypothetical quantization estimate — NVFP4",
     "runtimeGiBPerGpu": 1.0,
     "kvGiBPerAverageSequence": 0.78515625,
     "kvGiBPerMaximumSequence": 24.03515625,
-    "freeGiBPerGpu": 84.42548769060522,
-    "freeGiBAcrossGpusInUse": 84.42548769060522,
+    "freeGiBPerGpu": 83.97569540049881,
+    "freeGiBAcrossGpusInUse": 83.97569540049881,
     "kvGiBPerMaximumSequenceAllRanks": 24.03515625,
     "kvReplicatedAcrossRanks": false,
-    "memoryConcurrencyAverage": 107,
+    "memoryConcurrencyAverage": 106,
     "memoryConcurrencyMaximum": 3,
-    "memoryConcurrencyAverageTotal": 107,
+    "memoryConcurrencyAverageTotal": 106,
     "memoryConcurrencyMaximumTotal": 3,
     "physicalGiBPerGpu": 167.63806343078613
   },
   "performance": {
     "prefillTokensPerSecond": {
-      "min": 47225.104254895756,
-      "max": 102321.0592189408,
+      "min": 44419.52086844726,
+      "max": 96242.29521496907,
       "unit": "tokens/s"
     },
     "decodeTokensPerSecondPerRequest": {
-      "min": 587.3879098771878,
-      "max": 1027.9288422850786,
+      "min": 539.5530849211933,
+      "max": 944.2178986120883,
       "unit": "tokens/s"
     },
     "aggregateDecodeTokensPerSecond": {
-      "min": 1336.8351207855092,
-      "max": 2339.461461374641,
+      "min": 1328.9487847772823,
+      "max": 2325.6603733602437,
       "unit": "tokens/s"
     },
     "estimatedTTFT": {
-      "min": 0.3212197102470863,
-      "max": 0.6955706930416933,
+      "min": 0.34153308566646073,
+      "max": 0.7395470699554447,
       "unit": "seconds"
     },
     "estimatedStepLatency": {
-      "min": 0.0009728299847847513,
-      "max": 0.0017024524733733146,
+      "min": 0.001059077572528445,
+      "max": 0.0018533857519247789,
       "unit": "seconds"
     },
     "sloConcurrency": 34,
@@ -100,7 +100,7 @@
     },
     {
       "what": "loaded weight/rank",
-      "value": "65.4488 GiB",
+      "value": "65.8986 GiB",
       "source": "weight::loaded_weight_bytes_per_rank"
     },
     {
@@ -130,7 +130,7 @@
     },
     {
       "what": "decode TPS (analytical range)",
-      "value": "587–1028 tok/s",
+      "value": "540–944 tok/s",
       "source": "performance::roofline (§16.2)"
     }
   ],
@@ -201,16 +201,16 @@
       "label": "Checkpoint storage",
       "meaning": "On-disk size of the weights at the selected precision — what you would download. NVFP4 is not exactly half a byte per parameter: each group of weights carries an extra FP8 scale byte.",
       "formula": "M_checkpoint = sum over components of  N × bytes(P)  +  ceil(N / G) scale bytes for NVFP4",
-      "substitution": "  embeddings               308.28M × 0.5 B (nvfp4) + 19.27M scale bytes = 0.161 GiB\n  output head              308.28M × 0.5 B (nvfp4) + 19.27M scale bytes = 0.161 GiB\n  attention projections      2.00B × 0.5 B (nvfp4) + 125.04M scale bytes = 1.048 GiB\n  dense MLP                113.25M × 0.5 B (nvfp4) + 7.08M scale bytes = 0.05933 GiB\n  routed experts           113.55B × 0.5 B (nvfp4) + 7.10B scale bytes = 59.48 GiB\n  shared experts           443.55M × 0.5 B (nvfp4) + 27.72M scale bytes = 0.232 GiB\n  routers                   36.96M × 0.5 B (nvfp4) + 2.31M scale bytes = 0.01936 GiB\n  norms                     298.0K × 2 B (bf16) = 0.00056 GiB\n  total                    116.76B params                   61.17 GiB",
-      "result": "61.17 GiB"
+      "substitution": "  embeddings               308.28M × 0.5 B (nvfp4) + 19.27M scale bytes = 0.161 GiB\n  output head              308.28M × 0.5 B (nvfp4) + 19.27M scale bytes = 0.161 GiB\n  attention projections      2.80B × 0.5 B (nvfp4) + 175.20M scale bytes = 1.468 GiB\n  dense MLP                113.25M × 0.5 B (nvfp4) + 7.08M scale bytes = 0.05933 GiB\n  routed experts           113.55B × 0.5 B (nvfp4) + 7.10B scale bytes = 59.48 GiB\n  shared experts           443.55M × 0.5 B (nvfp4) + 27.72M scale bytes = 0.232 GiB\n  routers                   36.96M × 0.5 B (nvfp4) + 2.31M scale bytes = 0.01936 GiB\n  norms                     310.3K × 2 B (bf16) = 0.00058 GiB\n  total                    117.56B params                   61.59 GiB",
+      "result": "61.59 GiB"
     },
     {
       "id": "m-weights",
       "label": "Weights resident per GPU",
       "meaning": "VRAM the model parameters occupy once loaded. Larger than the checkpoint because the engine needs repack/dequantization buffers, and divided by TP because tensor parallelism splits the model across ranks.",
       "formula": "M_weights = M_checkpoint × loadFactor(P_weight) / TP",
-      "substitution": "61.17 GiB × 1.07 / 1\n(load factor 1.07 for NVFP4; TP = 1)",
-      "result": "65.45 GiB"
+      "substitution": "61.59 GiB × 1.07 / 1\n(load factor 1.07 for NVFP4; TP = 1)",
+      "result": "65.90 GiB"
     },
     {
       "id": "m-runtime",
@@ -225,8 +225,8 @@
       "label": "Free for KV cache",
       "meaning": "What is left on each GPU after weights and runtime overhead. This is the entire budget available to hold conversation context for concurrent requests — it is what caps concurrency.",
       "formula": "M_freeForKV = M_available - M_weights - M_runtime - M_draft",
-      "substitution": "150.87 GiB - 65.45 GiB - 1.00 GiB - 0.00 GiB",
-      "result": "84.43 GiB"
+      "substitution": "150.87 GiB - 65.90 GiB - 1.00 GiB - 0.00 GiB",
+      "result": "83.98 GiB"
     },
     {
       "id": "kv-avg",
@@ -249,15 +249,15 @@
       "label": "Concurrent requests @ avg context",
       "meaning": "How many requests fit in VRAM at once if each holds an average-length context. A pure memory limit — it ignores whether the GPU is fast enough to serve them within your latency target.",
       "formula": "C_memory(avg) = floor( M_freeForKV / KV_seq(avg) ) × replicas",
-      "substitution": "floor( 84.43 GiB / 0.785 GiB )\n= floor( 90,651,177,145 bytes / 843,055,104 bytes )\n= 107 per replica × 1 replica(s)",
-      "result": "107 concurrent requests"
+      "substitution": "floor( 83.98 GiB / 0.785 GiB )\n= floor( 90,168,216,351 bytes / 843,055,104 bytes )\n= 106 per replica × 1 replica(s)",
+      "result": "106 concurrent requests"
     },
     {
       "id": "c-mem-max",
       "label": "Concurrent requests @ max context",
       "meaning": "The same count in the worst case, where every concurrent request has filled the full context window simultaneously. Usually much smaller — it is the floor under which the deployment cannot be starved.",
       "formula": "C_memory(max) = floor( M_freeForKV / KV_seq(max) ) × replicas",
-      "substitution": "floor( 84.43 GiB / 24.04 GiB )\n= floor( 90,651,177,145 bytes / 25,807,552,512 bytes )\n= 3 per replica × 1 replica(s)",
+      "substitution": "floor( 83.98 GiB / 24.04 GiB )\n= floor( 90,168,216,351 bytes / 25,807,552,512 bytes )\n= 3 per replica × 1 replica(s)",
       "result": "3 concurrent requests"
     },
     {
@@ -265,7 +265,7 @@
       "label": "Comfortable active requests",
       "meaning": "The headline number: requests that can be in flight at the same time while still meeting your latency target. It is the tightest of the three limits — running out of memory and missing the SLO are both failures, so the smallest one governs.",
       "formula": "C_comfortable = min( C_memory(avg), C_memory(max), C_SLO )   [all cluster-wide]",
-      "substitution": "min( 107, 3, 34 )\n  C_memory(avg) = 107 — memory at average context (107 per replica × 1)\n  C_memory(max) = 3 — memory at full context (3 per replica × 1)\n  C_SLO         = 34 — latency target of 10.0 s",
+      "substitution": "min( 106, 3, 34 )\n  C_memory(avg) = 106 — memory at average context (106 per replica × 1)\n  C_memory(max) = 3 — memory at full context (3 per replica × 1)\n  C_SLO         = 34 — latency target of 10.0 s",
       "result": "3 concurrent requests"
     },
     {
@@ -273,47 +273,47 @@
       "label": "FLOPs per token",
       "meaning": "Arithmetic one token costs on a forward pass. Sets the compute side of the roofline — the floor on latency even with infinite bandwidth.",
       "formula": "FLOPs/token = 2 × active_params + 4 × H_q × D_head × sum(L × S_eff)",
-      "substitution": "matmul     2 × 7.65B active params = 15.29B FLOPs\nattention  4 × H_q × D_head × sum(layers × context) = 10.12B FLOPs\ntotal                                             = 25.41B FLOPs",
-      "result": "25.41B FLOPs/token"
+      "substitution": "matmul     2 × 8.45B active params = 16.90B FLOPs\nattention  4 × H_q × D_head × sum(layers × context) = 10.12B FLOPs\ntotal                                             = 27.02B FLOPs",
+      "result": "27.02B FLOPs/token"
     },
     {
       "id": "p-step",
       "label": "Step latency",
       "meaning": "Wall-clock time to emit one token for one request. The roofline takes whichever is slower — moving the bytes, or doing the arithmetic.",
       "formula": "T_step(B) = max( Bytes_step(B) / (BW × eff_bw), B × FLOPs/token / (Compute × eff_c) )\nwhere Bytes_step(B) = W_step(B) + B × (KV_seq + activations)",
-      "substitution": "at B = 1, expected tier (eff_bw = 55%, eff_c = 50%):\nBytes_step = 4.29 GiB weights + 804.00 MiB KV + 2.25 MiB activations = 5.07 GiB\nt_bandwidth = 5.07 GiB / (8,000 GB/s × 1 rank(s) × 0.55) = 1.24 ms\nt_compute   = 25.41B FLOPs / (4,000 TFLOPS × 1 rank(s) × 0.50) = 0.01 ms\nmax(...) → bandwidth-limited",
-      "result": "0.97 ms – 1.70 ms"
+      "substitution": "at B = 1, expected tier (eff_bw = 55%, eff_c = 50%):\nBytes_step = 4.74 GiB weights + 804.00 MiB KV + 2.25 MiB activations = 5.52 GiB\nt_bandwidth = 5.52 GiB / (8,000 GB/s × 1 rank(s) × 0.55) = 1.35 ms\nt_compute   = 27.02B FLOPs / (4,000 TFLOPS × 1 rank(s) × 0.50) = 0.01 ms\nmax(...) → bandwidth-limited",
+      "result": "1.06 ms – 1.85 ms"
     },
     {
       "id": "p-decode",
       "label": "Decode rate per request",
       "meaning": "Tokens per second a single request sees once it starts generating. This is the number a user experiences as typing speed.",
       "formula": "decode_tps = 1 / T_step(1)",
-      "substitution": "1 / 0.97 ms = 1028 tok/s   (optimistic tier)\n1 / 1.70 ms = 587 tok/s   (pessimistic tier)",
-      "result": "587 – 1028 tokens/s"
+      "substitution": "1 / 1.06 ms = 944 tok/s   (optimistic tier)\n1 / 1.85 ms = 540 tok/s   (pessimistic tier)",
+      "result": "540 – 944 tokens/s"
     },
     {
       "id": "p-prefill",
       "label": "Prefill rate",
       "meaning": "Tokens per second while reading the prompt. Much faster than decode because one weight read is amortised across the whole prompt, which usually leaves prefill compute-limited rather than bandwidth-limited.",
       "formula": "prefill_tps = min( BW × eff_bw / bytes_per_token , Compute × eff_c / FLOPs_per_token )",
-      "substitution": "bytes/token = 65.45 GiB weights / 32,768 ctx + 96.00 KiB KV write + 2.25 MiB activations\n= 4.39 MiB\nbandwidth-bound: 956059 tok/s   compute-bound: 78709 tok/s   (expected tier)",
-      "result": "47225 – 102321 tokens/s"
+      "substitution": "bytes/token = 65.90 GiB weights / 32,768 ctx + 96.00 KiB KV write + 2.25 MiB activations\n= 4.40 MiB\nbandwidth-bound: 953007 tok/s   compute-bound: 74033 tok/s   (expected tier)",
+      "result": "44420 – 96242 tokens/s"
     },
     {
       "id": "p-ttft",
       "label": "Time to first token",
       "meaning": "How long a request waits before the first token appears: read the whole prompt, then run one decode step.",
       "formula": "TTFT = S / prefill_tps + T_step(1)",
-      "substitution": "32,768 tokens / 102321 tok/s + 0.97 ms = 321.22 ms   (optimistic)\n32,768 tokens / 47225 tok/s + 1.70 ms = 695.57 ms   (pessimistic)",
-      "result": "321.22 ms – 695.57 ms"
+      "substitution": "32,768 tokens / 96242 tok/s + 1.06 ms = 341.53 ms   (optimistic)\n32,768 tokens / 44420 tok/s + 1.85 ms = 739.55 ms   (pessimistic)",
+      "result": "341.53 ms – 739.55 ms"
     },
     {
       "id": "p-slo",
       "label": "SLO concurrency",
       "meaning": "The largest batch that still meets your latency target, times the number of independent replicas. Purely a speed limit — memory is accounted separately.",
       "formula": "C_SLO = DP × max{ B <= C_memory(avg) : T_prefill + N_out × T_step(B) <= target }",
-      "substitution": "T_prefill = 32,768 tokens / 78709 tok/s = 416.32 ms\nat B = 34: 416.32 ms + 512 output × 18.50 ms = 9.89 s  <=  10.0 s target\nC_SLO = 34 × 1 replica(s)",
+      "substitution": "T_prefill = 32,768 tokens / 74033 tok/s = 442.62 ms\nat B = 34: 442.62 ms + 512 output × 18.61 ms = 9.97 s  <=  10.0 s target\nC_SLO = 34 × 1 replica(s)",
       "result": "34 concurrent requests"
     },
     {
@@ -321,8 +321,8 @@
       "label": "Aggregate decode throughput",
       "meaning": "Total tokens per second the whole deployment emits with every slot busy. Continuous batching reads the weights once per step and shares them across the batch, so this is far above one request's rate.",
       "formula": "aggregate = B_slo / T_step(B_slo) × DP",
-      "substitution": "34 / 14.53 ms × 1 replica(s) = 2339 tok/s   (optimistic)\n34 / 25.43 ms × 1 replica(s) = 1337 tok/s   (pessimistic)",
-      "result": "1337 – 2339 tokens/s"
+      "substitution": "34 / 14.62 ms × 1 replica(s) = 2326 tok/s   (optimistic)\n34 / 25.58 ms × 1 replica(s) = 1329 tok/s   (pessimistic)",
+      "result": "1329 – 2326 tokens/s"
     }
   ],
   "inputsUsed": [
@@ -337,7 +337,7 @@
       "group": "Model",
       "name": "Total parameters",
       "key": null,
-      "value": "116.76B (exact)",
+      "value": "117.56B (exact)",
       "usedFor": "M_checkpoint, FLOPs/token"
     },
     {

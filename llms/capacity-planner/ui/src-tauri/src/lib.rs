@@ -115,11 +115,15 @@ mod tests {
         }
     }
 
+    /// Golden numbers for the *public* (unquantized) Laguna config with the
+    /// NVFP4 what-if override on. The concurrency moved 107 → 106 when the
+    /// adapter picked up the attention output gate and the true `o_proj` shape,
+    /// which added ~800M parameters to the model.
     #[test]
     fn analyze_core_laguna_b200_matches_golden_numbers() {
         let r = analyze_core(&laguna_cmd()).expect("evaluates");
         assert_eq!(r.verdict, capacity_planner::result::Verdict::Comfortable);
-        assert_eq!(r.memory.memory_concurrency_average, 107);
+        assert_eq!(r.memory.memory_concurrency_average, 106);
         assert_eq!(r.memory.memory_concurrency_maximum, 3);
         assert!(r
             .memory
@@ -165,7 +169,7 @@ mod tests {
         );
         let cmd: AnalyzeCommand = serde_json::from_str(&payload).expect("payload deserializes");
         let r = analyze_core(&cmd).expect("evaluates");
-        assert_eq!(r.memory.memory_concurrency_average, 107);
+        assert_eq!(r.memory.memory_concurrency_average, 106);
         assert_eq!(r.memory.memory_concurrency_maximum, 3);
         assert_eq!(r.provenance.gpu_sku, "B200 SXM 180 GB");
     }
