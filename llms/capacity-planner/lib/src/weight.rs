@@ -108,6 +108,28 @@ pub fn load_factor(precision: Precision) -> f64 {
     }
 }
 
+/// Byte-weighted load factor across a mixed-precision component set.
+///
+/// A checkpoint that is NVFP4 in its experts and BF16 everywhere else does not
+/// pay the NVFP4 dequant-buffer penalty on the BF16 half, so applying a single
+/// precision's factor to the whole model is wrong in both directions. Weighting
+/// by stored bytes reduces to `load_factor(p)` when every component shares one
+/// precision.
+pub fn effective_load_factor(components: &[WeightComponent], nvfp4_group_size: u32) -> f64 {
+    let mut total = 0.0;
+    let mut weighted = 0.0;
+    for c in components {
+        let bytes = component_bytes(c, nvfp4_group_size);
+        total += bytes;
+        weighted += bytes * load_factor(c.precision);
+    }
+    if total == 0.0 {
+        1.0
+    } else {
+        weighted / total
+    }
+}
+
 /// Estimated loaded weight memory on one GPU rank, after TP sharding.
 pub fn loaded_weight_bytes_per_rank(
     model: &NormalizedModel,
@@ -118,16 +140,70 @@ pub fn loaded_weight_bytes_per_rank(
 ) -> u128 {
     let components = reassign_precision(model, target, is_hypothetical, group_size);
     let storage = checkpoint_storage_bytes(&components, group_size);
-    let factor = load_factor(target);
+    let factor = effective_load_factor(&components, group_size);
     let tp = (tensor_parallel.max(1)) as f64;
     ((storage as f64 * factor) / tp).floor() as u128
 }
 
-pub fn checkpoint_label(is_hypothetical: bool, precision: Precision) -> String {
+/// Every distinct precision present, ordered by descending stored bytes.
+///
+/// Drives the checkpoint label: reporting a single precision for a checkpoint
+/// that quantized only part of itself is how "Exact checkpoint — NVFP4" came to
+/// sit above a number computed entirely in BF16.
+pub fn precision_mix(
+    components: &[WeightComponent],
+    nvfp4_group_size: u32,
+) -> Vec<(Precision, f64)> {
+    let mut mix: Vec<(Precision, f64)> = Vec::new();
+    for c in components {
+        let bytes = component_bytes(c, nvfp4_group_size);
+        match mix.iter_mut().find(|(p, _)| *p == c.precision) {
+            Some((_, b)) => *b += bytes,
+            None => mix.push((c.precision, bytes)),
+        }
+    }
+    mix.sort_by(|a, b| b.1.total_cmp(&a.1));
+    mix
+}
+
+/// Name the precision(s) a component set is stored in — `"NVFP4"` when uniform,
+/// `"NVFP4 53% + BF16 47%"` when not.
+///
+/// Shares are of stored *bytes*, so a mostly-BF16 "NVFP4 checkpoint" cannot read
+/// as uniformly NVFP4.
+pub fn precision_summary(components: &[WeightComponent], nvfp4_group_size: u32) -> String {
+    let mix = precision_mix(components, nvfp4_group_size);
+    let total: f64 = mix.iter().map(|(_, b)| b).sum();
+    // Norms are never quantizable, so even a uniform NVFP4 model carries a
+    // fraction of a percent of BF16. Listing that as "BF16 0%" is noise; a
+    // format has to hold a real share of the weights to be worth naming.
+    let significant: Vec<_> = mix
+        .iter()
+        .filter(|(_, b)| total > 0.0 && b / total >= 0.005)
+        .collect();
+    match significant.as_slice() {
+        [] => "unknown".to_string(),
+        [(p, _)] => p.label().to_string(),
+        many => many
+            .iter()
+            .map(|(p, b)| format!("{} {:.0}%", p.label(), b / total * 100.0))
+            .collect::<Vec<_>>()
+            .join(" + "),
+    }
+}
+
+/// Label the figure a user is looking at: what precision(s) produced it, and
+/// whether it describes the checkpoint or a hypothetical requantization.
+pub fn checkpoint_label(
+    is_hypothetical: bool,
+    components: &[WeightComponent],
+    nvfp4_group_size: u32,
+) -> String {
+    let described = precision_summary(components, nvfp4_group_size);
     if is_hypothetical {
-        format!("Hypothetical quantization estimate — {}", precision.label())
+        format!("Hypothetical quantization estimate — {described}")
     } else {
-        format!("Exact checkpoint — {}", precision.label())
+        format!("Exact checkpoint — {described}")
     }
 }
 
@@ -159,6 +235,61 @@ mod tests {
         // 100 elements * 2 bytes = 200
         let c = comp(WeightCategory::DenseMlp, 100, Precision::Bf16);
         assert_eq!(component_bytes(&c, 16), 200.0);
+    }
+
+    /// The label must not claim a single precision for a checkpoint that
+    /// quantized only part of itself — the failure mode that put
+    /// "Exact checkpoint — NVFP4" above an all-BF16 number.
+    #[test]
+    fn label_names_every_significant_precision() {
+        let mixed = [
+            comp(WeightCategory::RoutedExperts, 8_000, Precision::Nvfp4),
+            comp(WeightCategory::Attention, 2_000, Precision::Bf16),
+        ];
+        // NVFP4: 8000×0.5 + 500 scales = 4500 B. BF16: 2000×2 = 4000 B.
+        assert_eq!(
+            checkpoint_label(false, &mixed, 16),
+            "Exact checkpoint — NVFP4 53% + BF16 47%"
+        );
+        assert_eq!(
+            checkpoint_label(true, &mixed, 16),
+            "Hypothetical quantization estimate — NVFP4 53% + BF16 47%"
+        );
+    }
+
+    /// Norms can never be quantized, so a uniformly-NVFP4 estimate still carries
+    /// a sliver of BF16. Naming it would read as a mixed checkpoint.
+    #[test]
+    fn label_ignores_sub_half_percent_slivers() {
+        let nearly_uniform = [
+            comp(WeightCategory::RoutedExperts, 1_000_000, Precision::Nvfp4),
+            comp(WeightCategory::Norms, 100, Precision::Bf16),
+        ];
+        assert_eq!(
+            checkpoint_label(false, &nearly_uniform, 16),
+            "Exact checkpoint — NVFP4"
+        );
+    }
+
+    /// A mixed checkpoint pays the NVFP4 dequant penalty only on its NVFP4
+    /// bytes; applying one precision's factor to the whole model over-counts.
+    #[test]
+    fn load_factor_is_weighted_across_a_mixed_checkpoint() {
+        let mixed = [
+            comp(WeightCategory::RoutedExperts, 8_000, Precision::Nvfp4),
+            comp(WeightCategory::Attention, 2_000, Precision::Bf16),
+        ];
+        let f = effective_load_factor(&mixed, 16);
+        assert!(f > 1.0 && f < load_factor(Precision::Nvfp4), "got {f}");
+        // 4500 B at 1.07 + 4000 B at 1.00, over 8500 B.
+        assert!((f - (4500.0 * 1.07 + 4000.0) / 8500.0).abs() < 1e-12);
+
+        // Uniform sets must reduce to the plain per-precision factor.
+        let uniform = [comp(WeightCategory::RoutedExperts, 8_000, Precision::Nvfp4)];
+        assert_eq!(
+            effective_load_factor(&uniform, 16),
+            load_factor(Precision::Nvfp4)
+        );
     }
 
     #[test]

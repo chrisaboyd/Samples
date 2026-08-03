@@ -8,12 +8,13 @@
 use serde_json::Value;
 
 use crate::error::Result;
-use crate::model::{Context, ModelType, MoeSpec, NormalizedModel, WeightComponent, Weights};
+use crate::model::{Context, ModelType, MoeSpec, NormalizedModel, Weights};
 use crate::precision::WeightCategory;
+use crate::quant::CheckpointQuantization;
 
 use super::{
-    as_u64, embedding_components, opt_u64, parse_identity, parse_source_precision,
-    quantization_marker, standard_attention_layers, standard_dimensions,
+    add_attention_projections, add_embeddings, as_u64, checkpoint_marker, opt_u64, parse_identity,
+    parse_source_precision, standard_attention_layers, standard_dimensions, ComponentBuilder,
 };
 
 pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
@@ -42,53 +43,44 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
     let num_experts = as_u64(raw, "num_local_experts").unwrap_or(0) as u128;
     let active_per_tok = opt_u64(raw, "num_experts_per_tok").unwrap_or(1) as u128;
 
-    let mut components: Vec<WeightComponent> = Vec::new();
-    components.extend(embedding_components(vocab, hidden, tied, precision));
+    // What the checkpoint says it quantized; `None` leaves every tensor at
+    // `precision`.
+    let quantization = CheckpointQuantization::parse(raw, &mut inferred);
+    let mut builder = ComponentBuilder::new(quantization.as_ref(), precision);
+    add_embeddings(&mut builder, vocab, hidden, tied);
 
-    // Attention (same as dense decoder).
-    let q = hidden * heads * head_dim;
-    let kv_each = hidden * kv_heads * head_dim;
-    let o_attn = hidden * hidden;
-    components.push(WeightComponent {
-        category: WeightCategory::Attention,
-        element_count: (q + kv_each + kv_each + o_attn) * layers,
-        precision,
-        is_hypothetical: false,
-    });
+    // Per layer so an `ignore` list that names specific layers is honoured.
+    // Mixtral's MoE block is `block_sparse_moe`, and its expert projections are
+    // `w1`/`w2`/`w3` rather than gate/up/down — the names an `ignore`/`targets`
+    // rule for this family is written against. Expert precision is resolved
+    // from expert 0 (rules select by layer and projection, not expert index).
+    for i in 0..layers as usize {
+        add_attention_projections(&mut builder, i, hidden, heads, kv_heads, head_dim);
+        for proj in ["w1", "w2", "w3"] {
+            builder.add(
+                WeightCategory::RoutedExperts,
+                &format!("model.layers.{i}.block_sparse_moe.experts.0.{proj}"),
+                num_experts * hidden * intermediate,
+            );
+        }
+        builder.add(
+            WeightCategory::Routers,
+            &format!("model.layers.{i}.block_sparse_moe.gate"),
+            hidden * num_experts,
+        );
+    }
 
-    // Routed experts: num_experts * (3 * H * I) per layer.
-    let routed_per_layer = num_experts * 3 * hidden * intermediate;
-    components.push(WeightComponent {
-        category: WeightCategory::RoutedExperts,
-        element_count: routed_per_layer * layers,
-        precision,
-        is_hypothetical: false,
-    });
-
-    // Router logits: H -> num_experts per layer.
-    components.push(WeightComponent {
-        category: WeightCategory::Routers,
-        element_count: hidden * num_experts * layers,
-        precision,
-        is_hypothetical: false,
-    });
-
-    // Norms.
-    components.push(WeightComponent {
-        category: WeightCategory::Norms,
-        element_count: (2 * layers + 1) * hidden,
-        precision,
-        is_hypothetical: false,
-    });
+    builder.add_unquantized(WeightCategory::Norms, (2 * layers + 1) * hidden);
     let _ = active_per_tok; // gating config, no params
 
+    let components = builder.finish();
     let exact: u128 = components.iter().map(|c| c.element_count).sum();
     let weights = Weights {
         components,
         exact_parameter_count: Some(exact),
         estimated_parameter_count: None,
         source_precision: Some(precision.label().to_string()),
-        quantization: quantization_marker(precision, false, 16),
+        quantization: checkpoint_marker(quantization.as_ref(), precision),
     };
 
     Ok(NormalizedModel {

@@ -8,12 +8,14 @@
 use serde_json::Value;
 
 use crate::error::Result;
-use crate::model::{Context, ModelType, NormalizedModel, WeightComponent, Weights};
+use crate::model::{Context, ModelType, NormalizedModel, Weights};
 use crate::precision::WeightCategory;
+use crate::quant::CheckpointQuantization;
 
 use super::{
-    embedding_components, opt_u64, parse_identity, parse_source_precision, quantization_marker,
-    standard_attention_layers, standard_dimensions,
+    add_attention_projections, add_dense_mlp, add_embeddings, checkpoint_marker, opt_u64,
+    parse_identity, parse_source_precision, standard_attention_layers, standard_dimensions,
+    ComponentBuilder,
 };
 
 pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
@@ -45,32 +47,21 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
     let head_dim: u128 = dims.head_dimension.unwrap_or(0) as u128;
     let intermediate: u128 = dims.intermediate_size.unwrap_or(0) as u128;
 
-    let mut components: Vec<WeightComponent> = Vec::new();
-    components.extend(embedding_components(vocab, hidden, tied, precision));
+    // What the checkpoint says it quantized; `None` leaves every tensor at
+    // `precision`.
+    let quantization = CheckpointQuantization::parse(raw, &mut inferred);
+    let mut builder = ComponentBuilder::new(quantization.as_ref(), precision);
+    add_embeddings(&mut builder, vocab, hidden, tied);
 
-    // Dense attention + MLP (GQA/MQA when kv_heads < heads).
-    let q = hidden * heads * head_dim;
-    let kv_each = hidden * kv_heads * head_dim;
-    let o_attn = hidden * hidden;
-    components.push(WeightComponent {
-        category: WeightCategory::Attention,
-        element_count: (q + kv_each + kv_each + o_attn) * layers,
-        precision,
-        is_hypothetical: false,
-    });
-    components.push(WeightComponent {
-        category: WeightCategory::DenseMlp,
-        element_count: 3 * hidden * intermediate * layers,
-        precision,
-        is_hypothetical: false,
-    });
-    components.push(WeightComponent {
-        category: WeightCategory::Norms,
-        element_count: (2 * layers + 1) * hidden,
-        precision,
-        is_hypothetical: false,
-    });
+    // Dense attention + MLP (GQA/MQA when kv_heads < heads), per layer so an
+    // `ignore` list that names specific layers is honoured.
+    for i in 0..layers as usize {
+        add_attention_projections(&mut builder, i, hidden, heads, kv_heads, head_dim);
+        add_dense_mlp(&mut builder, i, hidden, intermediate);
+    }
+    builder.add_unquantized(WeightCategory::Norms, (2 * layers + 1) * hidden);
 
+    let components = builder.finish();
     let exact: u128 = components.iter().map(|c| c.element_count).sum();
     // Generic path: claim estimate, not exact (Level D).
     let weights = Weights {
@@ -78,7 +69,7 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
         exact_parameter_count: None,
         estimated_parameter_count: Some(exact),
         source_precision: Some(precision.label().to_string()),
-        quantization: quantization_marker(precision, false, 16),
+        quantization: checkpoint_marker(quantization.as_ref(), precision),
     };
 
     Ok(NormalizedModel {

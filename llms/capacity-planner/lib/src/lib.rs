@@ -23,6 +23,7 @@ pub mod memory;
 pub mod model;
 pub mod performance;
 pub mod precision;
+pub mod quant;
 pub mod result;
 pub mod sources;
 pub mod weight;
