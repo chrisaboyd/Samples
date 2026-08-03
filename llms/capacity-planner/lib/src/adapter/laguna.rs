@@ -9,24 +9,36 @@
 //! head count.
 //!
 //! Parameter layout per layer (no bias terms — RMSNorm + SiLU):
-//!   attention = q(H·heads_i·d) + k + v(H·kv·d each) + o_proj(H·H)
+//!   attention = q(H·heads_i·d) + k + v(H·kv·d each) + o_proj(heads_i·d·H)
+//!             + g_proj(H·g_out) + q_norm/k_norm(d each)
 //!   dense MLP = 3·H·I_dense            (gate + up + down)
 //!   MoE layer = num_experts·(3·H·moeI)  routed
 //!             + 3·H·sharedI           shared experts
 //!             + H·num_experts          router logits
+//!
+//! Two shapes here are *not* the dense-decoder defaults, and both come from the
+//! reference `modeling_laguna.py`:
+//!
+//!   * `o_proj = Linear(heads_i · head_dim, hidden)`. Laguna's sliding layers run
+//!     72 heads × 128 = 9216 against a hidden size of 3072, so the usual
+//!     `hidden × hidden` shortcut under-counts `o_proj` by 3× on those layers.
+//!   * `g_proj = Linear(hidden, g_out)` — the attention output gate — where
+//!     `g_out = heads_i` under `"gating": "per-head"` and `heads_i · head_dim`
+//!     otherwise. It is absent when `gating` is `false`.
 
 use serde_json::Value;
 
 use crate::error::Result;
 use crate::model::{
     AttentionKind, AttentionLayer, Context, Dimensions, ModelType, MoeSpec, NormalizedModel,
-    WeightComponent, Weights,
+    Weights,
 };
-use crate::precision::{Precision, WeightCategory};
+use crate::precision::WeightCategory;
+use crate::quant::CheckpointQuantization;
 
 use super::{
-    as_u64, embedding_components, opt_u64, parse_identity, parse_source_precision,
-    quantization_marker,
+    add_attention_projections, add_dense_mlp, add_embeddings, as_u64, checkpoint_marker, opt_u64,
+    parse_identity, parse_source_precision, ComponentBuilder,
 };
 
 /// Interpret the per-layer attention type list into grouped layers.
@@ -138,12 +150,19 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
         }];
     }
 
-    // Iterate layers to accumulate per-category param counts.
-    let mut attention_elems: u128 = 0;
-    let mut dense_mlp: u128 = 0;
-    let mut routed: u128 = 0;
-    let mut shared: u128 = 0;
-    let mut router: u128 = 0;
+    // What the checkpoint says it quantized. `None` for an unquantized
+    // checkpoint; every tensor then keeps `precision`.
+    let quantization = CheckpointQuantization::parse(raw, &mut inferred);
+
+    // Attention output gating (`gating`/`gating_types`). `false` disables the
+    // gate entirely; `"per-head"` emits one scalar per head, anything else
+    // truthy emits one per channel.
+    let gating = raw.get("gating");
+    let gate_per_head = gating.and_then(|g| g.as_str()) == Some("per-head");
+    let gate_enabled = !matches!(gating, None | Some(Value::Bool(false)));
+
+    let mut builder = ComponentBuilder::new(quantization.as_ref(), precision);
+    add_embeddings(&mut builder, vocab, hidden, tied);
 
     for i in 0..layer_count as usize {
         let heads_i = if i < head_per_layer.len() {
@@ -153,10 +172,19 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
                 .map(|h| h as u128)
                 .unwrap_or_else(|_| hidden / head_dim)
         };
-        let q = hidden * heads_i * head_dim;
-        let kv_each = hidden * kv_heads * head_dim;
-        let o = hidden * hidden;
-        attention_elems += q + 2 * kv_each + o;
+        add_attention_projections(&mut builder, i, hidden, heads_i, kv_heads, head_dim);
+        if gate_enabled {
+            let gate_out = if gate_per_head {
+                heads_i
+            } else {
+                heads_i * head_dim
+            };
+            builder.add(
+                WeightCategory::Attention,
+                &format!("model.layers.{i}.self_attn.g_proj"),
+                hidden * gate_out,
+            );
+        }
 
         let mlp_type = if i < mlp_types.len() {
             mlp_types[i].as_str()
@@ -164,13 +192,42 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
             "sparse"
         };
         if mlp_type == "dense" {
-            dense_mlp += 3 * hidden * dense_intermediate;
+            add_dense_mlp(&mut builder, i, hidden, dense_intermediate);
         } else {
-            routed += num_experts * 3 * hidden * moe_intermediate;
-            shared += shared_intermediate.map(|s| 3 * hidden * s).unwrap_or(0);
-            router += hidden * num_experts;
+            // Precision is resolved from expert 0 and applied to all
+            // `num_experts`: compressed-tensors rules select by layer and
+            // projection, never by expert index, so enumerating every expert
+            // would cost 36k regex matches to reach the same answer.
+            for proj in ["gate_proj", "up_proj", "down_proj"] {
+                builder.add(
+                    WeightCategory::RoutedExperts,
+                    &format!("model.layers.{i}.mlp.experts.0.{proj}"),
+                    num_experts * hidden * moe_intermediate,
+                );
+                if let Some(s) = shared_intermediate {
+                    builder.add(
+                        WeightCategory::SharedExperts,
+                        &format!("model.layers.{i}.mlp.shared_expert.{proj}"),
+                        hidden * s,
+                    );
+                }
+            }
+            builder.add(
+                WeightCategory::Routers,
+                &format!("model.layers.{i}.mlp.gate"),
+                hidden * num_experts,
+            );
         }
     }
+
+    // RMSNorms: input + post-attention per layer, q_norm/k_norm (head_dim each)
+    // inside every attention module, and one final norm.
+    builder.add_unquantized(
+        WeightCategory::Norms,
+        (2 * layer_count as u128 + 1) * hidden + 2 * layer_count as u128 * head_dim,
+    );
+
+    let components = builder.finish();
 
     let dims = Dimensions {
         vocabulary_size: opt_u64(raw, "vocab_size"),
@@ -181,33 +238,6 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
         kv_heads: Some(kv_heads as u32),
         head_dimension: Some(head_dim as u32),
     };
-
-    let mut components: Vec<WeightComponent> = Vec::new();
-    components.extend(embedding_components(vocab, hidden, tied, precision));
-    let mut push = |cat: WeightCategory, n: u128, p: Precision| {
-        components.push(WeightComponent {
-            category: cat,
-            element_count: n,
-            precision: p,
-            is_hypothetical: false,
-        });
-    };
-    push(WeightCategory::Attention, attention_elems, precision);
-    if dense_mlp > 0 {
-        push(WeightCategory::DenseMlp, dense_mlp, precision);
-    }
-    if routed > 0 {
-        push(WeightCategory::RoutedExperts, routed, precision);
-    }
-    if shared > 0 {
-        push(WeightCategory::SharedExperts, shared, precision);
-    }
-    if router > 0 {
-        push(WeightCategory::Routers, router, precision);
-    }
-    // RMSNorms: 2 per layer + final.
-    let norms = (2 * layer_count as u128 + 1) * hidden;
-    push(WeightCategory::Norms, norms, precision);
 
     let exact: u128 = components.iter().map(|c| c.element_count).sum();
 
@@ -228,7 +258,7 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
         exact_parameter_count: Some(exact),
         estimated_parameter_count: None,
         source_precision: Some(precision.label().to_string()),
-        quantization: quantization_marker(precision, false, 16),
+        quantization: checkpoint_marker(quantization.as_ref(), precision),
     };
 
     Ok(NormalizedModel {
@@ -257,7 +287,7 @@ pub fn normalize(raw: &Value) -> Result<NormalizedModel> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::precision::WeightCategory;
+    use crate::precision::{Precision, WeightCategory};
 
     fn laguna() -> Value {
         // real public config, trimmed to the fields the adapter consumes.
@@ -288,22 +318,53 @@ mod tests {
     fn parameter_count_matches_hand_calc() {
         let m = normalize(&laguna()).unwrap();
         let p = m.parameter_count().unwrap();
-        // Hand calc: emb 616,562,688 + attn 2,000,683,008 + dense mlp 113,246,208
+        // Hand calc: emb 616,562,688 + attn 2,803,138,560 + dense mlp 113,246,208
         // + routed (47 sparse layers) 113,548,197,888 + shared 443,547,648
-        // + router 36,962,304 + norms 297,984 = 116,759,497,728 (~116.76B).
-        assert_eq!(p, 116_759_497_728);
+        // + router 36,962,304 + norms 310,272 = 117,561,965,568 (~117.56B).
+        assert_eq!(p, 117_561_965_568);
     }
 
+    /// `o_proj` maps `heads × head_dim → hidden`, not `hidden → hidden`. Laguna's
+    /// 36 sliding layers run 72 heads × 128 = 9216 against `hidden_size` 3072, so
+    /// treating `o_proj` as `hidden × hidden` under-counts it 3× on those layers
+    /// — 803M parameters (1.5 GiB at BF16) missing from the model total.
     #[test]
-    fn attention_uses_per_layer_head_counts() {
+    fn attention_uses_per_layer_head_counts_and_projection_shapes() {
         let m = normalize(&laguna()).unwrap();
-        let att = m
+        let att: u128 = m
             .weights
             .components
             .iter()
-            .find(|c| c.category == WeightCategory::Attention)
+            .filter(|c| c.category == WeightCategory::Attention)
+            .map(|c| c.element_count)
+            .sum();
+        // Σheads = 12×48 + 36×72 = 3168.
+        //   q_proj  3072 × 3168 × 128 = 1,245,708,288
+        //   o_proj  3168 × 128 × 3072 = 1,245,708,288  (not 48 × 3072² = 452,984,832)
+        //   k+v     2 × 48 × 3072 × 8 × 128 =  301,989,888
+        //   g_proj  3072 × 3168 (per-head gating) = 9,732,096
+        assert_eq!(att, 2_803_138_560);
+    }
+
+    /// `"gating": "per-head"` emits one gate per head; the per-channel default
+    /// emits `heads × head_dim`, which is 128× larger.
+    #[test]
+    fn gating_mode_sizes_the_attention_gate() {
+        let per_head = normalize(&laguna()).unwrap().parameter_count().unwrap();
+
+        let mut per_channel_cfg = laguna();
+        per_channel_cfg["gating"] = serde_json::json!(true);
+        let per_channel = normalize(&per_channel_cfg)
+            .unwrap()
+            .parameter_count()
             .unwrap();
-        assert_eq!(att.element_count, 2_000_683_008);
+        // g_proj grows from 3072×3168 to 3072×3168×128.
+        assert_eq!(per_channel - per_head, 3072 * 3168 * 127);
+
+        let mut ungated_cfg = laguna();
+        ungated_cfg["gating"] = serde_json::json!(false);
+        let ungated = normalize(&ungated_cfg).unwrap().parameter_count().unwrap();
+        assert_eq!(per_head - ungated, 3072 * 3168);
     }
 
     #[test]
@@ -317,5 +378,126 @@ mod tests {
             .unwrap();
         // 47 sparse MoE layers: 47 * 256 * (3*3072*1024) = 113,548,197,888
         assert_eq!(routed.element_count, 113_548_197_888);
+    }
+
+    /// The public config plus the `quantization_config` an llm-compressor NVFP4
+    /// run emits: routed experts quantized, everything else — attention,
+    /// embeddings, lm_head, the layer-0 dense MLP, shared experts, routers, and
+    /// the experts of the last 8 layers — left at BF16.
+    fn laguna_nvfp4() -> Value {
+        let mut cfg = laguna();
+        cfg["quantization_config"] = serde_json::json!({
+            "quant_method": "compressed-tensors",
+            "format": "nvfp4-pack-quantized",
+            "quantization_status": "compressed",
+            "config_groups": {
+                "group_0": {
+                    "targets": ["re:.*experts\\.[0-9]+\\.(gate_proj|up_proj|down_proj)$"],
+                    "weights": { "num_bits": 4, "type": "float", "group_size": 16 }
+                }
+            },
+            "ignore": [
+                "lm_head",
+                "re:.*\\.self_attn\\.q_proj$",
+                "re:.*\\.self_attn\\.k_proj$",
+                "re:.*\\.self_attn\\.v_proj$",
+                "re:.*\\.self_attn\\.o_proj$",
+                "re:.*\\.self_attn\\.g_proj$",
+                "re:.*\\.mlp\\.gate$",
+                "model.layers.0.mlp.gate_proj",
+                "model.layers.0.mlp.up_proj",
+                "model.layers.0.mlp.down_proj",
+                "re:.*\\.mlp\\.shared_expert\\.gate_proj$",
+                "re:.*\\.mlp\\.shared_expert\\.up_proj$",
+                "re:.*\\.mlp\\.shared_expert\\.down_proj$",
+                "re:^model\\.layers\\.4[0-7]\\.mlp\\.experts(\\..*)?$"
+            ]
+        });
+        cfg
+    }
+
+    /// A partially-quantized checkpoint must split its routed experts into two
+    /// components, not report one global precision. Reading the format alone and
+    /// applying NVFP4 to all 117.56B parameters is what produced a 61 GiB figure
+    /// for a checkpoint that is 93 GiB on disk.
+    #[test]
+    fn nvfp4_ignore_list_splits_routed_experts_by_precision() {
+        let m = normalize(&laguna_nvfp4()).unwrap();
+        let routed: Vec<_> = m
+            .weights
+            .components
+            .iter()
+            .filter(|c| c.category == WeightCategory::RoutedExperts)
+            .collect();
+        assert_eq!(routed.len(), 2, "experts split across two precisions");
+
+        let per_layer: u128 = 256 * 3 * 3072 * 1024;
+        let quantized = routed
+            .iter()
+            .find(|c| c.precision == Precision::Nvfp4)
+            .expect("layers 1–39 quantized");
+        let untouched = routed
+            .iter()
+            .find(|c| c.precision == Precision::Bf16)
+            .expect("layers 40–47 ignored");
+        assert_eq!(quantized.element_count, 39 * per_layer);
+        assert_eq!(untouched.element_count, 8 * per_layer);
+
+        // Parameter count is a property of the architecture, so quantizing must
+        // not change it — only the bytes those parameters occupy.
+        assert_eq!(m.parameter_count().unwrap(), 117_561_965_568);
+    }
+
+    /// Everything the `ignore` list names stays at the checkpoint's base dtype.
+    #[test]
+    fn ignored_categories_stay_bf16() {
+        let m = normalize(&laguna_nvfp4()).unwrap();
+        for category in [
+            WeightCategory::Attention,
+            WeightCategory::Embeddings,
+            WeightCategory::OutputHead,
+            WeightCategory::DenseMlp,
+            WeightCategory::SharedExperts,
+            WeightCategory::Routers,
+            WeightCategory::Norms,
+        ] {
+            let comps: Vec<_> = m
+                .weights
+                .components
+                .iter()
+                .filter(|c| c.category == category)
+                .collect();
+            assert!(!comps.is_empty(), "{category:?} missing");
+            assert!(
+                comps.iter().all(|c| c.precision == Precision::Bf16),
+                "{category:?} should be untouched by the ignore list"
+            );
+        }
+        let q = m.weights.quantization.as_ref().expect("marker present");
+        assert_eq!(q.flavor, "nvfp4-pack-quantized");
+        assert_eq!(q.group_size, Some(16));
+        assert!(!q.is_hypothetical, "this is what the checkpoint is");
+    }
+
+    /// The same architecture, quantized and not, must differ only in bytes.
+    #[test]
+    fn quantization_shrinks_storage_without_changing_the_model() {
+        use crate::weight::checkpoint_storage_bytes;
+        let plain = normalize(&laguna()).unwrap();
+        let quant = normalize(&laguna_nvfp4()).unwrap();
+        assert_eq!(plain.parameter_count(), quant.parameter_count());
+
+        let bytes = |m: &NormalizedModel| checkpoint_storage_bytes(&m.weights.components, 16);
+        let (plain_bytes, quant_bytes) = (bytes(&plain), bytes(&quant));
+        // BF16 throughout: 117.56B × 2 B.
+        assert_eq!(plain_bytes, 117_561_965_568 * 2);
+        // NVFP4 on 39 of 47 expert layers takes it to ~42% of the BF16 size.
+        // A blanket NVFP4 reading — the bug — claims ~28%, because it also
+        // shrinks the 22.5B parameters the checkpoint left alone.
+        let ratio = quant_bytes as f64 / plain_bytes as f64;
+        assert!(
+            (0.42..0.43).contains(&ratio),
+            "mixed-precision storage ratio was {ratio:.4}"
+        );
     }
 }

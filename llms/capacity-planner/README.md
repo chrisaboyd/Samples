@@ -36,11 +36,19 @@ Flags: `--weight-precision` (NVFP4|FP8|BF16|FP16|INT8|INT4|FP32),
 `--kv-precision`, `--avg-context`, `--max-context`, `--hypothetical`.
 Gated HuggingFace repos read `HF_TOKEN` from the environment (never logged).
 
+By default weights are sized from the checkpoint's own `quantization_config`,
+including the tensors its `ignore` list left at full precision — so a model whose
+routed experts are NVFP4 but whose attention, embeddings, and last eight expert
+layers are BF16 is reported as the mix it is. `--hypothetical true` replaces that
+with `--weight-precision` to answer "what if this model were quantized to X?";
+the result is then labelled and warned as an estimate, not a checkpoint.
+
 ## Architecture (Phase 1 surface)
 
 ```
 lib/src/
   adapter/   Laguna / Llama / Mixtral / generic config.json -> NormalizedModel
+  quant.rs   compressed-tensors quantization_config -> per-tensor precision
   kv.rs      PRD §13 KV-cache (dense + hybrid sliding-window, block rounding)
   weight.rs  PRD §12 weight memory + hypothetical quantization + NVFP4 scales
   memory.rs  PRD §15 memory-fit (freeForKV = available − weights − runtime − …)

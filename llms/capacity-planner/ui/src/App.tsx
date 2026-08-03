@@ -276,18 +276,23 @@ export default function App() {
               value={inputs.sloTargetSeconds}
               onChange={(v) => setInputs({ sloTargetSeconds: Math.max(0.1, v) })}
             />
+            {/* Unchecked, weights are sized from the checkpoint's own
+                `quantization_config` — including the tensors it left at full
+                precision. The selector below is a what-if that replaces that,
+                so it is disabled until the override is explicitly requested. */}
             <label className="field check">
               <input
                 type="checkbox"
                 checked={inputs.isHypotheticalWeight}
                 onChange={(e) => setInputs({ isHypotheticalWeight: e.target.checked })}
               />
-              <span>Hypothetical quantization</span>
+              <span>Override checkpoint precision (what-if)</span>
             </label>
             <div className="field">
               <span>Weight precision</span>
               <select
                 value={inputs.weightPrecision}
+                disabled={!inputs.isHypotheticalWeight}
                 onChange={(e) => setInputs({ weightPrecision: e.target.value as Precision })}
               >
                 {PRECISIONS.map((p) => (
@@ -297,6 +302,11 @@ export default function App() {
                 ))}
               </select>
             </div>
+            {!inputs.isHypotheticalWeight && (
+              <p className="hint">
+                Weights are sized from the checkpoint's own quantization_config.
+              </p>
+            )}
             <div className="field">
               <span>KV-cache precision</span>
               <select

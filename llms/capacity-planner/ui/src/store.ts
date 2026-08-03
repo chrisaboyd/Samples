@@ -31,7 +31,10 @@ const DEFAULT_INPUT: AnalyzeInput = {
   maxContextTokens: 1048576,
   avgOutputTokens: 512,
   sloTargetSeconds: 10.0,
-  isHypotheticalWeight: true,
+  // Off by default. A config.json that carries `quantization_config` already
+  // states its own precision — including which tensors it left unquantized —
+  // so `weightPrecision` only applies when the user asks for a what-if.
+  isHypotheticalWeight: false,
 };
 
 export const useStore = create<UiState>()((set) => ({

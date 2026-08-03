@@ -64,7 +64,9 @@ impl Default for Workload {
             max_context_tokens: 1_048_576,
             weight_precision: Precision::Nvfp4,
             kv_precision: Precision::Fp8,
-            is_hypothetical_weight: true,
+            // Off by default: a checkpoint's own `quantization_config` is the
+            // truth, and `weight_precision` only overrides it on request.
+            is_hypothetical_weight: false,
             nvfp4_group_size: 16,
             tensor_parallel: 1,
             prefix_cache_enabled: true,
@@ -207,7 +209,8 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         Verdict::DoesNotFit
     };
 
-    let checkpoint_label = weight::checkpoint_label(w.is_hypothetical_weight, w.weight_precision);
+    let checkpoint_label =
+        weight::checkpoint_label(w.is_hypothetical_weight, &components, w.nvfp4_group_size);
     let hypothesis_warning = w.is_hypothetical_weight;
 
     let memory = MemoryResult {
@@ -223,10 +226,39 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         physical_gib_per_gpu: gpu.usable_gib,
     };
 
+    // A checkpoint is genuinely quantized when some tensor is stored at a
+    // precision other than its declared `torch_dtype`. Deriving it from the
+    // components rather than the marker keeps an unquantized BF16 config — where
+    // the marker's flavor is just "bf16" — out of the override warning below.
+    let base_precision = inputs.model.weights.source_precision.as_deref();
+    let checkpoint_is_quantized = inputs
+        .model
+        .weights
+        .components
+        .iter()
+        .any(|c| Some(c.precision.label()) != base_precision);
+
     let mut warnings = Vec::new();
     if hypothesis_warning {
-        warnings
-            .push("Hypothetical quantization — weights use a format not present in the checkpoint; treat as an estimate.".to_string());
+        // A checkpoint that declares its own quantization already knows what it
+        // is. Overriding that is a legitimate what-if, but silently reporting
+        // the what-if as though it described the checkpoint is what let a 93 GiB
+        // NVFP4 model present as 61 GiB.
+        match &inputs.model.weights.quantization {
+            Some(q) if checkpoint_is_quantized => warnings.push(format!(
+                "Hypothetical quantization is overriding the checkpoint. This config declares \
+                 `{}` and stores its weights as {} — the figures below instead assume every \
+                 quantizable tensor is {}. Turn the override off to size the checkpoint as built.",
+                q.flavor,
+                weight::precision_summary(&inputs.model.weights.components, w.nvfp4_group_size),
+                w.weight_precision.label(),
+            )),
+            _ => warnings.push(
+                "Hypothetical quantization — weights use a format not present in the checkpoint; \
+                 treat as an estimate."
+                    .to_string(),
+            ),
+        }
     }
     if !weights_fit {
         // Report the figure actually compared against (available = physical × U),
@@ -455,9 +487,9 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         block_tokens: DEFAULT_VLLM_BLOCK_TOKENS,
         physical_bytes: physical,
         available_bytes: available,
+        load_factor: weight::effective_load_factor(&components, w.nvfp4_group_size),
         components,
         checkpoint_bytes,
-        load_factor: weight::load_factor(w.weight_precision),
         loaded_per_rank,
         runtime_bytes,
         draft_bytes: w.draft_kv_bytes_per_seq,
