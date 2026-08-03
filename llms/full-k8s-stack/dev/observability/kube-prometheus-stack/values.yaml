@@ -17,20 +17,31 @@ grafana:
       enabled: true
     datasources:
       enabled: true
-  # Exposed through the shared nginx ingress, same pattern as bifrost/litellm.
-  # grafana-tls is a self-signed cert created out-of-band (see CONFIGURATION.md);
-  # there is no cert-manager in this cluster.
+  # Exposed through the shared ALB ingress (class `alb`), same pattern as the
+  # poolside-models service. The ALB listener terminates TLS with the wildcard ACM
+  # cert (*.boyd.demo.poolsi.de) via the certificate-arn annotation, so no
+  # in-cluster TLS secret is needed. This adds a grafana.boyd.demo.poolsi.de host
+  # rule to the shared ALB (group.name=poolside). ssl-redirect is omitted because
+  # it is already set on that ALB by the existing ingress.
+  # NOTE: cluster-specific -- adjust certificate-arn / load-balancer-name / host
+  # for your own ALB and domain.
   ingress:
     enabled: true
-    ingressClassName: nginx
+    ingressClassName: alb
+    annotations:
+      alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:992382466748:certificate/0ace8f4e-09a2-4ba8-86c9-b9dbda0329a3
+      alb.ingress.kubernetes.io/group.name: poolside
+      alb.ingress.kubernetes.io/healthcheck-path: /api/health
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+      alb.ingress.kubernetes.io/load-balancer-attributes: routing.http.drop_invalid_header_fields.enabled=true
+      alb.ingress.kubernetes.io/load-balancer-name: poolside-poolside-boyd-ref0730
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+      alb.ingress.kubernetes.io/target-type: ip
     hosts:
-      - grafana.poolsi.de
+      - grafana.boyd.demo.poolsi.de
     path: /
     pathType: Prefix
-    tls:
-      - secretName: grafana-tls
-        hosts:
-          - grafana.poolsi.de
 
 alertmanager:
   enabled: true
