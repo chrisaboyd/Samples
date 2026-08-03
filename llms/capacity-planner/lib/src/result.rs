@@ -94,11 +94,58 @@ pub struct MemoryResult {
     /// Free GPU memory earmarked for KV cache, GiB.
     #[serde(rename = "freeGiBPerGpu")]
     pub free_gib_per_gpu: f64,
+    /// Free-for-KV summed over every GPU carrying a model copy, GiB.
+    ///
+    /// Published alongside the per-GPU figure because the two are easy to
+    /// conflate: within a TP group the KV pool *is* shared, so both the budget
+    /// and the per-sequence cost scale with TP and the concurrency is the same
+    /// either way. Showing only the per-GPU slice makes a correct number look
+    /// like it ignored the other cards.
+    #[serde(rename = "freeGiBAcrossGpusInUse")]
+    pub free_gib_across_gpus_in_use: f64,
+    /// KV bytes one maximum-context sequence costs across its whole TP group.
+    #[serde(rename = "kvGiBPerMaximumSequenceAllRanks")]
+    pub kv_gib_per_maximum_sequence_all_ranks: f64,
+    /// True when TP exceeds the KV head count, so KV is replicated per rank
+    /// rather than sharded and TP stops reducing per-GPU KV.
+    pub kv_replicated_across_ranks: bool,
+    /// Concurrent sequences one replica (one TP group) holds in KV memory at
+    /// average context. Per replica, not cluster-wide — see the `*_total` pair.
     pub memory_concurrency_average: u64,
     pub memory_concurrency_maximum: u64,
+    /// The same two ceilings across every replica: `per_replica × replicas`.
+    /// This is the figure comparable to `PerformanceResult::slo_concurrency`,
+    /// which is also cluster-wide.
+    pub memory_concurrency_average_total: u64,
+    pub memory_concurrency_maximum_total: u64,
     /// Total physical memory per GPU, GiB (for context).
     #[serde(rename = "physicalGiBPerGpu")]
     pub physical_gib_per_gpu: f64,
+}
+
+/// Which ceiling produced [`PracticalCapacity::comfortable_active_requests`].
+///
+/// Without this the headline number duplicates whichever row happened to win
+/// and says nothing about what to change to raise it.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum BindingConstraint {
+    /// KV memory at maximum context is the limit — buy VRAM or cap context.
+    MemoryAtMaximumContext,
+    /// KV memory at average context is the limit.
+    MemoryAtAverageContext,
+    /// Compute against the latency target is the limit — add replicas.
+    SloLatency,
+}
+
+impl BindingConstraint {
+    pub fn label(self) -> &'static str {
+        match self {
+            BindingConstraint::MemoryAtMaximumContext => "limited by KV memory at maximum context",
+            BindingConstraint::MemoryAtAverageContext => "limited by KV memory at average context",
+            BindingConstraint::SloLatency => "limited by the SLO latency target",
+        }
+    }
 }
 
 /// Phase-1 stub: ranges are `None` and a note explains the deferral (PRD §31).
@@ -136,6 +183,8 @@ impl PerformanceResult {
 #[serde(rename_all = "camelCase")]
 pub struct PracticalCapacity {
     pub comfortable_active_requests: u64,
+    /// Which ceiling produced the number above.
+    pub binding_constraint: BindingConstraint,
     pub intermittent_agents: Option<Range>,
     pub human_users: Option<Range>,
     pub note: String,
@@ -146,6 +195,10 @@ pub struct PracticalCapacity {
 pub struct TopologyResult {
     pub tensor_parallel: u32,
     pub data_parallel: u32,
+    /// GPUs carrying a model copy (`data_parallel × tensor_parallel`).
+    pub gpus_in_use: u32,
+    /// Configured GPUs left with no model copy on them.
+    pub gpus_idle: u32,
     pub expert_parallel: bool,
     pub explanation: Vec<String>,
     pub alternatives: Vec<TopologyOption>,
@@ -221,8 +274,13 @@ impl ScenarioResult {
                 kv_gib_per_average_sequence: 0.0,
                 kv_gib_per_maximum_sequence: 0.0,
                 free_gib_per_gpu: 0.0,
+                free_gib_across_gpus_in_use: 0.0,
+                kv_gib_per_maximum_sequence_all_ranks: 0.0,
+                kv_replicated_across_ranks: false,
                 memory_concurrency_average: 0,
                 memory_concurrency_maximum: 0,
+                memory_concurrency_average_total: 0,
+                memory_concurrency_maximum_total: 0,
                 physical_gib_per_gpu: 0.0,
             },
             performance: PerformanceResult {
@@ -236,6 +294,7 @@ impl ScenarioResult {
             },
             practical_capacity: PracticalCapacity {
                 comfortable_active_requests: 0,
+                binding_constraint: BindingConstraint::MemoryAtMaximumContext,
                 intermittent_agents: None,
                 human_users: None,
                 note: "Agent/user translation deferred to Phase 3 (requires SLO concurrency)."
@@ -244,6 +303,8 @@ impl ScenarioResult {
             topology: TopologyResult {
                 tensor_parallel: 1,
                 data_parallel: 1,
+                gpus_in_use: 1,
+                gpus_idle: 0,
                 expert_parallel: false,
                 explanation: vec!["Topology optimizer deferred to Phase 3 (PRD §31).".to_string()],
                 alternatives: Vec::new(),

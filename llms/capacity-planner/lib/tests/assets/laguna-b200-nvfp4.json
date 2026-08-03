@@ -8,8 +8,13 @@
     "kvGiBPerAverageSequence": 0.78515625,
     "kvGiBPerMaximumSequence": 24.03515625,
     "freeGiBPerGpu": 83.97569540049881,
+    "freeGiBAcrossGpusInUse": 83.97569540049881,
+    "kvGiBPerMaximumSequenceAllRanks": 24.03515625,
+    "kvReplicatedAcrossRanks": false,
     "memoryConcurrencyAverage": 106,
     "memoryConcurrencyMaximum": 3,
+    "memoryConcurrencyAverageTotal": 106,
+    "memoryConcurrencyMaximumTotal": 3,
     "physicalGiBPerGpu": 167.63806343078613
   },
   "performance": {
@@ -43,13 +48,16 @@
   },
   "practicalCapacity": {
     "comfortableActiveRequests": 3,
+    "bindingConstraint": "memory_at_maximum_context",
     "intermittentAgents": null,
     "humanUsers": null,
-    "note": "Agent/user translation deferred to Phase 3 (requires agent duty cycle, §19). SLO concurrency now computed (§18.2)."
+    "note": "3 — limited by KV memory at maximum context. Agent/user translation deferred to Phase 3 (requires agent duty cycle, §19)."
   },
   "topology": {
     "tensorParallel": 1,
     "dataParallel": 1,
+    "gpusInUse": 1,
+    "gpusIdle": 0,
     "expertParallel": true,
     "explanation": [
       "Topology optimizer deferred to Phase 3 (PRD §31 §20)."
@@ -238,26 +246,26 @@
     },
     {
       "id": "c-mem-avg",
-      "label": "Memory ceiling (avg ctx)",
+      "label": "Concurrent requests @ avg context",
       "meaning": "How many requests fit in VRAM at once if each holds an average-length context. A pure memory limit — it ignores whether the GPU is fast enough to serve them within your latency target.",
-      "formula": "C_memory(avg) = floor( M_freeForKV / KV_seq(avg) )",
-      "substitution": "floor( 83.98 GiB / 0.785 GiB )\n= floor( 90,168,216,351 bytes / 843,055,104 bytes )",
+      "formula": "C_memory(avg) = floor( M_freeForKV / KV_seq(avg) ) × replicas",
+      "substitution": "floor( 83.98 GiB / 0.785 GiB )\n= floor( 90,168,216,351 bytes / 843,055,104 bytes )\n= 106 per replica × 1 replica(s)",
       "result": "106 concurrent requests"
     },
     {
       "id": "c-mem-max",
-      "label": "Memory ceiling (max ctx)",
+      "label": "Concurrent requests @ max context",
       "meaning": "The same count in the worst case, where every concurrent request has filled the full context window simultaneously. Usually much smaller — it is the floor under which the deployment cannot be starved.",
-      "formula": "C_memory(max) = floor( M_freeForKV / KV_seq(max) )",
-      "substitution": "floor( 83.98 GiB / 24.04 GiB )\n= floor( 90,168,216,351 bytes / 25,807,552,512 bytes )",
+      "formula": "C_memory(max) = floor( M_freeForKV / KV_seq(max) ) × replicas",
+      "substitution": "floor( 83.98 GiB / 24.04 GiB )\n= floor( 90,168,216,351 bytes / 25,807,552,512 bytes )\n= 3 per replica × 1 replica(s)",
       "result": "3 concurrent requests"
     },
     {
       "id": "c-comfortable",
       "label": "Comfortable active requests",
       "meaning": "The headline number: requests that can be in flight at the same time while still meeting your latency target. It is the tightest of the three limits — running out of memory and missing the SLO are both failures, so the smallest one governs.",
-      "formula": "C_comfortable = min( C_memory(avg), C_memory(max), C_SLO )",
-      "substitution": "min( 106, 3, 34 )\n  C_memory(avg) = 106 — memory at average context\n  C_memory(max) = 3 — memory at full context\n  C_SLO         = 34 — latency target of 10.0 s",
+      "formula": "C_comfortable = min( C_memory(avg), C_memory(max), C_SLO )   [all cluster-wide]",
+      "substitution": "min( 106, 3, 34 )\n  C_memory(avg) = 106 — memory at average context (106 per replica × 1)\n  C_memory(max) = 3 — memory at full context (3 per replica × 1)\n  C_SLO         = 34 — latency target of 10.0 s",
       "result": "3 concurrent requests"
     },
     {

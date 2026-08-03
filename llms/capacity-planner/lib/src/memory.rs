@@ -27,8 +27,8 @@ use crate::model::NormalizedModel;
 use crate::performance::{self, PerformanceInputs};
 use crate::precision::Precision;
 use crate::result::{
-    AssumptionRecord, ConfidenceSummary, EvidenceRecord, MemoryResult, PerformanceResult,
-    PracticalCapacity, Provenance, ScenarioResult, TopologyResult, Verdict,
+    AssumptionRecord, BindingConstraint, ConfidenceSummary, EvidenceRecord, MemoryResult,
+    PerformanceResult, PracticalCapacity, Provenance, ScenarioResult, TopologyResult, Verdict,
 };
 use crate::weight;
 use crate::GIB_BYTES;
@@ -114,6 +114,13 @@ fn validate(inputs: &Inputs) -> Result<()> {
         return Err(CalcError::InvalidInput(format!(
             "tensor parallel ({tp}) exceeds GPU count ({count}) — TP shards one model \
              across {tp} physical GPUs, so at least {tp} are required"
+        )));
+    }
+    let replicas = inputs.gpu.replicas();
+    if replicas * tp > count {
+        return Err(CalcError::InvalidInput(format!(
+            "{replicas} replicas × TP {tp} needs {} GPUs but only {count} are configured",
+            replicas * tp
         )));
     }
     let w = &inputs.workload;
@@ -221,8 +228,13 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         kv_gib_per_average_sequence: to_gib(kv_bytes_avg),
         kv_gib_per_maximum_sequence: to_gib(kv_bytes_max),
         free_gib_per_gpu: to_gib(free_for_kv),
+        free_gib_across_gpus_in_use: to_gib(free_for_kv) * inputs.gpu.gpus_in_use() as f64,
+        kv_gib_per_maximum_sequence_all_ranks: to_gib(kv_bytes_max) * tp as f64,
+        kv_replicated_across_ranks: cfg_max.kv_is_replicated(),
         memory_concurrency_average: c_avg,
         memory_concurrency_maximum: c_max,
+        memory_concurrency_average_total: c_avg.saturating_mul(inputs.gpu.replicas() as u64),
+        memory_concurrency_maximum_total: c_max.saturating_mul(inputs.gpu.replicas() as u64),
         physical_gib_per_gpu: gpu.usable_gib,
     };
 
@@ -277,6 +289,37 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         warnings.push("Weights fit but no KV-cache room remains at maximum context.".to_string());
     }
 
+    if cfg_max.kv_is_replicated() {
+        warnings.push(format!(
+            "TP {tp} exceeds the model's {} KV head(s) — a KV head cannot be split, so engines \
+             replicate the whole KV cache on every rank. Tensor parallelism does not reduce \
+             per-GPU KV memory here; only weights shard.",
+            inputs.model.dimensions.kv_heads.unwrap_or(0).max(1)
+        ));
+    }
+    if gpu.unified_memory {
+        warnings.push(format!(
+            "{} shares one {:.0} GB pool between CPU and GPU — the {:.0}% ceiling and {:.0} GiB \
+             reserve below account for the host OS and serving process, which a discrete card \
+             does not have to fund. Bandwidth ({:.0} GB/s) is the binding limit on decode here, \
+             not capacity.",
+            gpu.sku,
+            gpu.memory_marketed_gb,
+            inputs.gpu.utilization()? * 100.0,
+            reserve_gib,
+            gpu.memory_bandwidth_gbs
+        ));
+    }
+    let idle = inputs.gpu.count.saturating_sub(inputs.gpu.gpus_in_use());
+    if idle > 0 {
+        warnings.push(format!(
+            "{idle} of {} GPUs hold no model copy ({} replica(s) × TP {tp}) and contribute \
+             nothing to capacity.",
+            inputs.gpu.count,
+            inputs.gpu.replicas()
+        ));
+    }
+
     // KV geometry is what the whole capacity number rests on. When the adapter
     // could not read it, `KvConfig` substitutes 1 head × 1 dim, which yields a
     // tiny KV/sequence and a huge, meaningless concurrency. Detect that here so
@@ -294,26 +337,38 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
                 .to_string(),
         );
     }
+    // Readable-but-wrong is the dangerous case: a config can supply every field
+    // this check looks at and still be an architecture we do not model, which
+    // produces a plausible number at full confidence. Adapters record those gaps
+    // in `unresolved`, and any one of them caps the result at Level D.
+    for gap in &inputs.model.unresolved {
+        warnings.push(format!("Not determined from the config: {gap}"));
+    }
+    let architecture_fully_modelled = inputs.model.unresolved.is_empty();
+    let analytical = kv_geometry_known && architecture_fully_modelled;
+
     for note in &inputs.model.inferred {
         warnings.push(format!("Inferred from an incomplete config: {note}"));
     }
 
     let confidence = Confidence {
-        grade: if kv_geometry_known {
+        grade: if analytical {
             ConfidenceGrade::Analytical
         } else {
             ConfidenceGrade::Speculative
         },
-        level: if kv_geometry_known {
+        level: if analytical {
             AnalyzeLevel::C
         } else {
             AnalyzeLevel::D
         },
         reasons: vec![
-            if kv_geometry_known {
+            if analytical {
                 "Architecture-derived (Level C) from config.json".to_string()
-            } else {
+            } else if !kv_geometry_known {
                 "Generic approximation (Level D) — key architecture fields missing".to_string()
+            } else {
+                "Generic approximation (Level D) — architecture not fully modelled".to_string()
             },
             format!(
                 "KV cache rounded to {}-token vLLM blocks",
@@ -399,7 +454,7 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         weight_precision: w.weight_precision,
         kv_precision: w.kv_precision,
         tensor_parallel: tp,
-        gpu_count: inputs.gpu.count,
+        replicas: inputs.gpu.replicas(),
         avg_context_tokens: w.avg_context_tokens,
         avg_output_tokens: w.avg_output_tokens,
         slo_target_seconds: w.slo_target_seconds,
@@ -424,9 +479,28 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
     };
 
     // C_comfortable = min(C_memory, C_SLO)  (PRD §18.3)
-    let c_memory = c_avg.min(c_max);
+    //
+    // Both sides must be cluster-wide. `c_avg`/`c_max` are per replica (free KV
+    // on one rank / KV per sequence on that rank), while `slo_concurrency` is
+    // already multiplied by the replica count. Comparing them directly reported
+    // a 4-replica deployment as serving the same number of requests as one.
+    let replicas = inputs.gpu.replicas() as u64;
+    let c_avg_total = c_avg.saturating_mul(replicas);
+    let c_max_total = c_max.saturating_mul(replicas);
+    let c_memory = c_avg_total.min(c_max_total);
     let c_slo = performance.slo_concurrency.unwrap_or(c_memory);
     let c_comfortable = c_memory.min(c_slo);
+    // Which of the three ceilings actually bound. Memory wins ties: when SLO and
+    // memory agree, the VRAM wall is the one the user can do something about.
+    let binding_constraint = if c_memory <= c_slo {
+        if c_max <= c_avg {
+            BindingConstraint::MemoryAtMaximumContext
+        } else {
+            BindingConstraint::MemoryAtAverageContext
+        }
+    } else {
+        BindingConstraint::SloLatency
+    };
 
     let compute_peak = performance::compute_peak_tflops(gpu, w.weight_precision);
     let decode_range = performance.decode_tokens_per_second_per_request.as_ref();
@@ -503,6 +577,7 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         sliding_window: cfg_avg.sliding_window,
         c_avg,
         c_max,
+        replicas,
         c_slo,
         c_comfortable,
         compute_peak_tflops: compute_peak,
@@ -517,18 +592,24 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         performance: performance.clone(),
         practical_capacity: PracticalCapacity {
             comfortable_active_requests: c_comfortable,
+            binding_constraint,
             intermittent_agents: None,
             human_users: None,
-            note: "Agent/user translation deferred to Phase 3 (requires agent \
-                   duty cycle, §19). SLO concurrency now computed (§18.2)."
-                .into(),
+            note: format!(
+                "{} — {}. Agent/user translation deferred to Phase 3 (requires agent \
+                 duty cycle, §19).",
+                c_comfortable,
+                binding_constraint.label()
+            ),
         },
         topology: TopologyResult {
             tensor_parallel: tp,
             // Replicas, not raw GPU count: `count` GPUs split into groups of
             // `tp`. Reporting count here claimed TP × count GPUs and contradicted
             // the DP factor the performance model uses.
-            data_parallel: (inputs.gpu.count / tp).max(1),
+            data_parallel: inputs.gpu.replicas(),
+            gpus_in_use: inputs.gpu.gpus_in_use(),
+            gpus_idle: inputs.gpu.count.saturating_sub(inputs.gpu.gpus_in_use()),
             // Laguna-style hybrids are MoE too — the router is what makes expert
             // parallelism applicable, not whether the MLP stack is uniformly sparse.
             expert_parallel: inputs.model.moe.is_some(),
@@ -556,6 +637,12 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
             },
             primary_uncertainty: if !kv_geometry_known {
                 "KV-cache geometry missing from the config — capacity figures are placeholders (PRD §10.1 Level D)".to_string()
+            } else if !architecture_fully_modelled {
+                format!(
+                    "Architecture not fully modelled — {} unresolved term(s); parameter count and \
+                     KV size are bounds, not estimates (PRD §10.1 Level D)",
+                    inputs.model.unresolved.len()
+                )
             } else if hypothesis_warning {
                 "Analytical roofline with broad efficiency ranges; hypothetical quantization adds weight-load uncertainty (PRD §16.3/§33)".to_string()
             } else {

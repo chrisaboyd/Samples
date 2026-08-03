@@ -9,7 +9,7 @@ use capacity_planner::hardware::{GpuConfig, Topology};
 use capacity_planner::memory::{Inputs, Workload};
 use capacity_planner::model::{AttentionKind, NormalizedModel};
 use capacity_planner::precision::Precision;
-use capacity_planner::result::Verdict;
+use capacity_planner::result::{BindingConstraint, Verdict};
 use capacity_planner::ScenarioResult;
 use capacity_planner::GIB_BYTES;
 use serde_json::Value;
@@ -37,6 +37,7 @@ fn run(
         count,
         topology: Topology::PciE,
         tensor_parallel: tp,
+        replicas: None,
         utilization: None,
         runtime_reserve_gib: None,
     };
@@ -511,6 +512,7 @@ fn try_run(
         count,
         topology: Topology::PciE,
         tensor_parallel: tp,
+        replicas: None,
         utilization: None,
         runtime_reserve_gib: None,
     };
@@ -644,6 +646,7 @@ fn dense_70b_on_b200(slo_target_seconds: f64) -> ScenarioResult {
         count: 1,
         topology: Topology::NvLink5,
         tensor_parallel: 1,
+        replicas: None,
         utilization: None,
         runtime_reserve_gib: None,
     };
@@ -755,4 +758,432 @@ fn hopper_parts_have_no_fp4_compute_path() {
         // FP8 is 2x BF16 on Hopper; both parts must agree on the convention.
         assert_eq!(g.fp8_tflops, Some(g.bf16_fp16_tflops * 2.0), "{sku}");
     }
+}
+
+// ---- generic-adapter regression: sparse models must not report as small dense
+// models (see `adapter::generic`). DeepSeek-V4-Flash has no dedicated adapter,
+// declares its MLP width only as `moe_intermediate_size`, and carries a blanket
+// `sliding_window` with no `layer_types`.
+
+const DEEPSEEK_V4_JSON: &str = include_str!("assets/deepseek-v4-flash-config.json");
+
+fn deepseek_v4() -> Value {
+    serde_json::from_str(DEEPSEEK_V4_JSON).unwrap()
+}
+
+#[test]
+fn generic_adapter_counts_routed_experts() {
+    let m = adapter::normalize(&deepseek_v4()).expect("normalizes");
+    // 256 routed + 1 shared expert, each 3 * 4096 * 2048, over 43 layers.
+    let experts_per_layer: u128 = 257 * 3 * 4096 * 2048;
+    let params = m.parameter_count().expect("has a parameter count");
+    assert!(
+        params > experts_per_layer * 43,
+        "expert tensors omitted: got {params} params"
+    );
+    // The pre-fix generic path reported 7.73B for this config.
+    assert!(params > 250_000_000_000, "got {params} params");
+    let moe = m.moe.as_ref().expect("MoE detected");
+    assert_eq!(moe.expert_count, 256);
+    assert_eq!(moe.active_experts_per_token, 6);
+}
+
+/// Expert tensors are ~97% of this model's parameters, so their *precision*
+/// matters as much as their presence. The config declares `quant_method: "fp8"`;
+/// sizing those experts at the BF16 `torch_dtype` reported 542 GiB for a
+/// checkpoint that stores 272.
+#[test]
+fn generic_adapter_sizes_experts_at_the_checkpoints_precision() {
+    let m = adapter::normalize(&deepseek_v4()).expect("normalizes");
+    let routed: Vec<_> = m
+        .weights
+        .components
+        .iter()
+        .filter(|c| c.category == capacity_planner::precision::WeightCategory::RoutedExperts)
+        .collect();
+    assert!(!routed.is_empty(), "no routed experts");
+    assert!(
+        routed.iter().all(|c| c.precision == Precision::Fp8),
+        "experts were not sized as FP8: {:?}",
+        routed.iter().map(|c| c.precision).collect::<Vec<_>>()
+    );
+
+    // Embeddings and the output head are not Linear conversions, so they keep
+    // the base dtype — the checkpoint is a mix, not uniformly FP8.
+    let r = run(
+        &deepseek_v4(),
+        "B200 SXM 180 GB",
+        8,
+        8,
+        Precision::Nvfp4,
+        false,
+        32_768,
+        1_048_576,
+    );
+    assert!(
+        r.memory
+            .checkpoint_precision_label
+            .starts_with("Exact checkpoint — FP8"),
+        "label was {:?}",
+        r.memory.checkpoint_precision_label
+    );
+    let gib = r.memory.checkpoint_storage_gib;
+    assert!(
+        (265.0..280.0).contains(&gib),
+        "checkpoint storage was {gib} GiB (BF16 would be ~542)"
+    );
+}
+
+#[test]
+fn blanket_sliding_window_does_not_freeze_kv_against_context() {
+    // `sliding_window: 128` with no per-layer pattern previously capped every
+    // layer at 128 tokens, making KV identical at 32K and 1M context.
+    let r = run(
+        &deepseek_v4(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert!(
+        r.memory.kv_gib_per_maximum_sequence > r.memory.kv_gib_per_average_sequence,
+        "KV did not scale with context: avg {} / max {}",
+        r.memory.kv_gib_per_average_sequence,
+        r.memory.kv_gib_per_maximum_sequence
+    );
+}
+
+#[test]
+fn unmodelled_architecture_is_capped_at_level_d() {
+    let r = run(
+        &deepseek_v4(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    // Every field the KV-geometry check looks at is present and readable here,
+    // so only the `unresolved` gate can catch this.
+    assert_eq!(r.confidence.analyze_level, AnalyzeLevel::D);
+    assert_eq!(r.confidence.memory, ConfidenceGrade::Speculative);
+    assert!(
+        r.warnings
+            .iter()
+            .any(|w| w.contains("no dedicated adapter")),
+        "warnings were: {:?}",
+        r.warnings
+    );
+}
+
+#[test]
+fn missing_mlp_width_is_reported_not_silently_zero() {
+    // Dense config with no `intermediate_size`: the MLP term used to evaluate to
+    // 0 and disappear into a confident-looking parameter count.
+    let raw: Value = serde_json::from_str(
+        r#"{"model_type":"mystery","architectures":["MysteryForCausalLM"],
+            "hidden_size":4096,"num_hidden_layers":32,"vocab_size":32000,
+            "num_attention_heads":32,"num_key_value_heads":8,"head_dim":128}"#,
+    )
+    .unwrap();
+    let m = adapter::normalize(&raw).expect("normalizes");
+    assert!(
+        m.unresolved.iter().any(|u| u.contains("no MLP width")),
+        "unresolved was: {:?}",
+        m.unresolved
+    );
+}
+
+// ---- KV sharding, replicas, and the binding constraint ---------------------
+
+#[test]
+fn kv_is_replicated_when_tp_exceeds_kv_heads() {
+    // DeepSeek-V4-Flash has num_key_value_heads = 1. A single KV head cannot be
+    // split across 4 ranks, so TP must not divide per-GPU KV here.
+    let r1 = run(
+        &deepseek_v4(),
+        "RTX PRO 6000 Blackwell Workstation Edition",
+        4,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    let r4 = run(
+        &deepseek_v4(),
+        "RTX PRO 6000 Blackwell Workstation Edition",
+        4,
+        4,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert!(r4.memory.kv_replicated_across_ranks);
+    assert_eq!(
+        r4.memory.kv_gib_per_maximum_sequence, r1.memory.kv_gib_per_maximum_sequence,
+        "TP divided a single KV head across ranks"
+    );
+    assert!(
+        r4.warnings
+            .iter()
+            .any(|w| w.contains("KV head cannot be split")),
+        "warnings were: {:?}",
+        r4.warnings
+    );
+}
+
+#[test]
+fn kv_still_shards_when_heads_allow_it() {
+    // Laguna has 8 KV heads, so TP=2 genuinely halves per-rank KV.
+    let r1 = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        2,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    let r2 = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        2,
+        2,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert!(!r2.memory.kv_replicated_across_ranks);
+    assert!(
+        (r2.memory.kv_gib_per_maximum_sequence * 2.0 - r1.memory.kv_gib_per_maximum_sequence).abs()
+            < 1e-9
+    );
+}
+
+#[test]
+fn replicas_default_to_filling_the_machine_and_can_be_capped() {
+    let gpu = |replicas| GpuConfig {
+        sku: "B200 SXM 180 GB".to_string(),
+        count: 8,
+        topology: Topology::NvLink5,
+        tensor_parallel: 4,
+        replicas,
+        utilization: None,
+        runtime_reserve_gib: None,
+    };
+    assert_eq!(gpu(None).replicas(), 2);
+    assert_eq!(gpu(None).gpus_in_use(), 8);
+    // Deliberately running one copy on half the machine.
+    assert_eq!(gpu(Some(1)).replicas(), 1);
+    assert_eq!(gpu(Some(1)).gpus_in_use(), 4);
+}
+
+#[test]
+fn idle_gpus_are_reported_not_silently_assumed_busy() {
+    let model = adapter::normalize(&laguna()).unwrap();
+    let gpu = GpuConfig {
+        sku: "B200 SXM 180 GB".to_string(),
+        count: 8,
+        topology: Topology::NvLink5,
+        tensor_parallel: 4,
+        replicas: Some(1),
+        utilization: None,
+        runtime_reserve_gib: None,
+    };
+    let r = capacity_planner::memory::evaluate(&Inputs {
+        model: &model,
+        gpu,
+        workload: Workload {
+            tensor_parallel: 4,
+            ..Workload::default()
+        },
+    })
+    .expect("evaluates");
+    assert_eq!(r.topology.data_parallel, 1);
+    assert_eq!(r.topology.gpus_in_use, 4);
+    assert_eq!(r.topology.gpus_idle, 4);
+    assert!(
+        r.warnings.iter().any(|w| w.contains("hold no model copy")),
+        "warnings were: {:?}",
+        r.warnings
+    );
+}
+
+#[test]
+fn replicas_beyond_gpu_count_are_rejected() {
+    let model = adapter::normalize(&laguna()).unwrap();
+    let gpu = GpuConfig {
+        sku: "B200 SXM 180 GB".to_string(),
+        count: 4,
+        topology: Topology::NvLink5,
+        tensor_parallel: 2,
+        replicas: Some(3),
+        utilization: None,
+        runtime_reserve_gib: None,
+    };
+    let err = capacity_planner::memory::evaluate(&Inputs {
+        model: &model,
+        gpu,
+        workload: Workload {
+            tensor_parallel: 2,
+            ..Workload::default()
+        },
+    });
+    assert!(err.is_err(), "3 replicas x TP2 needs 6 GPUs, only 4 given");
+}
+
+#[test]
+fn binding_constraint_names_the_limit_that_bound() {
+    // Laguna at 1M max context is memory-bound at 3 sequences.
+    let memory_bound = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert_eq!(
+        memory_bound.practical_capacity.binding_constraint,
+        BindingConstraint::MemoryAtMaximumContext
+    );
+    // Shrink max context until VRAM is no longer the wall and the SLO is.
+    let slo_bound = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        4_096,
+        4_096,
+    );
+    assert_eq!(
+        slo_bound.practical_capacity.binding_constraint,
+        BindingConstraint::SloLatency
+    );
+}
+
+// ---- cluster-wide vs per-replica concurrency, and unified-memory parts ------
+
+#[test]
+fn memory_ceiling_scales_with_replicas() {
+    // The per-replica ceilings previously fed straight into a comparison with a
+    // cluster-wide SLO figure, so 4 replicas reported the same capacity as 1.
+    let one = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    let four = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        4,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert_eq!(four.topology.data_parallel, 4);
+    // Per-replica figures are identical — one replica's VRAM does not change.
+    assert_eq!(
+        four.memory.memory_concurrency_maximum,
+        one.memory.memory_concurrency_maximum
+    );
+    // Cluster-wide figures scale.
+    assert_eq!(
+        four.memory.memory_concurrency_maximum_total,
+        one.memory.memory_concurrency_maximum * 4
+    );
+    assert_eq!(
+        four.practical_capacity.comfortable_active_requests,
+        one.practical_capacity.comfortable_active_requests * 4
+    );
+}
+
+#[test]
+fn comfortable_never_exceeds_either_cluster_ceiling() {
+    for count in [1u32, 2, 4, 8] {
+        let r = run(
+            &laguna(),
+            "B200 SXM 180 GB",
+            count,
+            1,
+            Precision::Nvfp4,
+            true,
+            32_768,
+            1_048_576,
+        );
+        let c = r.practical_capacity.comfortable_active_requests;
+        assert!(
+            c <= r.memory.memory_concurrency_maximum_total,
+            "{count} GPUs"
+        );
+        assert!(
+            c <= r.memory.memory_concurrency_average_total,
+            "{count} GPUs"
+        );
+        assert!(
+            c <= r.performance.slo_concurrency.unwrap(),
+            "{count} GPUs: comfortable {c} exceeded the SLO ceiling"
+        );
+    }
+}
+
+#[test]
+fn gb10_parts_are_unified_memory_and_bandwidth_bound() {
+    for sku in ["DGX Spark (GB10)", "Dell Pro Max with GB10"] {
+        let g = capacity_planner::hardware::find(sku).expect("in catalog");
+        assert!(g.unified_memory, "{sku}");
+        // Host OS and serving process come out of the same pool, so neither the
+        // 0.90 ceiling nor the 1 GiB reserve a discrete card gets applies.
+        assert!(g.default_utilization < 0.90, "{sku}");
+        assert!(g.typical_runtime_reserve_gib > 1.0, "{sku}");
+        assert_eq!(g.memory_marketed_gb, 128.0, "{sku}");
+        assert_eq!(g.memory_bandwidth_gbs, 273.0, "{sku}");
+    }
+    // Every discrete part keeps the flag off.
+    for sku in ["B200 SXM 180 GB", "H100 SXM 80 GB", "RTX 6000 Ada"] {
+        assert!(
+            !capacity_planner::hardware::find(sku)
+                .unwrap()
+                .unified_memory
+        );
+    }
+}
+
+#[test]
+fn unified_memory_is_surfaced_as_a_warning() {
+    let r = run(
+        &laguna(),
+        "DGX Spark (GB10)",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    assert!(
+        r.warnings.iter().any(|w| w.contains("shares one")),
+        "warnings were: {:?}",
+        r.warnings
+    );
 }

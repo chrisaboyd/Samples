@@ -48,7 +48,7 @@ the result is then labelled and warned as an estimate, not a checkpoint.
 ```
 lib/src/
   adapter/   Laguna / Llama / Mixtral / generic config.json -> NormalizedModel
-  quant.rs   compressed-tensors quantization_config -> per-tensor precision
+  quant.rs   quantization_config -> per-tensor precision (compressed-tensors, fp8)
   kv.rs      PRD §13 KV-cache (dense + hybrid sliding-window, block rounding)
   weight.rs  PRD §12 weight memory + hypothetical quantization + NVFP4 scales
   memory.rs  PRD §15 memory-fit (freeForKV = available − weights − runtime − …)

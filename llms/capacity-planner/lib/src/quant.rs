@@ -123,13 +123,18 @@ impl CheckpointQuantization {
             .unwrap_or(method)
             .to_string();
 
-        if method != "compressed-tensors" {
-            inferred.push(format!(
-                "quantization_config declares quant_method `{method}` \
-                 (only `compressed-tensors` is parsed) — per-tensor precision \
-                 not applied; weights are sized at the checkpoint's base dtype"
-            ));
-            return None;
+        match method {
+            "compressed-tensors" => {}
+            "fp8" => return Some(Self::from_hf_fp8(cfg, format)),
+            _ => {
+                inferred.push(format!(
+                    "quantization_config declares quant_method `{method}` \
+                     (only `compressed-tensors` and `fp8` are parsed) — per-tensor \
+                     precision not applied; weights are sized at the checkpoint's \
+                     base dtype"
+                ));
+                return None;
+            }
         }
 
         let ignore = rules_from(cfg.get("ignore"));
@@ -181,6 +186,44 @@ impl CheckpointQuantization {
             groups,
             ignore,
         })
+    }
+
+    /// HF's native FP8 scheme (`quant_method: "fp8"`) — what DeepSeek-V3/R1 and
+    /// vLLM's FP8 checkpoints declare.
+    ///
+    /// It carries no `targets` list because it has no need of one: every
+    /// `nn.Linear` weight is FP8 except `modules_to_not_convert`. Two modules
+    /// are always excluded and are not usually listed — `model.embed_tokens` is
+    /// an `nn.Embedding` and is never converted, and `lm_head` is in the
+    /// quantizer's default skip set.
+    ///
+    /// `weight_block_size` (typically 128×128) gives one FP32 scale per 16,384
+    /// weights — 0.02% overhead, below the resolution of everything else in this
+    /// model, so it is not added to the byte total the way NVFP4's per-16 scales
+    /// are.
+    fn from_hf_fp8(cfg: &serde_json::Map<String, Value>, format: String) -> Self {
+        let mut ignore = rules_from(cfg.get("modules_to_not_convert"));
+        ignore.push(Rule::Literal("lm_head".to_string()));
+        ignore.push(Rule::Literal("model.embed_tokens".to_string()));
+
+        // `fmt` names the float layout (e4m3 / e5m2); both are 8-bit.
+        let group_size = cfg
+            .get("weight_block_size")
+            .and_then(|v| v.as_array())
+            .and_then(|a| a.first())
+            .and_then(|v| v.as_u64())
+            .unwrap_or(128) as u32;
+
+        CheckpointQuantization {
+            format,
+            groups: vec![QuantGroup {
+                precision: Precision::Fp8,
+                group_size,
+                // Everything that is not ignored.
+                targets: vec![Rule::ClassName],
+            }],
+            ignore,
+        }
     }
 
     /// Stored precision of one module, given the checkpoint's base dtype.
@@ -335,6 +378,67 @@ mod tests {
         assert_eq!(mk(8, "float"), Precision::Fp8);
         assert_eq!(mk(8, "int"), Precision::Int8);
         assert_eq!(mk(4, "int"), Precision::Int4);
+    }
+
+    /// HF's native FP8 (`quant_method: "fp8"`) has no `targets` list — every
+    /// Linear weight is FP8. Missing it sized a 271 GiB DeepSeek checkpoint at
+    /// its BF16 dtype, 542 GiB: the same class of error as the NVFP4 case, in
+    /// the opposite direction.
+    #[test]
+    fn hf_fp8_scheme_quantizes_every_linear() {
+        let raw = serde_json::json!({
+            "quantization_config": {
+                "quant_method": "fp8",
+                "fmt": "e4m3",
+                "activation_scheme": "dynamic",
+                "weight_block_size": [128, 128]
+            }
+        });
+        let q = CheckpointQuantization::parse(&raw, &mut Vec::new()).expect("parses");
+        assert_eq!(q.primary_precision(), Precision::Fp8);
+        for module in [
+            "model.layers.3.self_attn.q_proj",
+            "model.layers.3.mlp.experts.7.down_proj",
+            "model.layers.3.mlp.shared_experts.up_proj",
+            "model.layers.3.mlp.gate",
+        ] {
+            assert_eq!(
+                q.precision_for(module, Precision::Bf16),
+                Precision::Fp8,
+                "{module} should be FP8"
+            );
+        }
+        // Never converted, and usually not listed: an nn.Embedding, and a head
+        // in the quantizer's default skip set.
+        assert_eq!(
+            q.precision_for("model.embed_tokens", Precision::Bf16),
+            Precision::Bf16
+        );
+        assert_eq!(q.precision_for("lm_head", Precision::Bf16), Precision::Bf16);
+    }
+
+    #[test]
+    fn hf_fp8_honours_modules_to_not_convert() {
+        let raw = serde_json::json!({
+            "quantization_config": {
+                "quant_method": "fp8",
+                "fmt": "e4m3",
+                "modules_to_not_convert": ["re:.*\\.self_attn\\..*", "model.layers.0.mlp.gate"]
+            }
+        });
+        let q = CheckpointQuantization::parse(&raw, &mut Vec::new()).expect("parses");
+        assert_eq!(
+            q.precision_for("model.layers.3.self_attn.q_proj", Precision::Bf16),
+            Precision::Bf16
+        );
+        assert_eq!(
+            q.precision_for("model.layers.0.mlp.gate", Precision::Bf16),
+            Precision::Bf16
+        );
+        assert_eq!(
+            q.precision_for("model.layers.3.mlp.experts.7.down_proj", Precision::Bf16),
+            Precision::Fp8
+        );
     }
 
     /// `"Linear"` is a torch class name, not a module path: it targets every

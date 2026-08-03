@@ -7,6 +7,8 @@ export const GPU_SKUS = [
   "H100 SXM 80 GB",
   "H200 SXM 141 GB",
   "B200 SXM 180 GB",
+  "DGX Spark (GB10)",
+  "Dell Pro Max with GB10",
 ] as const;
 
 interface UiState {
@@ -25,6 +27,7 @@ const DEFAULT_INPUT: AnalyzeInput = {
   gpu: "B200 SXM 180 GB",
   count: 1,
   tensorParallel: 1,
+  replicas: null,
   weightPrecision: "nvfp4",
   kvPrecision: "fp8",
   avgContextTokens: 32768,

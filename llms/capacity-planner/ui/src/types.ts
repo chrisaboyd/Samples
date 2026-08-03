@@ -18,8 +18,14 @@ export interface MemoryResult {
   kvGiBPerAverageSequence: number;
   kvGiBPerMaximumSequence: number;
   freeGiBPerGpu: number;
+  freeGiBAcrossGpusInUse: number;
+  kvGiBPerMaximumSequenceAllRanks: number;
+  kvReplicatedAcrossRanks: boolean;
+  /** Per replica (one TP group), not cluster-wide. */
   memoryConcurrencyAverage: number;
   memoryConcurrencyMaximum: number;
+  memoryConcurrencyAverageTotal: number;
+  memoryConcurrencyMaximumTotal: number;
   physicalGiBPerGpu: number;
 }
 
@@ -33,8 +39,14 @@ export interface PerformanceResult {
   note: string;
 }
 
+export type BindingConstraint =
+  | "memory_at_maximum_context"
+  | "memory_at_average_context"
+  | "slo_latency";
+
 export interface PracticalCapacity {
   comfortableActiveRequests: number;
+  bindingConstraint: BindingConstraint;
   intermittentAgents: Range | null;
   humanUsers: Range | null;
   note: string;
@@ -43,6 +55,8 @@ export interface PracticalCapacity {
 export interface TopologyResult {
   tensorParallel: number;
   dataParallel: number;
+  gpusInUse: number;
+  gpusIdle: number;
   expertParallel: boolean;
   explanation: string[];
   alternatives: unknown[];
@@ -123,6 +137,8 @@ export interface AnalyzeInput {
   gpu: string;
   count: number;
   tensorParallel: number;
+  /** null = fill the machine: floor(count / tensorParallel). */
+  replicas: number | null;
   weightPrecision: Precision;
   kvPrecision: Precision;
   avgContextTokens: number;

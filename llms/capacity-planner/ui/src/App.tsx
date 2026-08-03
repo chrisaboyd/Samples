@@ -2,6 +2,23 @@ import type React from "react";
 import { useRef, useState } from "react";
 import { MemoryBar } from "./components/MemoryBar";
 import { Figure, Term } from "./components/Explain";
+import type { BindingConstraint } from "./types";
+
+/// Which ceiling produced the comfortable-requests number. Without it the value
+/// duplicates whichever row won and says nothing about what to change.
+/// Request counts are per replica; the cluster total only differs when more
+/// than one replica is deployed, so the qualifier appears only when it matters.
+function concurrency(perReplica: number, total: number): string {
+  return perReplica === total
+    ? `${total}`
+    : `${total} total · ${perReplica} per replica`;
+}
+
+const BINDING_LABEL: Record<BindingConstraint, string> = {
+  memory_at_maximum_context: "limited by KV memory at maximum context",
+  memory_at_average_context: "limited by KV memory at average context",
+  slo_latency: "limited by the SLO latency target",
+};
 import { InputsUsed } from "./components/InputsUsed";
 import { indexDerivations, levelKey } from "./glossary";
 import { useStore, GPU_SKUS } from "./store";
@@ -252,6 +269,19 @@ export default function App() {
               value={inputs.tensorParallel}
               onChange={(v) => setInputs({ tensorParallel: Math.max(1, v) })}
             />
+            {/* Replicas are a deployment choice, not a quotient: 8 GPUs at TP=4
+                can be 2 copies or 1 copy with 4 cards spare. Blank = fill the
+                machine, so the common case needs no input. */}
+            <NumberInput
+              label="Replicas"
+              value={inputs.replicas ?? Math.max(1, Math.floor(inputs.count / inputs.tensorParallel))}
+              onChange={(v) => setInputs({ replicas: Math.max(1, v) })}
+            />
+            <div className="label-sm">
+              {inputs.replicas === null
+                ? `filling the machine — ${Math.max(1, Math.floor(inputs.count / inputs.tensorParallel))} × TP ${inputs.tensorParallel}`
+                : `${inputs.replicas} × TP ${inputs.tensorParallel} = ${inputs.replicas * inputs.tensorParallel} of ${inputs.count} GPUs`}
+            </div>
           </fieldset>
 
           <fieldset>
@@ -370,19 +400,42 @@ function ResultView({ r, onCopyJson }: { r: ScenarioResult; onCopyJson: () => vo
           them follows. Each row expands to the formula that derived it. */}
       <div className="figures headline">
         <Figure
-          label="Comfortable active requests"
+          label={`Comfortable active requests — ${BINDING_LABEL[r.practicalCapacity.bindingConstraint]}`}
           value={r.practicalCapacity.comfortableActiveRequests}
           derivation={dv["c-comfortable"]}
         />
+        {/* "Memory ceiling" named the mechanism, not the quantity. These are
+            request counts, and with >1 replica the per-replica and cluster
+            figures differ — showing only one invited exactly that confusion. */}
         <Figure
-          label="Memory ceiling (avg ctx)"
-          value={m.memoryConcurrencyAverage}
+          label="Concurrent requests @ avg context"
+          value={concurrency(m.memoryConcurrencyAverage, m.memoryConcurrencyAverageTotal)}
           derivation={dv["c-mem-avg"]}
         />
         <Figure
-          label="Memory ceiling (max ctx)"
-          value={m.memoryConcurrencyMaximum}
+          label="Concurrent requests @ max context"
+          value={concurrency(m.memoryConcurrencyMaximum, m.memoryConcurrencyMaximumTotal)}
           derivation={dv["c-mem-max"]}
+        />
+      </div>
+
+      <div className="figures">
+        <Figure
+          label="Deployment"
+          value={`${r.topology.dataParallel} replica(s) x TP ${r.topology.tensorParallel} = ${r.topology.gpusInUse} GPU(s)${
+            r.topology.gpusIdle > 0 ? ` (${r.topology.gpusIdle} idle)` : ""
+          }`}
+        />
+        {/* The per-GPU slice alone reads as though the other cards were ignored.
+            Within a TP group the KV pool is shared, so the cluster figure is the
+            one that matches how people reason about the box. */}
+        <Figure
+          label="KV pool across GPUs in use"
+          value={`${m.freeGiBAcrossGpusInUse.toFixed(2)} GiB`}
+        />
+        <Figure
+          label="KV per sequence @ max ctx (whole TP group)"
+          value={`${m.kvGiBPerMaximumSequenceAllRanks.toFixed(3)} GiB`}
         />
       </div>
 

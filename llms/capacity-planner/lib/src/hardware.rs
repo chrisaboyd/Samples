@@ -66,6 +66,15 @@ pub struct Gpu {
     /// Per-GPU NVLink bandwidth in GB/s.
     pub nvlink_bandwidth_gbs: Option<f64>,
     pub mig_support: bool,
+    /// The accelerator shares one physical memory pool with the CPU (Grace
+    /// Blackwell desktop parts) rather than owning dedicated VRAM.
+    ///
+    /// The capacity math is unchanged in form — it is still
+    /// `available − weights − runtime` — but two inputs move: the OS, page
+    /// cache and host-side process memory come out of the same pool (so the
+    /// utilization ceiling is lower and the runtime reserve larger), and the
+    /// marketed capacity is system memory, not a private frame buffer.
+    pub unified_memory: bool,
     /// Quantization formats the hardware + engines are known to support.
     pub supported_quantizations: &'static [&'static str],
     /// Conservative fixed runtime reserve (CUDA context, allocator, kernels)
@@ -106,6 +115,7 @@ pub const GPU_CATALOG: &[Gpu] = &[
         nvlink: None,
         nvlink_bandwidth_gbs: None,
         mig_support: false,
+        unified_memory: false,
         supported_quantizations: &["fp16", "bf16", "fp8", "int8", "int4", "nvfp4"],
         typical_runtime_reserve_gib: 1.0,
         default_utilization: 0.90,
@@ -128,6 +138,7 @@ pub const GPU_CATALOG: &[Gpu] = &[
         nvlink: None,
         nvlink_bandwidth_gbs: None,
         mig_support: false,
+        unified_memory: false,
         supported_quantizations: &["fp16", "bf16", "fp8", "nvfp4", "int8"],
         typical_runtime_reserve_gib: 1.0,
         default_utilization: 0.90,
@@ -154,6 +165,7 @@ pub const GPU_CATALOG: &[Gpu] = &[
         nvlink: Some(Topology::NvLink4),
         nvlink_bandwidth_gbs: Some(900.0),
         mig_support: true,
+        unified_memory: false,
         supported_quantizations: &["fp16", "bf16", "fp8", "nvfp4", "int8", "int4"],
         typical_runtime_reserve_gib: 1.0,
         default_utilization: 0.90,
@@ -180,6 +192,7 @@ pub const GPU_CATALOG: &[Gpu] = &[
         nvlink: Some(Topology::NvLink4),
         nvlink_bandwidth_gbs: Some(900.0),
         mig_support: true,
+        unified_memory: false,
         supported_quantizations: &["fp16", "bf16", "fp8", "nvfp4", "int8", "int4"],
         typical_runtime_reserve_gib: 1.0,
         default_utilization: 0.90,
@@ -202,11 +215,73 @@ pub const GPU_CATALOG: &[Gpu] = &[
         nvlink: Some(Topology::NvLink5),
         nvlink_bandwidth_gbs: Some(1_440.0), // per-node NVLink, PRD §422
         mig_support: true,
+        unified_memory: false,
         supported_quantizations: &["fp16", "bf16", "fp8", "nvfp4", "int8", "int4"],
         typical_runtime_reserve_gib: 1.0,
         default_utilization: 0.90,
         default_topology: Topology::NvLink5,
         source: "PRD §9 lines 418, 422",
+    },
+    // ---- Grace Blackwell desktop parts (unified memory) --------------------
+    //
+    // GB10 pairs a Blackwell GPU with a Grace CPU over NVLink-C2C behind a
+    // single 128 GB LPDDR5X pool. Two consequences the catalog encodes:
+    //
+    //  - Bandwidth is ~273 GB/s, roughly 1/29th of a B200. Decode is bandwidth
+    //    bound, so this — not capacity — is what caps tokens/s on these boxes.
+    //  - The 128 GB is system memory. The OS, page cache and the serving
+    //    process all live in it, so the utilization ceiling is well below the
+    //    0.90 a discrete card gets and the runtime reserve is larger.
+    //
+    // NVIDIA markets "1 PFLOP" at FP4 *with sparsity*; the dense figure is half
+    // that, and this catalog quotes dense throughout.
+    Gpu {
+        manufacturer: "NVIDIA",
+        product_family: "DGX",
+        sku: "DGX Spark (GB10)",
+        architecture: "Grace Blackwell",
+        memory_marketed_gb: 128.0,
+        usable_gib: gib_from_gb(128.0),
+        memory_bandwidth_gbs: 273.0,
+        bf16_fp16_tflops: 125.0,
+        fp8_tflops: Some(250.0),
+        nvfp4_tflops: Some(500.0),
+        pcie_gen: 5,
+        pcie_width: 16,
+        nvlink: None,
+        nvlink_bandwidth_gbs: None,
+        mig_support: false,
+        unified_memory: true,
+        supported_quantizations: &["fp16", "bf16", "fp8", "nvfp4", "int8", "int4"],
+        // Host OS + serving process share the pool; 4 GiB is a conservative
+        // desktop-Linux floor rather than the 1 GiB a discrete card needs.
+        typical_runtime_reserve_gib: 4.0,
+        default_utilization: 0.75,
+        default_topology: Topology::PciE,
+        source: "NVIDIA GB10 / DGX Spark product spec (dense FP4; vendor quotes sparse)",
+    },
+    Gpu {
+        manufacturer: "Dell",
+        product_family: "Pro Max",
+        sku: "Dell Pro Max with GB10",
+        architecture: "Grace Blackwell",
+        memory_marketed_gb: 128.0,
+        usable_gib: gib_from_gb(128.0),
+        memory_bandwidth_gbs: 273.0,
+        bf16_fp16_tflops: 125.0,
+        fp8_tflops: Some(250.0),
+        nvfp4_tflops: Some(500.0),
+        pcie_gen: 5,
+        pcie_width: 16,
+        nvlink: None,
+        nvlink_bandwidth_gbs: None,
+        mig_support: false,
+        unified_memory: true,
+        supported_quantizations: &["fp16", "bf16", "fp8", "nvfp4", "int8", "int4"],
+        typical_runtime_reserve_gib: 4.0,
+        default_utilization: 0.75,
+        default_topology: Topology::PciE,
+        source: "Dell Pro Max GB10 spec — same GB10 superchip as DGX Spark",
     },
 ];
 
@@ -234,6 +309,14 @@ pub struct GpuConfig {
     /// Tensor-parallel size (1 = no TP). Drives weight + KV sharding.
     #[serde(default = "default_one")]
     pub tensor_parallel: u32,
+    /// Independent model copies to run, each occupying `tensor_parallel` GPUs.
+    ///
+    /// `None` means "fill the machine": `floor(count / tensor_parallel)`. Set it
+    /// explicitly to model a deployment that deliberately leaves GPUs idle —
+    /// 8 cards at TP=4 can be 2 replicas or 1 replica with 4 spare, and those
+    /// are different answers for aggregate throughput.
+    #[serde(default)]
+    pub replicas: Option<u32>,
     /// User-overridable memory utilization ceiling (default from SKU).
     pub utilization: Option<f64>,
     /// User-overridable fixed runtime reserve in GiB.
@@ -247,6 +330,18 @@ fn default_one() -> u32 {
 impl GpuConfig {
     pub fn gpu(&self) -> Result<&'static Gpu> {
         find(&self.sku)
+    }
+
+    /// Replicas actually deployed: the explicit setting, else as many whole
+    /// TP groups as the GPU count allows.
+    pub fn replicas(&self) -> u32 {
+        let max_replicas = (self.count / self.tensor_parallel.max(1)).max(1);
+        self.replicas.unwrap_or(max_replicas).max(1)
+    }
+
+    /// GPUs carrying a model copy (`replicas × TP`). The remainder are idle.
+    pub fn gpus_in_use(&self) -> u32 {
+        self.replicas() * self.tensor_parallel.max(1)
     }
 
     pub fn utilization(&self) -> Result<f64> {

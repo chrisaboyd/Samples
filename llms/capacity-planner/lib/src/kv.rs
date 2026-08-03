@@ -42,25 +42,42 @@ pub struct KvConfig {
 }
 
 impl KvConfig {
+    /// KV heads resident on one TP rank.
+    ///
+    /// The KV head is the unit of sharding — a rank cannot hold a fraction of
+    /// one. When `kv_heads < tensor_parallel` (MQA, MLA-style single-head
+    /// latents, aggressive GQA) engines replicate the whole KV cache onto every
+    /// rank instead of splitting it, so TP stops reducing per-GPU KV at all.
+    /// Dividing by `tp` unconditionally understates per-GPU KV by up to `tp`×.
+    pub fn kv_heads_per_rank(&self) -> u32 {
+        let kv_heads = self.kv_heads.max(1);
+        kv_heads.div_ceil(self.tensor_parallel.max(1)).max(1)
+    }
+
+    /// True when TP exceeds the KV head count, forcing replication rather than
+    /// sharding. Surfaced as an assumption because it is the difference between
+    /// KV shrinking with TP and not shrinking at all.
+    pub fn kv_is_replicated(&self) -> bool {
+        self.kv_heads.max(1) < self.tensor_parallel.max(1)
+    }
+
     /// KV cache bytes for one sequence **before** engine block rounding and
     /// before draft-cache addition, exactly on this TP rank.
     pub fn bytes_per_sequence_exact(&self) -> u128 {
         let b_kv = kv_bytes(self.kv_precision);
-        let kv_heads = self.kv_heads.max(1) as u128;
+        let kv_heads = self.kv_heads_per_rank() as u128;
         let head_dim = self.head_dimension.max(1) as u128;
         let full = self.full_layers as u128;
         let sliding = self.sliding_layers as u128;
         let s = self.context_tokens as u128;
         let window = self.sliding_window.map(|w| w as u128).unwrap_or(s);
-        let tp = (self.tensor_parallel.max(1)) as u128;
 
         // min(S, W) per the PRD hybrid formula.
         let sliding_term = sliding * s.min(window);
 
         // 2 = keys + values (PRD §13).
         let tokens_term = full * s + sliding_term;
-        let per_rank = (2 * kv_heads * head_dim * tokens_term) as f64 * b_kv;
-        (per_rank / tp as f64).floor() as u128
+        ((2 * kv_heads * head_dim * tokens_term) as f64 * b_kv).floor() as u128
     }
 
     /// Round a per-sequence KV byte cost up to the engine's allocation block
@@ -78,11 +95,9 @@ impl KvConfig {
     /// an allocation block).
     fn bytes_per_kv_token_exact(&self) -> u128 {
         let b_kv = kv_bytes(self.kv_precision);
-        let kv_heads = self.kv_heads.max(1) as u128;
+        let kv_heads = self.kv_heads_per_rank() as u128;
         let head_dim = self.head_dimension.max(1) as u128;
-        let tp = (self.tensor_parallel.max(1)) as u128;
-        let per_token = (2 * kv_heads * head_dim) as f64 * b_kv;
-        (per_token / tp as f64).floor() as u128
+        ((2 * kv_heads * head_dim) as f64 * b_kv).floor() as u128
     }
 }
 

@@ -190,8 +190,12 @@ pub struct ExplainContext<'a> {
     pub sliding_layers: u32,
     pub sliding_window: Option<u32>,
 
+    /// Per replica (one TP group).
     pub c_avg: u64,
     pub c_max: u64,
+    /// Replica count, so the derivations can show where the cluster-wide
+    /// figures come from rather than silently comparing mismatched units.
+    pub replicas: u64,
     pub c_slo: u64,
     pub c_comfortable: u64,
     pub compute_peak_tflops: f64,
@@ -353,36 +357,40 @@ pub fn memory_derivations(c: &ExplainContext) -> Vec<Derivation> {
 
     out.push(d(
         "c-mem-avg",
-        "Memory ceiling (avg ctx)",
+        "Concurrent requests @ avg context",
         "How many requests fit in VRAM at once if each holds an average-length \
          context. A pure memory limit — it ignores whether the GPU is fast \
          enough to serve them within your latency target.",
-        "C_memory(avg) = floor( M_freeForKV / KV_seq(avg) )",
+        "C_memory(avg) = floor( M_freeForKV / KV_seq(avg) ) × replicas",
         format!(
-            "floor( {} / {} )\n= floor( {} bytes / {} bytes )",
+            "floor( {} / {} )\n= floor( {} bytes / {} bytes )\n= {} per replica × {} replica(s)",
             gib_s(c.free_for_kv),
             gib_precise(c.kv_avg_rounded),
             commas(c.free_for_kv),
-            commas(c.kv_avg_rounded)
+            commas(c.kv_avg_rounded),
+            c.c_avg,
+            c.replicas
         ),
-        format!("{} concurrent requests", c.c_avg),
+        format!("{} concurrent requests", c.c_avg.saturating_mul(c.replicas)),
     ));
 
     out.push(d(
         "c-mem-max",
-        "Memory ceiling (max ctx)",
+        "Concurrent requests @ max context",
         "The same count in the worst case, where every concurrent request has \
          filled the full context window simultaneously. Usually much smaller — \
          it is the floor under which the deployment cannot be starved.",
-        "C_memory(max) = floor( M_freeForKV / KV_seq(max) )",
+        "C_memory(max) = floor( M_freeForKV / KV_seq(max) ) × replicas",
         format!(
-            "floor( {} / {} )\n= floor( {} bytes / {} bytes )",
+            "floor( {} / {} )\n= floor( {} bytes / {} bytes )\n= {} per replica × {} replica(s)",
             gib_s(c.free_for_kv),
             gib_precise(c.kv_max_rounded),
             commas(c.free_for_kv),
-            commas(c.kv_max_rounded)
+            commas(c.kv_max_rounded),
+            c.c_max,
+            c.replicas
         ),
-        format!("{} concurrent requests", c.c_max),
+        format!("{} concurrent requests", c.c_max.saturating_mul(c.replicas)),
     ));
 
     out.push(d(
@@ -392,12 +400,22 @@ pub fn memory_derivations(c: &ExplainContext) -> Vec<Derivation> {
          while still meeting your latency target. It is the tightest of the three \
          limits — running out of memory and missing the SLO are both failures, so \
          the smallest one governs.",
-        "C_comfortable = min( C_memory(avg), C_memory(max), C_SLO )",
+        "C_comfortable = min( C_memory(avg), C_memory(max), C_SLO )   [all cluster-wide]",
         format!(
-            "min( {}, {}, {} )\n  C_memory(avg) = {} — memory at average context\n  \
-             C_memory(max) = {} — memory at full context\n  C_SLO         = {} — \
+            "min( {}, {}, {} )\n  C_memory(avg) = {} — memory at average context ({} per replica × {})\n  \
+             C_memory(max) = {} — memory at full context ({} per replica × {})\n  C_SLO         = {} — \
              latency target of {:.1} s",
-            c.c_avg, c.c_max, c.c_slo, c.c_avg, c.c_max, c.c_slo, w.slo_target_seconds
+            c.c_avg.saturating_mul(c.replicas),
+            c.c_max.saturating_mul(c.replicas),
+            c.c_slo,
+            c.c_avg.saturating_mul(c.replicas),
+            c.c_avg,
+            c.replicas,
+            c.c_max.saturating_mul(c.replicas),
+            c.c_max,
+            c.replicas,
+            c.c_slo,
+            w.slo_target_seconds
         ),
         format!("{} concurrent requests", c.c_comfortable),
     ));

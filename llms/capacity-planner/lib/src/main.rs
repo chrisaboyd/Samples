@@ -76,6 +76,11 @@ struct Cli {
     #[arg(long, default_value_t = 1)]
     tp: u32,
 
+    /// Independent model replicas, each on its own group of `--tp` GPUs.
+    /// Defaults to filling the machine: floor(count / tp).
+    #[arg(long)]
+    replicas: Option<u32>,
+
     /// Weight/quantization precision to evaluate.
     #[arg(long, value_enum, default_value_t = PrecArg::Nvfp4)]
     weight_precision: PrecArg,
@@ -126,6 +131,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         count: cli.count,
         topology: Topology::PciE,
         tensor_parallel: cli.tp,
+        replicas: cli.replicas,
         utilization: None,
         runtime_reserve_gib: None,
     };
