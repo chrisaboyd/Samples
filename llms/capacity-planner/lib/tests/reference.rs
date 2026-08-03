@@ -788,6 +788,52 @@ fn generic_adapter_counts_routed_experts() {
     assert_eq!(moe.active_experts_per_token, 6);
 }
 
+/// Expert tensors are ~97% of this model's parameters, so their *precision*
+/// matters as much as their presence. The config declares `quant_method: "fp8"`;
+/// sizing those experts at the BF16 `torch_dtype` reported 542 GiB for a
+/// checkpoint that stores 272.
+#[test]
+fn generic_adapter_sizes_experts_at_the_checkpoints_precision() {
+    let m = adapter::normalize(&deepseek_v4()).expect("normalizes");
+    let routed: Vec<_> = m
+        .weights
+        .components
+        .iter()
+        .filter(|c| c.category == capacity_planner::precision::WeightCategory::RoutedExperts)
+        .collect();
+    assert!(!routed.is_empty(), "no routed experts");
+    assert!(
+        routed.iter().all(|c| c.precision == Precision::Fp8),
+        "experts were not sized as FP8: {:?}",
+        routed.iter().map(|c| c.precision).collect::<Vec<_>>()
+    );
+
+    // Embeddings and the output head are not Linear conversions, so they keep
+    // the base dtype — the checkpoint is a mix, not uniformly FP8.
+    let r = run(
+        &deepseek_v4(),
+        "B200 SXM 180 GB",
+        8,
+        8,
+        Precision::Nvfp4,
+        false,
+        32_768,
+        1_048_576,
+    );
+    assert!(
+        r.memory
+            .checkpoint_precision_label
+            .starts_with("Exact checkpoint — FP8"),
+        "label was {:?}",
+        r.memory.checkpoint_precision_label
+    );
+    let gib = r.memory.checkpoint_storage_gib;
+    assert!(
+        (265.0..280.0).contains(&gib),
+        "checkpoint storage was {gib} GiB (BF16 would be ~542)"
+    );
+}
+
 #[test]
 fn blanket_sliding_window_does_not_freeze_kv_against_context() {
     // `sliding_window: 128` with no per-layer pattern previously capped every
