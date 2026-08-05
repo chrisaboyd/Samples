@@ -207,16 +207,28 @@ impl<'a> ComponentBuilder<'a> {
     }
 }
 
+/// The declared sliding window, treating `0` the same as `null`.
+///
+/// HF configs spell "this model has no sliding window" both ways, and `0` is the
+/// more dangerous spelling: taken literally it caps every sliding layer at
+/// `min(S, 0)` tokens, which zeroes the KV cache and makes concurrency divide by
+/// zero. A window of 0 attends to nothing, so it can only mean "disabled".
+pub(crate) fn sliding_window(raw: &Value) -> Option<u32> {
+    opt_u64(raw, "sliding_window")
+        .filter(|&w| w > 0)
+        .map(|w| w as u32)
+}
+
 /// Standard decoder attention-layer decomposition. Detects full vs sliding
 /// attention when a `sliding_window` field is present.
 pub(crate) fn standard_attention_layers(raw: &Value) -> Vec<AttentionLayer> {
     let layers = as_u64(raw, "num_hidden_layers").unwrap_or(0) as u32;
-    if let Some(w) = raw.get("sliding_window").and_then(|x| x.as_u64()) {
+    if let Some(w) = sliding_window(raw) {
         // Assume all layers are sliding-window with the given window.
         vec![AttentionLayer {
             kind: AttentionKind::Sliding,
             count: layers,
-            window_size: Some(w as u32),
+            window_size: Some(w),
         }]
     } else {
         vec![AttentionLayer {

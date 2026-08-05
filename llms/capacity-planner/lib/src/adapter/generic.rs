@@ -21,7 +21,7 @@ use crate::quant::CheckpointQuantization;
 
 use super::{
     add_attention_projections, add_dense_mlp, add_embeddings, checkpoint_marker, opt_u64,
-    parse_identity, parse_source_precision, standard_dimensions, ComponentBuilder,
+    parse_identity, parse_source_precision, sliding_window, standard_dimensions, ComponentBuilder,
 };
 
 /// Expert count under any of the spellings in common use.
@@ -41,7 +41,7 @@ fn expert_count(raw: &Value) -> Option<u64> {
 /// upper bound (all layers full) and say so.
 fn generic_attention_layers(raw: &Value, unresolved: &mut Vec<String>) -> Vec<AttentionLayer> {
     let layer_count = opt_u64(raw, "num_hidden_layers").unwrap_or(0) as u32;
-    let window = opt_u64(raw, "sliding_window").map(|w| w as u32);
+    let window = sliding_window(raw);
 
     if let Some(types) = raw.get("layer_types").and_then(|x| x.as_array()) {
         let sliding = types

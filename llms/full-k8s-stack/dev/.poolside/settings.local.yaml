@@ -13,3 +13,58 @@ tools:
             - tail *
             - which gh
             - gh auth *
+            - ls *
+            - find *
+            - head *
+            - sort
+            - cat *
+            - which kubectl helm *
+            - type kubectl *
+            - kubectl version *
+            - helm version
+            - kubectl config view *
+            - kubectl get ns *
+            - kubectl get nodes *
+            - kubectl get sc *
+            - kubectl get svc *
+            - kubectl get pods *
+            - kubectl get ingress *
+            - kubectl get crd *
+            - kubectl get *
+            - which aws
+            - aws acm describe-certificate *
+            - helm repo add prometheus-community *
+            - helm search repo *
+            - kubectl run metrics-check *
+            - kubectl run metrics-check2 *
+            - kubectl run mcheck *
+            - sleep 8
+            - kubectl logs *
+            - kubectl delete pod *
+            - sleep 6
+            - awk *
+            - which eksctl
+            - aws eks list-addons *
+            - tr *
+            - aws eks describe-addon *
+            - sleep 25
+            - aws eks describe-cluster *
+            - aws iam list-roles *
+            - aws eks describe-nodegroup *
+            - aws iam list-policies *
+            - kubectl annotate sa ebs-csi-controller-sa *
+            - kubectl rollout restart *
+            - sleep 20
+            - kubectl describe pvc pvctest *
+            - sed *
+            - kubectl describe pod pvctest *
+            - aws iam get-policy *
+            - aws iam get-policy-version *
+            - aws iam simulate-principal-policy *
+            - aws iam tag-role *
+            - aws iam list-role-tags *
+            - kubectl delete pvc,pod pvctest *
+            - kubectl apply *
+            - kubectl wait *
+            - rm *
+            - helm install kube-prometheus-stack *

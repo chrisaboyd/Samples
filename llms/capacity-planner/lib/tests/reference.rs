@@ -1187,3 +1187,70 @@ fn unified_memory_is_surfaced_as_a_warning() {
         r.warnings
     );
 }
+
+// ---- laguna-adapter regression: a config with no `layer_types` -------------
+// Laguna-M.1 declares `mlp_layer_types` but no *attention* `layer_types`, and
+// spells "no sliding window" as `sliding_window: 0`. Both previously produced a
+// model with zero KV-bearing layers: KV_seq collapsed to 0 bytes, and
+// `memory_concurrency` returned its u64::MAX divide-by-zero sentinel — surfacing
+// in the UI as 18,446,744,073,709,551,615 concurrent requests.
+
+const LAGUNA_M1_JSON: &str = include_str!("assets/laguna-m1-config.json");
+
+fn laguna_m1() -> Value {
+    serde_json::from_str(LAGUNA_M1_JSON).unwrap()
+}
+
+#[test]
+fn config_without_layer_types_still_has_kv_bearing_layers() {
+    let m = adapter::normalize(&laguna_m1()).expect("normalizes");
+    let kv_layers: u32 = m
+        .attention_layers
+        .iter()
+        .filter(|l| l.kind != AttentionKind::Ssm)
+        .map(|l| l.count)
+        .sum();
+    assert_eq!(
+        kv_layers, 70,
+        "all 70 layers must carry KV when no per-layer pattern is given"
+    );
+    // `sliding_window: 0` means disabled, not a zero-token window.
+    assert!(m
+        .attention_layers
+        .iter()
+        .all(|l| l.window_size.is_none_or(|w| w > 0)));
+}
+
+#[test]
+fn config_without_layer_types_reports_finite_concurrency() {
+    let r = run(
+        &laguna_m1(),
+        "B200 SXM 180 GB",
+        8,
+        4,
+        Precision::Fp8,
+        true,
+        32_768,
+        262_144,
+    );
+    assert!(
+        r.memory.kv_gib_per_average_sequence > 0.0,
+        "KV per sequence was {} GiB",
+        r.memory.kv_gib_per_average_sequence
+    );
+    // 2 × 70 layers × 32768 tokens × 2 kv-heads-per-rank × 128 × 1 B (FP8).
+    let expected = (2u64 * 70 * 32_768 * 2 * 128) as f64 / GIB_BYTES as f64;
+    let got = r.memory.kv_gib_per_average_sequence;
+    assert!(
+        (got - expected).abs() < 1e-3,
+        "KV was {got} GiB, expected ~{expected}"
+    );
+    for c in [
+        r.memory.memory_concurrency_average,
+        r.memory.memory_concurrency_maximum,
+        r.memory.memory_concurrency_average_total,
+        r.memory.memory_concurrency_maximum_total,
+    ] {
+        assert!(c < 1_000_000, "concurrency sentinel leaked: {c}");
+    }
+}

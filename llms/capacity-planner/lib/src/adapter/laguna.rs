@@ -38,10 +38,15 @@ use crate::quant::CheckpointQuantization;
 
 use super::{
     add_attention_projections, add_dense_mlp, add_embeddings, as_u64, checkpoint_marker, opt_u64,
-    parse_identity, parse_source_precision, ComponentBuilder,
+    parse_identity, parse_source_precision, sliding_window, ComponentBuilder,
 };
 
 /// Interpret the per-layer attention type list into grouped layers.
+///
+/// Only buckets that actually have layers are emitted. A zero-count bucket still
+/// makes the returned vector non-empty, which would suppress the caller's
+/// "no `layer_types`" fallback and leave the model with *no* KV-bearing layers at
+/// all — a zero-byte KV cache, and a division by zero in concurrency.
 fn attention_layers_from(layer_types: &[String]) -> (Vec<AttentionLayer>, u32, u32) {
     let is_full = |s: &str| s == "full_attention" || s == "full" || s == "mla";
     let is_sliding =
@@ -54,18 +59,21 @@ fn attention_layers_from(layer_types: &[String]) -> (Vec<AttentionLayer>, u32, u
             sliding += 1;
         }
     }
-    let layers = vec![
-        AttentionLayer {
+    let mut layers = Vec::new();
+    if full > 0 {
+        layers.push(AttentionLayer {
             kind: AttentionKind::Full,
             count: full,
             window_size: None,
-        },
-        AttentionLayer {
+        });
+    }
+    if sliding > 0 {
+        layers.push(AttentionLayer {
             kind: AttentionKind::Sliding,
             count: sliding,
             window_size: None,
-        },
-    ];
+        });
+    }
     (layers, full, sliding)
 }
 
@@ -88,7 +96,7 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
     let shared_intermediate: Option<u128> =
         opt_u64(raw, "shared_expert_intermediate_size").map(|v| v as u128);
     let active_per_tok: u128 = opt_u64(raw, "num_experts_per_tok").unwrap_or(1) as u128;
-    let window = opt_u64(raw, "sliding_window").map(|v| v as u32);
+    let window = sliding_window(raw);
 
     let precision = parse_source_precision(raw, &mut inferred);
 
@@ -142,12 +150,18 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
         }
     }
     if attention_layers.is_empty() {
-        // Fallback if layer_types absent.
+        // Fallback when `layer_types` is absent or names nothing recognizable
+        // (Laguna-M.1 carries only `mlp_layer_types`). Every layer is treated as
+        // full attention — the KV upper bound.
         attention_layers = vec![AttentionLayer {
             kind: AttentionKind::Full,
             count: layer_count,
             window_size: None,
         }];
+        inferred.push(format!(
+            "attention pattern (no `layer_types`) — all {layer_count} layers treated as full \
+             attention (KV upper bound)"
+        ));
     }
 
     // What the checkpoint says it quantized. `None` for an unquantized
