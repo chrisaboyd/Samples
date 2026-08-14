@@ -1,0 +1,259 @@
+# PRD: vLLM Inference Behavior Test Suite
+
+## Objective
+
+Deliver a portable Kubernetes Job that generates deterministic inference workloads against an existing vLLM endpoint and demonstrates the following behaviors:
+
+- Input-heavy vs. output-heavy inference behavior
+- Latency and throughput changes as concurrency rises
+- KV-cache pressure and request queuing
+- Prefix-cache hits vs. misses
+- Saturation and preemption behavior
+- Clear distinction between healthy load, saturation, and overload
+
+The Job does not benchmark the Kubernetes cluster itself and does not provision vLLM. It exercises an existing endpoint.
+
+## 1. Standard workload shapes
+
+Normalize around a 4,080-token request footprint per session, using actual tokenizer token counts (not characters or words). The four shapes share the same total token budget so that KV-cache requirements per fully realized session are approximately comparable.
+
+| Profile                | Input | Output | Ratio  | Demonstrates                                  |
+|------------------------|-------|--------|--------|-----------------------------------------------|
+| Prefill-heavy (15:1)   | 3,825 | 255    | 15:1   | Prompt processing / TTFT                      |
+| Input-heavy (5:1)      | 3,400 | 680    | 5:1    | Mostly prefill                                |
+| Balanced (1:1)         | 2,040 | 2,040  | 1:1    | Mixed workload                                |
+| Decode-heavy (1:5)     | 680   | 3,400  | 1:5    | Generation / ITL / TPOT                       |
+
+### Expected behavior
+
+Each expectation is a relationship or ordering to be verified against the single-session baseline for the same shape (T01 for 15:1, T02 for 5:1, T03 for 1:1, T04 for 1:5). Absolute magnitudes are hardware-dependent; the stated relationships must hold.
+
+- 15:1 (Prefill-heavy)
+  - In e2e latency, prefill_time is the dominant component; decode_time is small.
+  - Under concurrency, prompt_tokens throughput (tokens/sec) increases; output_token throughput stays roughly flat.
+  - TTFT tracks queue_time and prefill_time.
+- 5:1 (Input-heavy)
+  - prefill_time is the dominant component and is smaller than the 15:1 prefill_time (fewer input tokens); decode_time is non-negligible and larger than 15:1 decode_time, yet still below prefill_time.
+  - Concurrency raises prompt_tokens throughput; output_token throughput stays roughly flat.
+- 1:1 (Balanced)
+  - In the single-session baseline, prefill_time ≈ decode_time.
+  - Under concurrency, both components contribute visibly to e2e latency.
+- 1:5 (Decode-heavy)
+  - decode_time is the dominant component of e2e latency; prefill_time is small.
+  - ITL/TPOT and generation_tokens throughput are the primary concurrency-driven latency signals.
+  - Prefix caching has a small effect on total request time: e2e latency of the cache-hot variant ≈ the cache-cold variant, because APC avoids only shared-prefix prefill computation, not generation.
+
+## 2. Concurrency tests
+
+For each workload shape, define these concurrency levels as a fraction of theoretical concurrency:
+
+| Level        | Definition                     | Expected behavior                                                  |
+|--------------|--------------------------------|--------------------------------------------------------------------|
+| Baseline     | 1 session                      | No queueing, no preemption; establishes latency floor              |
+| Moderate     | ~50% theoretical concurrency   | Better batching/throughput; latency remains controlled             |
+| Saturation   | ~100% theoretical concurrency  | High KV utilization; queueing/latency becomes visible              |
+
+Add one deliberate overload test at ~125% theoretical concurrency. "100%" is not necessarily where the most interesting behavior occurs, so the overload point is required.
+
+### Calculating theoretical concurrency
+
+Do not base theoretical concurrency on GPU count or GPU memory alone.
+
+vLLM reports available GPU KV-cache capacity during startup, including the largest messages and an estimated Maximum concurrency (calculated against max_model_len).
+
+For the fixed 4,080-token suite, define:
+
+theoretical concurrency ≈ available KV-cache tokens / 4,080
+
+then cap the result according to scheduler configuration such as max_num_seqs.
+
+Use unique-prefix / cache-miss requests when determining this capacity. Shared prefixes (APC) make the apparent concurrency limit artificially high.
+
+## 3. Prefix-cache test
+
+Three cache states define the prefix-cache dimension:
+
+| Scenario   | Workload                          | Expected outcome          |
+|------------|-----------------------------------|---------------------------|
+| Cache cold | Unique prefix every request       | ~0% hit rate              |
+| Mixed      | 50% shared / 50% unique           | Intermediate hit rate     |
+| Cache hot  | Large common prefix reused        | High hit rate             |
+
+### Prefix construction rules
+
+Place the random ID at the beginning of the prompt to destroy prefix reuse. Placing it after the common content still allows vLLM to reuse the blocks preceding the ID, because APC recognizes shared prefixes.
+
+### Hit-ratio definition
+
+Define hit ratio in terms of cached tokens, not "percentage of requests." Current vLLM exposes prefix_cache_queries and prefix_cache_hits as token counters.
+
+Concretely:
+
+Cache-hot:
+- 3,000-token identical system/document prefix
+- unique 825-token user portion
+
+Cache-cold:
+- unique fixed-length identifier/content
+- otherwise equivalent prompt
+
+### Expected metric changes as cache-hit ratio increases
+
+- prefix_cache_hits increases
+- prompt_tokens_cached increases
+- request_prefill_kv_computed_tokens decreases
+- prefill time decreases
+- TTFT decreases
+- GPU compute required for prefill decreases
+
+Unchanged as cache-hit ratio increases:
+- decode time remains approximately constant
+- ITL/TPOT remains approximately constant
+
+## 4. Core test suite
+
+Deliver the following 10-test suite (T01–T10) plus one Grafana dashboard. This set covers all inference concepts without becoming a benchmark laboratory.
+
+| Test | Shape    | Concurrency | Cache | Purpose                        |
+|------|----------|-------------|-------|--------------------------------|
+| T01  | 15:1     | 1           | cold  | Prefill baseline               |
+| T02  | 5:1      | 1           | cold  | Input baseline                 |
+| T03  | 1:1      | 1           | cold  | Balanced baseline              |
+| T04  | 1:5      | 1           | cold  | Decode baseline                |
+| T05  | 1:1      | ~50%        | cold  | Normal loaded state            |
+| T06  | 1:1      | ~100%       | cold  | Saturation                     |
+| T07  | 1:1      | ~125%       | cold  | Overload                       |
+| T08  | 15:1     | ~50%        | hot   | Prefix-cache benefit           |
+| T09  | 15:1     | ~50%        | mixed | Partial cache benefit          |
+| T10  | 15:1     | ~50%        | cold  | Cache-miss comparison          |
+
+### Expected outputs
+
+The following expectations are observable, testable relationships. Absolute values are hardware-dependent; the ordering and directionality must hold for a test to pass. Baseline metrics are taken from the single-session, cold-cache run for the same shape (T01 for 15:1, T02 for 5:1, T03 for 1:1, T04 for 1:5).
+
+T01 (15:1, 1 session, cold) — Prefill baseline
+- queue_time ≈ 0; num_requests_waiting = 0; preemptions = 0.
+- e2e_latency ≈ prefill_time + output_tokens × ITL; prefill_time dominates.
+
+T02 (5:1, 1 session, cold) — Input baseline
+- queue_time ≈ 0; num_requests_waiting = 0; preemptions = 0.
+- prefill_time < T01 prefill_time (fewer input tokens); decode_time > T01 decode_time (more output tokens); prefill_time still dominates.
+
+T03 (1:1, 1 session, cold) — Balanced baseline
+- prefill_time ≈ decode_time; queue_time ≈ 0; preemptions = 0.
+
+T04 (1:5, 1 session, cold) — Decode baseline
+- decode_time dominates e2e_latency; prefill_time is small; queue_time ≈ 0; preemptions = 0.
+
+T05 (1:1, ~50%, cold) — Normal loaded state
+- (prompt_tokens + generation_tokens) throughput > T03 throughput (batching payoff).
+- queue_time ≈ 0 or bounded; num_requests_waiting = 0.
+- preemptions = 0.
+- TTFT and ITL within ~2× of T03 (latency controlled).
+- kv_cache_usage_perc elevated but below the scheduler/KV cap.
+
+T06 (1:1, ~100%, cold) — Saturation
+- num_requests_waiting > 0; queue_time > 0 and trending up.
+- kv_cache_usage_perc approaches the cap (within the range at which vLLM signals capacity).
+- throughput ≤ T05 (flattening begins; no gain from added load).
+- preemptions = 0 (saturation, not yet overload).
+- TTFT rises above T05.
+
+T07 (1:1, ~125%, cold) — Overload
+- num_requests_waiting continues growing; queue_time grows.
+- throughput ≤ T06 (no gain from additional traffic; may degrade).
+- preemptions may be > 0; if 0, kv_cache_usage_perc must be at the cap.
+- TTFT rises sharply above T06.
+- kv_cache_usage_perc at/near cap for the run duration.
+
+T08 (15:1, ~50%, hot) — Prefix-cache benefit
+- prefix_cache_hits / prefix_cache_queries is high (cache-hot).
+- request_prefill_kv_computed_tokens is low.
+- prefill_time < T10 prefill_time; TTFT < T10 TTFT.
+- decode_time ≈ T10 decode_time (decode is unaffected by the prefix cache).
+
+T09 (15:1, ~50%, mixed) — Partial cache benefit
+- Hit-ratio ordering: T08 > T09 > T10.
+- prefill_time ordering: T08 prefill_time < T09 prefill_time < T10 prefill_time.
+- TTFT follows the same ordering.
+- decode_time ≈ T08/T09/T10 decode_time.
+
+T10 (15:1, ~50%, cold) — Cache-miss comparison
+- prefix_cache_hits / prefix_cache_queries ≈ 0.
+- prefill_time is the reference maximum for the 15:1 @~50% set.
+- queue_time and kv_cache_usage_perc comparable to T08/T09 (same concurrency and cache state by design).
+
+## 5. Additional tests (phase 2)
+
+The following tests are not initial requirements. Defer to a later phase.
+
+- Burst traffic: compare 50 simultaneous arrivals against 50 requests evenly paced over several seconds. Same total traffic, different queuing/TTFT behavior.
+- KV-cache exhaustion / preemption: drive concurrency beyond capacity until KV utilization reaches its limit. vLLM exposes cumulative preemptions; V1 normally uses recomputation when requests are preempted because of KV pressure.
+- Long-prefill interference: establish active decoding sessions, then inject several very large prompts. Demonstrates chunked prefill and the TTFT-vs-ITL scheduling tradeoff. vLLM V1 prioritizes decodes while chunking prefills when necessary.
+- Context scaling: repeat the balanced workload at ~1K, 4K, and 16K total sequence length. Demonstrates why "50 concurrent users" is meaningless without specifying context length.
+
+These four tests provide more educational value than many small permutations.
+
+## 6. Metrics (Grafana dashboard)
+
+Do not require every vLLM metric. The dashboard must surface these primary signals:
+
+| Category  | Metric                                          | Reason                                   |
+|-----------|-------------------------------------------------|------------------------------------------|
+| Latency   | vllm:time_to_first_token_seconds               | User waits before streaming starts       |
+| Latency   | vllm:inter_token_latency_seconds               | Streaming smoothness                     |
+| Latency   | vllm:request_time_per_output_token_seconds     | Decode performance                       |
+| Latency   | vllm:e2e_request_latency_seconds               | Overall experience                       |
+| Queue     | vllm:request_queue_time_seconds                | Best saturation indicator                |
+| Scheduler | vllm:num_requests_running                      | Active workload                          |
+| Scheduler | vllm:num_requests_waiting                      | Backpressure                             |
+| KV        | vllm:kv_cache_usage_perc                       | Memory pressure                          |
+| KV        | vllm:num_preemptions                           | Exceeding useful capacity                |
+| Prefix    | vllm:prefix_cache_hits / prefix_cache_queries  | Cache effectiveness                      |
+| Prefix    | vllm:request_prefill_kv_computed_tokens        | Actual computation avoided               |
+| Tokens    | vllm:prompt_tokens                             | Prefill throughput                       |
+| Tokens    | vllm:generation_tokens                         | Decode throughput                        |
+
+These are all part of vLLM's current production metrics surface.
+
+Alongside them, the dashboard must surface these DCGM GPU metrics: GPU utilization, framebuffer memory, memory bandwidth/utilization, power, and temperature. These explain why the vLLM-level metrics change.
+
+## 7. Baseline definition
+
+Baseline does not mean "GPU idle."
+
+For each inference shape, the baseline is the latency and throughput characteristics of one request/session on a warmed-up model, with zero queueing, zero preemptions, and a deliberately defined cache state.
+
+This yields:
+
+- cold-prefix baseline — model warm, prefix cache misses intentionally forced
+
+and optionally:
+
+- warm-prefix baseline — model warm, shared prefix already cached.
+
+Do not include model loading or CUDA initialization in inference baseline measurements.
+
+Every load test compares against the established baseline. The illustrative p95-TTFT comparison curve (magnitudes are hardware-dependent; the progression must hold):
+
+p95 TTFT = 210 ms → 280 ms → 600 ms → 4.2 s
+
+concurrency  = 1 → 50% → 100% → 125%
+
+## 8. Healthy vs. unhealthy
+
+Do not declare a rule such as "80% GPU = unhealthy." High utilization is generally desired.
+
+Use these operational definitions, verified against the baseline (single-session, warm model, defined cache state) and against the greatest lower concurrency level already observed:
+
+- Healthy — throughput increases as load increases (throughput(T05) > throughput(T03)); queue is absent or bounded (num_requests_waiting = 0, queue_time ≈ 0); preemptions = 0; TTFT/ITL within ~2× of baseline.
+- Saturated — throughput flattening begins (throughput(T06) ≤ throughput(T05)); num_requests_waiting > 0; queue_time > 0 and rising; TTFT rises above baseline.
+- Overloaded — additional traffic yields no throughput gain (throughput(T07) ≤ throughput(T06)) while queue depth continues growing and latency rises sharply; KV pressure at cap and/or preemptions/recomputation appear.
+
+This produces the demonstration curve:
+
+Concurrency ↑ → batching improves → GPU fills → throughput peaks → queue appears → TTFT explodes → KV pressure / preemption appears.
+
+The four inference shapes explain why two workloads with identical request counts can behave completely differently.
+
+For the first implementation, the deliverable is T01–T10 plus one Grafana dashboard.

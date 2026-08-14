@@ -1,0 +1,6 @@
+tools:
+    shell:
+        allow:
+            - cd *
+            - echo *
+            - grep *
