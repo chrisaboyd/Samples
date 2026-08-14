@@ -23,7 +23,7 @@ import { InputsUsed } from "./components/InputsUsed";
 import { indexDerivations, levelKey } from "./glossary";
 import { useStore, GPU_SKUS } from "./store";
 import type { MemoryProfile, Precision, Range, ScenarioResult, Verdict } from "./types";
-import { analyze, fetchConfig, fetchIndex } from "./lib/invoke";
+import { analyze, fetchConfig, fetchIndex, fetchSpeculator } from "./lib/invoke";
 import "./App.css";
 
 const PRECISIONS: Precision[] = ["fp16", "bf16", "fp8", "nvfp4", "int8", "int4", "fp32"];
@@ -93,6 +93,41 @@ export function formatRange(r: Range | null): string {
   return `${formatMagnitude(r.min)}–${formatMagnitude(r.max)} ${r.unit}`;
 }
 
+/// Short badge for a resolved drafter: method plus the layers it adds to the
+/// full-context KV count, which is the number that moves capacity.
+function speculatorLabel(json: string): string {
+  try {
+    const s = JSON.parse(json) as { method?: string; fullContextLayers?: number };
+    return `speculator: ${s.method ?? "?"} +${s.fullContextLayers ?? 0} full-ctx layers`;
+  } catch {
+    return "speculator detected";
+  }
+}
+
+/// Hover detail. `fullContextLayers` deliberately ignores a drafter's declared
+/// sliding window: EAGLE-family drafters write K/V at absolute positions and
+/// allocate across the whole context regardless of what their config says.
+function speculatorTitle(json: string): string {
+  try {
+    const s = JSON.parse(json) as {
+      source?: string;
+      fullContextLayers?: number;
+      numSpeculativeTokens?: number;
+      weightBytes?: number;
+    };
+    const gib = s.weightBytes ? (s.weightBytes / 1024 ** 3).toFixed(2) : "?";
+    return [
+      `drafter: ${s.source ?? "unknown"}`,
+      `${s.fullContextLayers ?? 0} layers holding full-context KV`,
+      `${gib} GiB of weights`,
+      `${s.numSpeculativeTokens ?? "?"} draft tokens/step`,
+      "uncheck to size this serve without it",
+    ].join("\n");
+  } catch {
+    return "declared in generation_config.json";
+  }
+}
+
 export default function App() {
   const {
     inputs,
@@ -115,7 +150,12 @@ export default function App() {
       // it is fetched with the config rather than as a separate opt-in. A repo
       // without one is normal and must not fail the config fetch.
       const idx = await fetchIndex(url).catch(() => null);
-      setInputs({ configJson: cfg, indexJson: idx });
+      // A declared speculative drafter is a second checkpoint on the same GPUs
+      // whose layers hold KV across the whole context. The declaration is in
+      // generation_config.json, not config.json, so it has to be chased
+      // separately or the analysis sizes a deployment nobody is running.
+      const spec = await fetchSpeculator(url).catch(() => null);
+      setInputs({ configJson: cfg, indexJson: idx, speculatorJson: spec });
     } catch (e) {
       setError(String(e));
     } finally {
@@ -203,7 +243,13 @@ export default function App() {
     // Always set both. Leaving a previously fetched index in place while the
     // config changes underneath it would size one checkpoint with another's
     // byte total.
-    setInputs({ configJson: config ?? inputs.configJson, indexJson: index });
+    // Clear the speculator too: it was resolved for whatever model was loaded
+    // before, and a pasted config carries no way to re-resolve it.
+    setInputs({
+      configJson: config ?? inputs.configJson,
+      indexJson: index,
+      speculatorJson: null,
+    });
     setError(null);
   };
 
@@ -242,7 +288,11 @@ export default function App() {
               onChange={(e) =>
                 // Clear any index fetched for a previous model: it describes a
                 // checkpoint that is no longer the one in the box.
-                setInputs({ configJson: e.target.value, indexJson: null })
+                setInputs({
+                  configJson: e.target.value,
+                  indexJson: null,
+                  speculatorJson: null,
+                })
               }
               rows={8}
             />
@@ -264,6 +314,18 @@ export default function App() {
               </button>
               {inputs.indexJson && (
                 <span className="provenance">index loaded — exact weights</span>
+              )}
+              {inputs.speculatorJson && (
+                <label className="provenance" title={speculatorTitle(inputs.speculatorJson)}>
+                  <input
+                    type="checkbox"
+                    checked={!inputs.disableSpeculator}
+                    onChange={(e) =>
+                      setInputs({ disableSpeculator: !e.target.checked })
+                    }
+                  />
+                  {speculatorLabel(inputs.speculatorJson)}
+                </label>
               )}
               <span className="hint">or paste above</span>
             </div>

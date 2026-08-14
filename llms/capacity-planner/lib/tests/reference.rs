@@ -128,7 +128,8 @@ fn laguna_fp8_checkpoint_storage_matches_the_safetensors_index() {
 
     let bytes = weight::checkpoint_storage_bytes(&m.weights.components, 16);
     assert_eq!(
-        bytes, INDEX_TOTAL_SIZE,
+        bytes,
+        INDEX_TOTAL_SIZE,
         "config-derived storage {bytes} != index total_size {INDEX_TOTAL_SIZE} \
          (delta {} bytes)",
         bytes as i128 - INDEX_TOTAL_SIZE as i128
@@ -507,7 +508,16 @@ fn laguna_constrained_on_single_rtx_pro_6000() {
     // *reserves* during profiling (1.5677 GiB for 48 layers at 51 captured
     // shapes), which is what actually shrinks the KV cache, rather than the
     // 2.06 GiB capture eventually cost.
-    assert_eq!(r.memory.memory_concurrency_average, 21);
+    //
+    // Then 21 → 10, from two corrections measured against live serves. The
+    // larger is the sliding-window reservation: a windowed layer holds
+    // `min(W-1 + max_num_batched_tokens, S)`, not `min(S, W)`. At this 32768
+    // context and 8192 batched tokens that is 8703 tokens per layer instead of
+    // 512, and across 36 sliding layers it nearly doubles a request's KV
+    // (411,648 → 706,524 layer-tokens). The rest is the `non_torch` runtime
+    // term. Short contexts move most here, because the sliding reservation is a
+    // fixed cost per request that the old formula had priced at a window.
+    assert_eq!(r.memory.memory_concurrency_average, 10);
     assert_eq!(r.memory.memory_concurrency_maximum, 0);
     assert_eq!(r.confidence.memory, ConfidenceGrade::Analytical);
     assert_eq!(r.confidence.analyze_level, AnalyzeLevel::C);
@@ -574,6 +584,7 @@ fn kv_exact_before_rounding_and_within_one_block() {
         Precision::Bf16,
         1,
         128,
+        8_192,
     );
     let exact = cfg.bytes_per_sequence_exact();
     let (rounded, block) = cfg.bytes_per_sequence_rounded(128);
@@ -591,6 +602,7 @@ fn kv_unit_conversion_is_exact() {
         Precision::Bf16,
         1,
         128,
+        8_192,
     );
     let exact = cfg.bytes_per_sequence_exact();
     let gib_via_constant = exact as f64 / GIB_BYTES as f64;
@@ -1596,4 +1608,198 @@ fn config_without_layer_types_reports_finite_concurrency() {
     ] {
         assert!(c < 1_000_000, "concurrency sentinel leaked: {c}");
     }
+}
+
+// ---------------------------------------------------------------------------
+// Measured-serve regression: three live vLLM startups on RTX PRO 6000 Blackwell
+// ---------------------------------------------------------------------------
+//
+// Figures below are read from vLLM's own startup log, not fitted. Each run is
+// `poolside/Laguna-S-2.1-FP8` with the bundled DFlash drafter, at
+// `--gpu-memory-utilization 0.9` and `max_num_batched_tokens 16384`:
+//
+// ```text
+// A  TP=2  FP8 KV   262144 ctx   Available KV cache memory: 16.7 GiB   3.29x
+// B  TP=4  BF16 KV 1048576 ctx   Available KV cache memory: 47.11 GiB  2.53x
+// C  TP=4  FP8 KV  1048576 ctx   Available KV cache memory: 47.05 GiB  5.06x
+// ```
+//
+// vLLM's "Maximum concurrency" is `num_gpu_blocks / blocks_per_request`, a
+// ratio rather than a whole-sequence count, so these compare against the
+// unfloored `pool / kv_per_request`.
+
+const LAGUNA_S_FP8: &str = include_str!("assets/laguna-s-2.1-fp8-config.json");
+
+/// Exact `metadata.total_size` from the FP8 repo's safetensors index.
+const LAGUNA_S_FP8_INDEX_BYTES: u128 = 131_264_796_160;
+/// `model.safetensors` in `poolside/Laguna-S-2.1-DFlash`, a single unsharded
+/// file with no index of its own.
+const DFLASH_BYTES: u128 = 2_229_962_896;
+
+fn laguna_s_fp8_with_dflash(with_drafter: bool) -> NormalizedModel {
+    let raw: Value = serde_json::from_str(LAGUNA_S_FP8).unwrap();
+    let mut m = adapter::normalize(&raw).expect("normalizes");
+    m.weights.checkpoint_total_size_bytes = Some(LAGUNA_S_FP8_INDEX_BYTES);
+    if with_drafter {
+        // As declared in the FP8 repo's generation_config.json:
+        //   {"method":"dflash","source":"huggingface",
+        //    "model":"poolside/Laguna-S-2.1-DFlash","num_speculative_tokens":15}
+        // All six of its layers declare `sliding_attention` at a 512 window and
+        // all six allocate full-context KV anyway.
+        m.speculator = Some(capacity_planner::model::Speculator {
+            method: "dflash".into(),
+            source: Some("poolside/Laguna-S-2.1-DFlash".into()),
+            num_speculative_tokens: Some(15),
+            full_context_layers: 6,
+            kv_heads: Some(8),
+            head_dimension: Some(128),
+            weight_bytes: Some(DFLASH_BYTES),
+            weight_precision: Some(Precision::Bf16),
+        });
+    }
+    m
+}
+
+fn measured_run(tp: u32, kv: Precision, ctx: u64, with_drafter: bool) -> ScenarioResult {
+    let model = laguna_s_fp8_with_dflash(with_drafter);
+    capacity_planner::memory::evaluate(&Inputs {
+        model: &model,
+        gpu: GpuConfig {
+            sku: "RTX PRO 6000 Blackwell".to_string(),
+            count: tp,
+            topology: Topology::PciE,
+            tensor_parallel: tp,
+            replicas: None,
+            utilization: None,
+            runtime_reserve_gib: None,
+        },
+        workload: Workload {
+            avg_context_tokens: ctx,
+            max_context_tokens: ctx,
+            weight_precision: Precision::Fp8,
+            kv_precision: kv,
+            is_hypothetical_weight: false,
+            nvfp4_group_size: 16,
+            tensor_parallel: tp,
+            prefix_cache_enabled: true,
+            draft_kv_bytes_per_seq: 0,
+            avg_output_tokens: 512,
+            slo_target_seconds: 10.0,
+            max_num_batched_tokens: 16_384,
+            max_num_seqs: 256,
+            memory_profile: MemoryProfile::Balanced,
+        },
+    })
+    .expect("evaluates")
+}
+
+fn within(actual: f64, expected: f64, tolerance: f64, what: &str) {
+    let err = (actual / expected - 1.0).abs();
+    assert!(
+        err <= tolerance,
+        "{what}: {actual:.4} vs measured {expected:.4} ({:+.1}%, tolerance {:.0}%)",
+        (actual / expected - 1.0) * 100.0,
+        tolerance * 100.0
+    );
+}
+
+#[test]
+fn kv_per_request_matches_three_measured_serves() {
+    // The KV term is closed-form arithmetic once the drafter's layers and the
+    // scheduler-step sliding reservation are in, so it is held to 1%.
+    //
+    // Derivations, per GPU, from vLLM's num_gpu_blocks and block layout:
+    //   A: 18498 blocks x 294912 B = 5.0806 GiB
+    //   B: 67650 blocks x 294912 B = 18.580 GiB
+    //   C: 67650 blocks x 147456 B = 9.2900 GiB
+    for (name, tp, kv, ctx, expect) in [
+        ("A TP2 FP8 262K", 2, Precision::Fp8, 262_144u64, 5.0806),
+        ("B TP4 BF16 1M", 4, Precision::Bf16, 1_048_576, 18.580),
+        ("C TP4 FP8 1M", 4, Precision::Fp8, 1_048_576, 9.2900),
+    ] {
+        let r = measured_run(tp, kv, ctx, true);
+        within(
+            r.memory.kv_gib_per_maximum_sequence,
+            expect,
+            0.01,
+            &format!("{name} KV per request"),
+        );
+    }
+}
+
+#[test]
+fn kv_pool_and_concurrency_match_three_measured_serves() {
+    // The pool is a small residual of two large numbers (a 62.97 GiB weight
+    // load against an 86.03 GiB budget leaves 16.7), so a 1% error on either
+    // input lands as several percent here. 10% is the PRD §33 target.
+    for (name, tp, kv, ctx, pool, concurrency) in [
+        ("A TP2 FP8 262K", 2, Precision::Fp8, 262_144u64, 16.70, 3.29),
+        ("B TP4 BF16 1M", 4, Precision::Bf16, 1_048_576, 47.11, 2.53),
+        ("C TP4 FP8 1M", 4, Precision::Fp8, 1_048_576, 47.05, 5.06),
+    ] {
+        let r = measured_run(tp, kv, ctx, true);
+        within(
+            r.memory.free_gib_per_gpu,
+            pool,
+            0.10,
+            &format!("{name} KV pool"),
+        );
+        within(
+            r.memory.free_gib_per_gpu / r.memory.kv_gib_per_maximum_sequence,
+            concurrency,
+            0.10,
+            &format!("{name} concurrency"),
+        );
+    }
+}
+
+#[test]
+fn the_drafter_costs_half_again_the_kv_of_the_target_alone() {
+    // 12 target full-attention layers hold the context; the drafter adds 6 more.
+    // Dropping it is the difference between a planner that says 2.5 sessions
+    // and one that says 3.8, which is where a 3x capacity error came from.
+    let with = measured_run(4, Precision::Bf16, 1_048_576, true);
+    let without = measured_run(4, Precision::Bf16, 1_048_576, false);
+
+    // The difference is exactly 6 layers of full context. At TP=4 the model's 8
+    // KV heads shard to 2 per rank, so a layer-token costs
+    // 2 heads x 128 dim x 2 (K+V) x 2 B = 1024 B, and 6 x 1048576 x 1024 is
+    // 6.0 GiB on top of the target's 12.0.
+    let delta_gib =
+        with.memory.kv_gib_per_maximum_sequence - without.memory.kv_gib_per_maximum_sequence;
+    within(delta_gib, 6.0, 0.001, "drafter KV per request");
+
+    // As a ratio that is 1.477 rather than a clean 18/12: the sliding-window
+    // reservation is common to both and dilutes it.
+    let ratio =
+        with.memory.kv_gib_per_maximum_sequence / without.memory.kv_gib_per_maximum_sequence;
+    within(ratio, 1.4770, 0.01, "drafter KV multiple");
+
+    // It costs weights too, though far less: ~2.08 GiB spread over 4 ranks.
+    assert!(with.memory.weight_gib_per_gpu > without.memory.weight_gib_per_gpu);
+    let delta = with.memory.weight_gib_per_gpu - without.memory.weight_gib_per_gpu;
+    within(delta, 2.0768 / 4.0, 0.10, "drafter weight per rank");
+}
+
+/// Regenerate the golden snapshot: `REGEN_GOLDEN=1 cargo test -p capacity_planner
+/// --test reference regenerate_golden -- --ignored --nocapture`
+#[test]
+#[ignore]
+fn regenerate_golden() {
+    let r = run(
+        &laguna(),
+        "B200 SXM 180 GB",
+        1,
+        1,
+        Precision::Nvfp4,
+        true,
+        32_768,
+        1_048_576,
+    );
+    let path = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/assets/laguna-b200-nvfp4.json"
+    );
+    std::fs::write(path, serde_json::to_string_pretty(&r).unwrap() + "\n").unwrap();
+    eprintln!("wrote {path}");
 }

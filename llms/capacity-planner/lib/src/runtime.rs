@@ -122,7 +122,10 @@ impl RuntimeMemory {
     /// `M_fixed + M_token × tokens + M_sequence × sequences`.
     pub fn total_bytes(&self, scheduled_tokens: u64, running_sequences: u64) -> u128 {
         self.fixed_bytes
-            .saturating_add(self.per_token_bytes.saturating_mul(scheduled_tokens as u128))
+            .saturating_add(
+                self.per_token_bytes
+                    .saturating_mul(scheduled_tokens as u128),
+            )
             .saturating_add(
                 self.per_sequence_bytes
                     .saturating_mul(running_sequences as u128),
@@ -132,8 +135,10 @@ impl RuntimeMemory {
     /// The part that does not depend on the running-sequence count, which is
     /// what comes off the budget before KV blocks are allocated.
     pub fn step_bytes(&self, scheduled_tokens: u64) -> u128 {
-        self.fixed_bytes
-            .saturating_add(self.per_token_bytes.saturating_mul(scheduled_tokens as u128))
+        self.fixed_bytes.saturating_add(
+            self.per_token_bytes
+                .saturating_mul(scheduled_tokens as u128),
+        )
     }
 }
 
@@ -188,6 +193,38 @@ fn collective_bytes(tensor_parallel: u32) -> f64 {
     } else {
         0.0
     }
+}
+
+/// Allocations vLLM attributes to `non_torch_increase`: the CUDA context, the
+/// attention backend's workspace, driver-side buffers, and anything else that
+/// grows device memory without passing through the PyTorch caching allocator.
+///
+/// vLLM measures this during its profile run and subtracts it before sizing the
+/// KV cache, so it comes straight off capacity. Nothing in a `config.json`
+/// predicts it, which is why it is a measured constant rather than a derivation.
+///
+/// # Calibration
+///
+/// Two Laguna-S serves on RTX PRO 6000 Blackwell, both at
+/// `max_num_batched_tokens=16384`, backing this out as
+/// `budget - weights - kv_pool - rope - cudagraph_estimate - modelled_scaling_terms`:
+///
+/// ```text
+/// TP=2, FP8 KV, 262144 ctx, FLASHINFER : 5.078 GiB residual
+/// TP=4, BF16 KV, 1048576 ctx, FLASH_ATTN: 4.978 GiB residual
+/// ```
+///
+/// Flat across both TP widths, both attention backends, and a 4x spread in
+/// context, which is what a context-and-driver term should look like. The
+/// modelled activation and per-sequence terms already account for 1.6–1.9 GiB
+/// of that, so what remains here is the rest.
+///
+/// Two data points cannot separate a TP dependence from a constant, so this
+/// stays constant rather than inventing a slope. Both runs land within 2% of
+/// measured concurrency with it (see `tests/reference.rs`); treat it as
+/// provisional until the calibration set is wider (PRD §17).
+fn non_torch_bytes() -> f64 {
+    2.75 * (crate::GIB_BYTES as f64)
 }
 
 /// Peak transient activation for one scheduled token, on one rank.
@@ -256,6 +293,81 @@ fn per_sequence_bytes(model: &NormalizedModel) -> f64 {
     logits * 2.0
 }
 
+/// Bytes held by rotary-embedding cos/sin tables.
+///
+/// These are *buffers*, not weights: `RotaryEmbedding` builds them from a
+/// formula at load and registers them with `persistent=False`, so they appear in
+/// no checkpoint file and summing `model.safetensors.index.json` can never
+/// reach vLLM's figure. vLLM still counts them inside its "Model loading took"
+/// line, because that line is a GPU allocation delta rather than a parameter
+/// tally.
+///
+/// Three properties make them worth a term of their own:
+///
+///   * **Sized by the config, not the deployment.** The table spans
+///     `max_position_embeddings`, so `--max-model-len 262144` on a model that
+///     declares 1M still builds 1M positions.
+///   * **Not sharded.** Every rank holds the whole table.
+///   * **One per distinct rope configuration, not per layer.** `get_rope()`
+///     memoizes on a config key (`_ROPE_DICT`), so an interleaved model with
+///     one rope for its full-attention layers and another for its sliding
+///     layers builds two tables regardless of layer count.
+///
+/// Measured against Laguna-S: 0.125 GiB for the full-attention table (partial
+/// rotary 0.5, so 64 of 128 dims) plus 0.25 GiB for the sliding table, against
+/// 0.375 GiB predicted here.
+pub fn rope_table_bytes(model: &NormalizedModel) -> f64 {
+    let positions = model.context.native_maximum as f64;
+    let head_dim = model.dimensions.head_dimension.unwrap_or(0) as f64;
+    if positions <= 0.0 || head_dim <= 0.0 {
+        return 0.0;
+    }
+    // cos and sin are stored concatenated as [positions, rotary_dim] at the
+    // model dtype. BF16 is the near-universal case and the only one observed.
+    let elem = Precision::Bf16.bytes_per_element();
+
+    let partial_of = |v: &serde_json::Value| -> f64 {
+        v.get("partial_rotary_factor")
+            .and_then(|p| p.as_f64())
+            .unwrap_or(1.0)
+            .clamp(0.0, 1.0)
+    };
+
+    let factors: Vec<f64> = match &model.context.rope_scaling {
+        // A map whose values are themselves objects is a per-attention-type
+        // rope block (Laguna's `rope_parameters`), one table per entry.
+        Some(serde_json::Value::Object(map))
+            if !map.is_empty() && map.values().all(|v| v.is_object()) =>
+        {
+            map.values().map(partial_of).collect()
+        }
+        Some(v @ serde_json::Value::Object(_)) => vec![partial_of(v)],
+        // No rope block still means one table, at the full head dimension.
+        _ => vec![1.0],
+    };
+
+    let target: f64 = factors
+        .iter()
+        .map(|f| positions * (head_dim * f).round() * elem)
+        .sum();
+
+    // A drafter builds its own table. Its rope differs from the target's by at
+    // least the theta base (Laguna's DFlash uses 500000 against the sliding
+    // layers' 10000), so `_ROPE_DICT` cannot hand it an existing one. Full head
+    // dimension: drafters observed so far do not use partial rotary.
+    let draft = match &model.speculator {
+        Some(s) if s.full_context_layers > 0 => {
+            let hd = s
+                .head_dimension
+                .unwrap_or(model.dimensions.head_dimension.unwrap_or(0));
+            positions * hd as f64 * elem
+        }
+        _ => 0.0,
+    };
+
+    target + draft
+}
+
 /// Estimate the PRD §14 coefficients for a model on a GPU.
 ///
 /// `fixed_override` replaces the fixed term outright (the user's
@@ -278,13 +390,17 @@ pub fn estimate(
             // The catalog figure covers context, kernels and allocator reserve —
             // larger on unified-memory parts, where the host OS shares the pool.
             gpu.typical_runtime_reserve_gib * gib
+                + non_torch_bytes()
                 + cuda_graph_bytes(model.dimensions.layer_count, max_num_seqs)
                 + collective_bytes(tensor_parallel)
         }
     };
 
     RuntimeMemory {
-        fixed_bytes: (fixed * factor) as u128,
+        // Rope tables are added outside the profile factor and outside the
+        // override: their size is arithmetic on the config, not an estimate to
+        // be scaled, and a hand-set reserve does not make them go away.
+        fixed_bytes: (fixed * factor) as u128 + rope_table_bytes(model) as u128,
         per_token_bytes: (per_token_bytes(model, tensor_parallel) * factor) as u128,
         per_sequence_bytes: (per_sequence_bytes(model) * factor) as u128,
     }
@@ -389,17 +505,25 @@ mod tests {
             at(MemoryProfile::Balanced),
             at(MemoryProfile::Aggressive),
         );
-        assert!(a < b && b < c, "aggressive {a}, balanced {b}, conservative {c}");
+        assert!(
+            a < b && b < c,
+            "aggressive {a}, balanced {b}, conservative {c}"
+        );
     }
 
-    /// An explicit reserve replaces the fixed term and nothing else: the
-    /// scheduler still runs as wide as it was configured to.
+    /// An explicit reserve replaces the *estimated* fixed term and nothing
+    /// else: the scheduler still runs as wide as it was configured to, and the
+    /// rope tables are arithmetic on the config rather than part of the reserve
+    /// being overridden.
     #[test]
     fn fixed_override_does_not_silence_the_scaling_terms() {
         let m = laguna();
         let gpu = find("B200").unwrap();
         let r = estimate(&m, gpu, 1, MemoryProfile::Balanced, Some(2.0), 256);
-        assert_eq!(r.fixed_bytes, (2.0 * crate::GIB_BYTES as f64) as u128);
+        assert_eq!(
+            r.fixed_bytes,
+            (2.0 * crate::GIB_BYTES as f64) as u128 + rope_table_bytes(&m) as u128
+        );
         assert!(r.per_token_bytes > 0);
         assert!(r.per_sequence_bytes > 0);
     }
@@ -415,5 +539,28 @@ mod tests {
             r.total_bytes(8192, 256) - r.step_bytes(8192),
             r.per_sequence_bytes * 256
         );
+    }
+
+    #[test]
+    fn rope_tables_are_one_per_config_sized_by_the_config_context() {
+        let m = laguna();
+        // Laguna declares rope_parameters with two entries: full_attention at
+        // partial_rotary_factor 0.5 and sliding_attention at 1.0. Head dim 128,
+        // 1,048,576 positions, BF16.
+        let expect = 1_048_576.0 * 64.0 * 2.0 + 1_048_576.0 * 128.0 * 2.0;
+        assert_eq!(rope_table_bytes(&m), expect);
+        // 0.375 GiB, and not divided by anything.
+        assert!((rope_table_bytes(&m) / crate::GIB_BYTES as f64 - 0.375).abs() < 1e-6);
+    }
+
+    #[test]
+    fn rope_tables_ignore_the_deployed_context_length() {
+        // The table spans max_position_embeddings from the config. Nothing in
+        // this function reads a workload context, so a shorter --max-model-len
+        // cannot shrink it.
+        let mut m = laguna();
+        let full = rope_table_bytes(&m);
+        m.context.checkpoint_maximum = Some(262_144);
+        assert_eq!(rope_table_bytes(&m), full);
     }
 }

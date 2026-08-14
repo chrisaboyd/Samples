@@ -26,15 +26,19 @@ use crate::kv::{self, derive_kv_config};
 use crate::model::NormalizedModel;
 use crate::performance::{self, PerformanceInputs};
 use crate::precision::Precision;
-use crate::runtime::{self, MemoryProfile};
 use crate::result::{
     AssumptionRecord, BindingConstraint, ConfidenceSummary, EvidenceRecord, MemoryResult,
     PerformanceResult, PracticalCapacity, Provenance, ScenarioResult, TopologyResult, Verdict,
 };
+use crate::runtime::{self, MemoryProfile};
 use crate::weight;
 use crate::GIB_BYTES;
 
-const DEFAULT_VLLM_BLOCK_TOKENS: u32 = 128;
+/// vLLM v1's default KV block. The v0 engine used 128; v1 resolves to 16 on
+/// CUDA, which the running engine confirms via `vllm:cache_config_info`
+/// (`block_size="16"`). Rounding to 128 overstated a request's KV by up to
+/// eight times as much slack as the engine actually leaves.
+const DEFAULT_VLLM_BLOCK_TOKENS: u32 = 16;
 
 /// Workload snapshot driving a memory evaluation.
 pub struct Workload {
@@ -206,10 +210,13 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         .unwrap_or_else(|| weight::checkpoint_storage_bytes(&components, w.nvfp4_group_size));
 
     let loaded_per_rank = match measured_checkpoint_bytes {
-        // Same repack/dequant factor, applied to the real storage figure.
+        // Same repack/dequant factor, applied to the real storage figure. The
+        // index gives no per-category split, so the architecture components
+        // supply the replicated/sharded ratio and the index supplies the total.
         Some(total) => {
             let factor = weight::effective_load_factor(&components, w.nvfp4_group_size);
-            ((total as f64 * factor) / tp as f64).floor() as u128
+            let loaded = (total as f64 * factor) as u128;
+            weight::per_rank_bytes(loaded, &components, w.nvfp4_group_size, tp)
         }
         None => weight::loaded_weight_bytes_per_rank(
             inputs.model,
@@ -219,6 +226,19 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
             tp,
         ),
     };
+
+    // A speculative drafter is a second checkpoint loading onto the same GPUs.
+    // Its projections shard with TP; its `fc` and norms replicate, but they are
+    // a small enough slice of a 2 GiB drafter that the target's own replicated
+    // ratio stands in for them rather than inventing a second component set.
+    let draft_weight_per_rank = inputs
+        .model
+        .speculator
+        .as_ref()
+        .and_then(|s| s.weight_bytes)
+        .map(|b| weight::per_rank_bytes(b, &components, w.nvfp4_group_size, tp))
+        .unwrap_or(0);
+    let loaded_per_rank = loaded_per_rank.saturating_add(draft_weight_per_rank);
     let run_reserve_and_load = loaded_per_rank
         .saturating_add(runtime_bytes)
         .saturating_add(w.draft_kv_bytes_per_seq);
@@ -226,12 +246,25 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
     let free_for_kv = available.saturating_sub(run_reserve_and_load);
 
     let kv_cfg = |ctx| {
-        let layers: Vec<(crate::model::AttentionKind, u32, Option<u32>)> = inputs
+        let mut layers: Vec<(crate::model::AttentionKind, u32, Option<u32>)> = inputs
             .model
             .attention_layers
             .iter()
             .map(|a| (a.kind, a.count, a.window_size))
             .collect();
+        // The drafter's layers join the target's full-attention group and are
+        // billed at the whole context. See `model::Speculator` for why their
+        // declared sliding window does not apply to allocation. On Laguna-S
+        // this is 6 layers on top of 12, so half again the KV per request.
+        if let Some(spec) = &inputs.model.speculator {
+            if spec.full_context_layers > 0 {
+                layers.push((
+                    crate::model::AttentionKind::Full,
+                    spec.full_context_layers,
+                    None,
+                ));
+            }
+        }
         derive_kv_config(
             &layers,
             inputs.model.dimensions.kv_heads.unwrap_or(0),
@@ -239,6 +272,7 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
             w.kv_precision,
             tp,
             ctx,
+            w.max_num_batched_tokens,
         )
     };
 
@@ -498,8 +532,7 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
     let mut assumptions = vec![
         AssumptionRecord {
             id: "m-avail".into(),
-            description: "M_available = M_physical * U with U from GPU memory utilization."
-                .into(),
+            description: "M_available = M_physical * U with U from GPU memory utilization.".into(),
             scope: "memory".into(),
         },
         AssumptionRecord {
