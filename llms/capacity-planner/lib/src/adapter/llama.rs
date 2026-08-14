@@ -94,6 +94,7 @@ pub(crate) fn normalize_family(raw: &Value, model_type: &str) -> Result<Normaliz
         weights,
         inferred,
         unresolved: Vec::new(),
+        speculator: None,
     })
 }
 

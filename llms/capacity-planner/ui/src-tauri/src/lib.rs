@@ -42,6 +42,19 @@ pub struct AnalyzeCommand {
     /// architecture-derived total is the fallback.
     #[serde(default)]
     index_json: Option<String>,
+    /// Serialized [`capacity_planner::model::Speculator`] from `fetch_speculator`.
+    ///
+    /// A speculative drafter is a second checkpoint occupying the same GPUs, and
+    /// its layers hold KV across the full context. Nothing in `config.json`
+    /// mentions it — the declaration lives in `generation_config.json` — so
+    /// without this field the analysis silently sizes a deployment that is not
+    /// the one running.
+    #[serde(default)]
+    speculator_json: Option<String>,
+    /// Ignore a declared drafter, answering "what would this cost without
+    /// speculative decoding?".
+    #[serde(default)]
+    disable_speculator: bool,
 }
 
 /// Pure calculation behind the `analyze` command (no `AppHandle` needed).
@@ -57,6 +70,15 @@ pub fn analyze_core(cmd: &AnalyzeCommand) -> capacity_planner::Result<ScenarioRe
             .ok()
             .as_ref()
             .and_then(capacity_planner::sources::index_total_size);
+    }
+
+    // Same tolerance as the index: a drafter that failed to resolve leaves the
+    // analysis config-only rather than failing it outright. The confidence
+    // block is where a missing term gets reported.
+    if !cmd.disable_speculator {
+        if let Some(text) = &cmd.speculator_json {
+            model.speculator = serde_json::from_str(text).ok();
+        }
     }
 
     let gpu = GpuConfig {
@@ -120,11 +142,44 @@ fn fetch_index(url: String) -> Result<Option<String>, String> {
         .map(|v| v.map(|v| v.to_string()))
 }
 
+/// Resolve the speculative drafter a repository declares, if any.
+///
+/// Reads `generation_config.json` for a `speculative_config` block, then follows
+/// it to the drafter's own repo (`source: "huggingface"`) or subfolder
+/// (`source: "bundled"`) for its shape and weight bytes. `None` when the
+/// checkpoint declares no drafter or declares a prompt-lookup method that loads
+/// no model.
+#[tauri::command]
+fn fetch_speculator(url: String) -> Result<Option<String>, String> {
+    let token = std::env::var("HF_TOKEN").ok();
+    let svc = capacity_planner::sources::SourceService::new(token);
+    let Some(gc) = svc
+        .fetch_generation_config(&url)
+        .map_err(|e| e.to_string())?
+    else {
+        return Ok(None);
+    };
+    let Some(spec) = capacity_planner::sources::parse_speculator_ref(&gc) else {
+        return Ok(None);
+    };
+    let resolved = svc
+        .fetch_speculator(&url, &spec)
+        .map_err(|e| e.to_string())?;
+    resolved
+        .map(|s| serde_json::to_string(&s).map_err(|e| e.to_string()))
+        .transpose()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![analyze, fetch_config, fetch_index])
+        .invoke_handler(tauri::generate_handler![
+            analyze,
+            fetch_config,
+            fetch_index,
+            fetch_speculator
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -150,6 +205,8 @@ mod tests {
             slo_target_seconds: 10.0,
             is_hypothetical_weight: true,
             index_json: None,
+            speculator_json: None,
+            disable_speculator: false,
             max_num_batched_tokens: 8_192,
             max_num_seqs: 256,
             memory_profile: MemoryProfile::Balanced,
@@ -167,11 +224,17 @@ mod tests {
     /// 8192 batched tokens and 256 sequences) instead of a flat 1 GiB. Then
     /// 116 held once the CUDA-graph constant was
     /// calibrated against a measured vLLM serve (the reservation, not the capture).
+    /// Then 116 → 65 against three live serves: a sliding-window layer reserves
+    /// `min(W-1 + max_num_batched_tokens, S)` rather than `min(S, W)`, which at
+    /// this 32768 context and 8192 batched tokens is 8703 tokens per layer
+    /// instead of 512, and `non_torch` runtime memory became its own term. The
+    /// average-context figure moves most because the sliding reservation is a
+    /// per-request fixed cost that the old formula had priced at a window.
     #[test]
     fn analyze_core_laguna_b200_matches_golden_numbers() {
         let r = analyze_core(&laguna_cmd()).expect("evaluates");
         assert_eq!(r.verdict, capacity_planner::result::Verdict::Comfortable);
-        assert_eq!(r.memory.memory_concurrency_average, 116);
+        assert_eq!(r.memory.memory_concurrency_average, 65);
         assert_eq!(r.memory.memory_concurrency_maximum, 3);
         assert!(r
             .memory
@@ -220,7 +283,7 @@ mod tests {
         );
         let cmd: AnalyzeCommand = serde_json::from_str(&payload).expect("payload deserializes");
         let r = analyze_core(&cmd).expect("evaluates");
-        assert_eq!(r.memory.memory_concurrency_average, 116);
+        assert_eq!(r.memory.memory_concurrency_average, 65);
         assert_eq!(r.memory.memory_concurrency_maximum, 3);
         assert_eq!(r.provenance.gpu_sku, "B200 SXM 180 GB");
     }

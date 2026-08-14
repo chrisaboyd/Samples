@@ -160,6 +160,52 @@ pub fn effective_load_factor(components: &[WeightComponent], nvfp4_group_size: u
     }
 }
 
+/// Fraction of a component set's bytes that tensor parallelism replicates
+/// rather than shards.
+///
+/// Returned as a fraction so it can be applied to a *measured* checkpoint total
+/// from `model.safetensors.index.json`, which gives no per-category breakdown of
+/// its own. The architecture-derived components supply the ratio, the index
+/// supplies the magnitude.
+pub fn replicated_fraction(components: &[WeightComponent], nvfp4_group_size: u32) -> f64 {
+    let mut replicated = 0.0;
+    let mut total = 0.0;
+    for c in components {
+        let bytes = component_bytes(c, nvfp4_group_size);
+        total += bytes;
+        if c.category.replicates_under_tp() {
+            replicated += bytes;
+        }
+    }
+    if total == 0.0 {
+        0.0
+    } else {
+        replicated / total
+    }
+}
+
+/// Per-GPU bytes for a whole-model byte total under tensor parallelism.
+///
+/// `sharded / tp + replicated`, rather than `total / tp`. Norms and routers are
+/// copied onto every rank (see [`WeightCategory::replicates_under_tp`]), so the
+/// flat divide understates every rank by `replicated × (1 - 1/tp)`. Small in
+/// absolute terms and TP-invariant, which means its share of the per-GPU
+/// footprint grows as TP widens.
+pub fn per_rank_bytes(
+    total_bytes: u128,
+    components: &[WeightComponent],
+    nvfp4_group_size: u32,
+    tensor_parallel: u32,
+) -> u128 {
+    let tp = tensor_parallel.max(1);
+    if tp == 1 {
+        return total_bytes;
+    }
+    let total = total_bytes as f64;
+    let replicated = total * replicated_fraction(components, nvfp4_group_size);
+    ((total - replicated) / tp as f64 + replicated).floor() as u128
+}
+
 /// Estimated loaded weight memory on one GPU rank, after TP sharding.
 pub fn loaded_weight_bytes_per_rank(
     model: &NormalizedModel,
@@ -171,8 +217,8 @@ pub fn loaded_weight_bytes_per_rank(
     let components = reassign_precision(model, target, is_hypothetical, group_size);
     let storage = checkpoint_storage_bytes(&components, group_size);
     let factor = effective_load_factor(&components, group_size);
-    let tp = (tensor_parallel.max(1)) as f64;
-    ((storage as f64 * factor) / tp).floor() as u128
+    let loaded = (storage as f64 * factor) as u128;
+    per_rank_bytes(loaded, &components, group_size, tensor_parallel)
 }
 
 /// Every distinct precision present, ordered by descending stored bytes.
@@ -360,5 +406,46 @@ mod tests {
         assert!(att.is_hypothetical);
         assert_eq!(norm.precision, Precision::Bf16); // norms not quantizable
         assert!(norm.is_hypothetical); // flag still propagates
+    }
+
+    #[test]
+    fn replicated_weights_are_not_divided_by_tp() {
+        // BF16 so no scale bytes muddy the arithmetic:
+        // 1000 attention elements = 2000 B (shards),
+        //  100 norm      elements =  200 B (replicates). Total 2200.
+        let comps = vec![
+            WeightComponent {
+                category: WeightCategory::Attention,
+                element_count: 1000,
+                precision: Precision::Bf16,
+                is_hypothetical: false,
+            },
+            WeightComponent {
+                category: WeightCategory::Norms,
+                element_count: 100,
+                precision: Precision::Bf16,
+                is_hypothetical: false,
+            },
+        ];
+        assert!((replicated_fraction(&comps, 16) - 200.0 / 2200.0).abs() < 1e-9);
+
+        // TP1 is the identity.
+        assert_eq!(per_rank_bytes(2200, &comps, 16, 1), 2200);
+        // TP4: 2000/4 + 200 = 700, against a flat divide's 550.
+        assert_eq!(per_rank_bytes(2200, &comps, 16, 4), 700);
+        // TP2: 2000/2 + 200 = 1200.
+        assert_eq!(per_rank_bytes(2200, &comps, 16, 2), 1200);
+    }
+
+    #[test]
+    fn a_model_without_replicated_categories_matches_a_flat_divide() {
+        let comps = vec![WeightComponent {
+            category: WeightCategory::Attention,
+            element_count: 800,
+            precision: Precision::Bf16,
+            is_hypothetical: false,
+        }];
+        assert_eq!(replicated_fraction(&comps, 16), 0.0);
+        assert_eq!(per_rank_bytes(1600, &comps, 16, 4), 400);
     }
 }

@@ -4,20 +4,20 @@
     "weightGiBPerGpu": 65.94671291299164,
     "checkpointStorageGiB": 61.636985301971436,
     "checkpointPrecisionLabel": "Hypothetical quantization estimate — NVFP4",
-    "runtimeGiBPerGpu": 3.392656249925494,
-    "runtimeFixedGiBPerGpu": 2.076249999925494,
+    "runtimeGiBPerGpu": 6.517656249925494,
+    "runtimeFixedGiBPerGpu": 5.201249999925494,
     "runtimeActivationGiBPerGpu": 1.125,
     "runtimeSequenceGiBPerGpu": 0.19140625,
     "concurrencyCappedByScheduler": false,
-    "kvGiBPerAverageSequence": 0.78515625,
-    "kvGiBPerMaximumSequence": 24.03515625,
-    "freeGiBPerGpu": 91.81600193027407,
-    "freeGiBAcrossGpusInUse": 91.81600193027407,
-    "kvGiBPerMaximumSequenceAllRanks": 24.03515625,
+    "kvGiBPerAverageSequence": 1.34759521484375,
+    "kvGiBPerMaximumSequence": 24.59759521484375,
+    "freeGiBPerGpu": 88.69100193027407,
+    "freeGiBAcrossGpusInUse": 88.69100193027407,
+    "kvGiBPerMaximumSequenceAllRanks": 24.59759521484375,
     "kvReplicatedAcrossRanks": false,
-    "memoryConcurrencyAverage": 116,
+    "memoryConcurrencyAverage": 65,
     "memoryConcurrencyMaximum": 3,
-    "memoryConcurrencyAverageTotal": 116,
+    "memoryConcurrencyAverageTotal": 65,
     "memoryConcurrencyMaximumTotal": 3,
     "physicalGiBPerGpu": 179.0615234375
   },
@@ -76,7 +76,7 @@
     "analyzeLevel": "c",
     "reasons": [
       "Architecture-derived (Level C) from config.json",
-      "KV cache rounded to 128-token vLLM blocks",
+      "KV cache rounded to 16-token vLLM blocks",
       "TP sharding: KV and weights divided by tensor_parallel=1",
       "Roofline compute peak: 4000 TFLOPS",
       "Roofline bandwidth: 8000 GB/s",
@@ -109,7 +109,7 @@
     },
     {
       "what": "runtime M_fixed",
-      "value": "2.0762 GiB",
+      "value": "5.2012 GiB",
       "source": "catalog reserve + CUDA graphs + collectives (PRD §14)"
     },
     {
@@ -129,17 +129,17 @@
     },
     {
       "what": "KV avg exact",
-      "value": "843055104 bytes",
+      "value": "1446961152 bytes",
       "source": "kv::bytes_per_sequence_exact"
     },
     {
       "what": "KV avg rounded",
-      "value": "843055104 bytes",
+      "value": "1446969344 bytes",
       "source": "kv::bytes_per_sequence_rounded"
     },
     {
       "what": "KV max exact",
-      "value": "25807552512 bytes",
+      "value": "26411458560 bytes",
       "source": "kv::bytes_per_sequence_exact"
     },
     {
@@ -246,47 +246,47 @@
       "label": "Runtime memory per GPU",
       "meaning": "Everything the engine holds that is neither weights nor KV blocks: the CUDA context, allocator, compiled kernels, captured CUDA graphs and collective buffers, plus the transient activations of the widest scheduler step and the logits and sampling buffers for every running sequence. Held back before any KV cache is budgeted.",
       "formula": "M_runtime = M_fixed + M_token × N_scheduledTokens + M_sequence × N_runningSequences",
-      "substitution": "2.08 GiB fixed (B200 SXM 180 GB catalog reserve + CUDA graphs)\n+ 144.00 KiB/token × 8,192 scheduled tokens = 1.12 GiB\n+ 784.00 KiB/seq × 256 running sequences = 0.19 GiB\n(Balanced profile, ×1.00)",
-      "result": "3.39 GiB"
+      "substitution": "5.20 GiB fixed (B200 SXM 180 GB catalog reserve + CUDA graphs)\n+ 144.00 KiB/token × 8,192 scheduled tokens = 1.12 GiB\n+ 784.00 KiB/seq × 256 running sequences = 0.19 GiB\n(Balanced profile, ×1.00)",
+      "result": "6.52 GiB"
     },
     {
       "id": "m-free",
       "label": "Free for KV cache",
       "meaning": "What is left on each GPU after weights and runtime overhead. This is the entire budget available to hold conversation context for concurrent requests — it is what caps concurrency.",
       "formula": "M_freeForKV = M_available - M_weights - M_runtime - M_draft",
-      "substitution": "161.16 GiB - 65.95 GiB - 3.39 GiB - 0.00 GiB",
-      "result": "91.82 GiB"
+      "substitution": "161.16 GiB - 65.95 GiB - 6.52 GiB - 0.00 GiB",
+      "result": "88.69 GiB"
     },
     {
       "id": "kv-avg",
       "label": "KV cache per sequence @ average context",
       "meaning": "Memory one in-flight request holds to keep its attention cache at the average context length. Every concurrent request pays this.",
       "formula": "KV_seq = 2 × H_kv × D_head × B_kv × (L_full × S + L_sliding × min(S, W)) / TP",
-      "substitution": "2 × 8 × 128 × 1 B (fp8) × (12 × 32,768 + 36 × min(32,768, 512)) / 1\n= 2 × 8 × 128 × 1 × (411,648) / 1\n= 843,055,104 bytes exact\nalready block-aligned (128-token vLLM blocks)",
-      "result": "0.785 GiB"
+      "substitution": "2 × 8 × 128 × 1 B (fp8) × (12 × 32,768 + 36 × min(32,768, 512)) / 1\n= 2 × 8 × 128 × 1 × (411,648) / 1\n= 1,446,961,152 bytes exact\nrounded up to whole 16-token vLLM blocks: 1,446,961,152 → 1,446,969,344 bytes",
+      "result": "1.348 GiB"
     },
     {
       "id": "kv-max",
       "label": "KV cache per sequence @ maximum context",
       "meaning": "The same cost for a request that has filled the context window — the worst case a single request can cost.",
       "formula": "KV_seq = 2 × H_kv × D_head × B_kv × (L_full × S + L_sliding × min(S, W)) / TP",
-      "substitution": "2 × 8 × 128 × 1 B (fp8) × (12 × 1,048,576 + 36 × min(1,048,576, 512)) / 1\n= 2 × 8 × 128 × 1 × (12,601,344) / 1\n= 25,807,552,512 bytes exact\nalready block-aligned (128-token vLLM blocks)",
-      "result": "24.04 GiB"
+      "substitution": "2 × 8 × 128 × 1 B (fp8) × (12 × 1,048,576 + 36 × min(1,048,576, 512)) / 1\n= 2 × 8 × 128 × 1 × (12,601,344) / 1\n= 26,411,458,560 bytes exact\nrounded up to whole 16-token vLLM blocks: 26,411,458,560 → 26,411,466,752 bytes",
+      "result": "24.60 GiB"
     },
     {
       "id": "c-mem-avg",
       "label": "Concurrent requests @ avg context",
       "meaning": "How many requests fit in VRAM at once if each holds an average-length context. A pure memory limit — it ignores whether the GPU is fast enough to serve them within your latency target.",
       "formula": "C_memory(avg) = floor( M_freeForKV / KV_seq(avg) ) × replicas",
-      "substitution": "floor( 91.82 GiB / 0.785 GiB )\n= floor( 98,586,681,385 bytes / 843,055,104 bytes )\n= 116 per replica × 1 replica(s)",
-      "result": "116 concurrent requests"
+      "substitution": "floor( 88.69 GiB / 1.348 GiB )\n= floor( 95,231,238,185 bytes / 1,446,969,344 bytes )\n= 65 per replica × 1 replica(s)",
+      "result": "65 concurrent requests"
     },
     {
       "id": "c-mem-max",
       "label": "Concurrent requests @ max context",
       "meaning": "The same count in the worst case, where every concurrent request has filled the full context window simultaneously. Usually much smaller — it is the floor under which the deployment cannot be starved.",
       "formula": "C_memory(max) = floor( M_freeForKV / KV_seq(max) ) × replicas",
-      "substitution": "floor( 91.82 GiB / 24.04 GiB )\n= floor( 98,586,681,385 bytes / 25,807,552,512 bytes )\n= 3 per replica × 1 replica(s)",
+      "substitution": "floor( 88.69 GiB / 24.60 GiB )\n= floor( 95,231,238,185 bytes / 26,411,466,752 bytes )\n= 3 per replica × 1 replica(s)",
       "result": "3 concurrent requests"
     },
     {
@@ -294,7 +294,7 @@
       "label": "Comfortable active requests",
       "meaning": "The headline number: requests that can be in flight at the same time while still meeting your latency target. It is the tightest of the three limits — running out of memory and missing the SLO are both failures, so the smallest one governs.",
       "formula": "C_comfortable = min( C_memory(avg), C_memory(max), C_SLO )   [all cluster-wide]",
-      "substitution": "min( 116, 3, 34 )\n  C_memory(avg) = 116 — memory at average context (116 per replica × 1)\n  C_memory(max) = 3 — memory at full context (3 per replica × 1)\n  C_SLO         = 34 — latency target of 10.0 s",
+      "substitution": "min( 65, 3, 34 )\n  C_memory(avg) = 65 — memory at average context (65 per replica × 1)\n  C_memory(max) = 3 — memory at full context (3 per replica × 1)\n  C_SLO         = 34 — latency target of 10.0 s",
       "result": "3 concurrent requests"
     },
     {
@@ -485,7 +485,7 @@
       "group": "GPU",
       "name": "Runtime reserve",
       "key": null,
-      "value": "3.39 GiB",
+      "value": "6.52 GiB",
       "usedFor": "M_runtime"
     },
     {
@@ -562,7 +562,7 @@
       "group": "Engine",
       "name": "KV block size",
       "key": null,
-      "value": "128 tokens",
+      "value": "16 tokens",
       "usedFor": "KV_seq rounding"
     },
     {

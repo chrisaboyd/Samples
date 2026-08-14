@@ -24,6 +24,8 @@ const INPUT: AnalyzeInput = {
   sloTargetSeconds: 10,
   isHypotheticalWeight: true,
   indexJson: null,
+  speculatorJson: null,
+  disableSpeculator: false,
   maxNumBatchedTokens: 8192,
   maxNumSeqs: 256,
   memoryProfile: "balanced",
@@ -49,6 +51,11 @@ const REQUIRED_FIELDS = [
   // index cleared in the UI actually clears in the backend rather than being
   // omitted and leaving a stale value.
   "indexJson",
+  // Same reasoning: a drafter resolved for a previous model must clear rather
+  // than persist, since it would add full-context KV layers the new model does
+  // not have.
+  "speculatorJson",
+  "disableSpeculator",
   "maxNumBatchedTokens",
   "maxNumSeqs",
   "memoryProfile",

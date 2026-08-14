@@ -29,3 +29,14 @@ export async function fetchConfig(url: string): Promise<string> {
 export async function fetchIndex(url: string): Promise<string | null> {
   return invoke<string | null>("fetch_index", { url });
 }
+
+/// Resolve the speculative drafter the repository declares, or null when it
+/// declares none.
+///
+/// This is a second fetch chain, not part of `config.json`: the declaration
+/// lives in `generation_config.json` and points at a separate drafter
+/// checkpoint. A drafter's layers hold KV across the whole context, so leaving
+/// it out sizes a deployment that is not the one running.
+export async function fetchSpeculator(url: string): Promise<string | null> {
+  return invoke<string | null>("fetch_speculator", { url });
+}

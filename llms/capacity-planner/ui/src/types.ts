@@ -167,4 +167,8 @@ export interface AnalyzeInput {
    * estimate. null when none was supplied or the repository has no index.
    */
   indexJson: string | null;
+  /// Serialized Speculator from `fetch_speculator`, or null.
+  speculatorJson: string | null;
+  /// Ignore a declared drafter, to model the same serve without it.
+  disableSpeculator: boolean;
 }

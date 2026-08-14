@@ -114,6 +114,79 @@ pub struct Weights {
     pub checkpoint_total_size_bytes: Option<u128>,
 }
 
+/// A speculative-decoding draft model attached to a target checkpoint.
+///
+/// The drafter is a second checkpoint that costs GPU memory twice over: its
+/// weights load alongside the target's, and its attention layers take KV cache
+/// out of the same pool. On Laguna-S the KV half is the larger of the two by an
+/// order of magnitude.
+///
+/// # Why `full_context_layers` is not read from the drafter's config
+///
+/// A drafter may declare a sliding window and still allocate full-context KV.
+/// Laguna's DFlash declares `"layer_types": ["sliding_attention", ...]` with a
+/// 512-token window on all six layers, and `laguna_dflash.py` then clears the
+/// window immediately after constructing the attention module:
+///
+/// ```text
+/// if sliding_window is not None:
+///     # Keep full KV allocation: context K/V is inserted manually at
+///     # absolute slots, while SWA is only a compute-time attention limit.
+///     self.attn.sliding_window = None
+/// ```
+///
+/// vLLM picks `SlidingWindowSpec` only when that attribute survives, so all six
+/// layers take `FullAttentionSpec`. The window is enforced as an attention mask
+/// at compute time and has no effect on allocation. No config file records this;
+/// it is a property of the serving implementation, so [`SpeculatorMethod`]
+/// carries the rule instead.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct Speculator {
+    /// `speculative_config.method`, e.g. `dflash`, `eagle`, `mtp`, `ngram`.
+    pub method: String,
+    /// Repository or path the drafter was resolved from, for provenance.
+    pub source: Option<String>,
+    /// Draft tokens proposed per step. Does not change KV residency, but scales
+    /// the tokens a decode step carries.
+    pub num_speculative_tokens: Option<u32>,
+    /// Drafter layers holding KV across the full context.
+    pub full_context_layers: u32,
+    /// Drafter KV heads before TP sharding. Falls back to the target's when the
+    /// drafter config omits it.
+    pub kv_heads: Option<u32>,
+    /// Drafter head dimension. Falls back to the target's.
+    pub head_dimension: Option<u32>,
+    /// Drafter checkpoint bytes, from its safetensors index or blob sizes.
+    pub weight_bytes: Option<u128>,
+    /// Drafter storage precision, which is independent of the target's. The FP8
+    /// Laguna-S repo pairs with a BF16 drafter.
+    pub weight_precision: Option<Precision>,
+}
+
+/// Whether a speculative method loads a draft model that occupies KV cache.
+///
+/// Prompt-lookup methods (`ngram`) propose tokens from the prompt itself and
+/// load no model at all, so they cost nothing here.
+pub fn method_loads_draft_model(method: &str) -> bool {
+    !matches!(
+        method.trim().to_ascii_lowercase().as_str(),
+        "ngram" | "lookahead" | "suffix" | "none" | ""
+    )
+}
+
+/// Whether a drafter's declared sliding window should be ignored for KV sizing.
+///
+/// True for the EAGLE-family drafters (DFlash included), which write K/V at
+/// absolute sequence positions so their block tables line up with the target's
+/// and therefore allocate across the whole context.
+pub fn method_allocates_full_context(method: &str) -> bool {
+    matches!(
+        method.trim().to_ascii_lowercase().as_str(),
+        "dflash" | "eagle" | "eagle3" | "mtp" | "medusa"
+    )
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NormalizedModel {
@@ -134,6 +207,14 @@ pub struct NormalizedModel {
     /// Speculative (PRD §10.1) so a guess is never graded like a parse.
     #[serde(default)]
     pub unresolved: Vec<String>,
+    /// Speculative-decoding drafter, when the checkpoint declares one in
+    /// `generation_config.json` or the user supplied one.
+    ///
+    /// An adapter can never set this: it is not in `config.json`. It is filled
+    /// in by whoever resolved the drafter, the same way
+    /// [`Weights::checkpoint_total_size_bytes`] is.
+    #[serde(default)]
+    pub speculator: Option<Speculator>,
 }
 
 impl NormalizedModel {

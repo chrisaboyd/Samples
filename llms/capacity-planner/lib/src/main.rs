@@ -16,9 +16,9 @@ use capacity_planner::adapter;
 use capacity_planner::hardware::{GpuConfig, Topology};
 use capacity_planner::memory::{Inputs, Workload};
 use capacity_planner::precision::Precision;
+use capacity_planner::runtime::MemoryProfile;
 #[cfg(feature = "sources")]
 use capacity_planner::sources::SourceService;
-use capacity_planner::runtime::MemoryProfile;
 use capacity_planner::ScenarioResult;
 use clap::{Parser, ValueEnum};
 
@@ -156,6 +156,30 @@ struct Cli {
     /// bare flag, so both paths are reachable.
     #[arg(long, action = clap::ArgAction::Set, default_value_t = false)]
     hypothetical: bool,
+
+    /// Ignore any speculative drafter the checkpoint declares.
+    ///
+    /// Answers "what would this cost without speculative decoding?" A drafter's
+    /// layers are billed at the full context, so on Laguna-S turning it off is
+    /// the difference between 18 and 12 full-context layers.
+    #[arg(long, action = clap::ArgAction::Set, default_value_t = false)]
+    no_speculator: bool,
+
+    /// Supply a drafter the checkpoint does not declare, as a HuggingFace repo
+    /// id or a local directory.
+    ///
+    /// `generation_config.json` is fetched automatically with `--url` and read
+    /// from the model directory with `--file`, so this is only needed for a
+    /// deployment that passes `--speculative-config` to the engine by hand, or
+    /// for a checkpoint that bundles a drafter without declaring it.
+    #[arg(long)]
+    speculator: Option<String>,
+
+    /// Speculative method for `--speculator`, deciding whether the drafter's
+    /// declared sliding window applies to KV allocation. EAGLE-family methods
+    /// (`dflash`, `eagle`, `mtp`, `medusa`) allocate the full context.
+    #[arg(long, default_value = "dflash")]
+    speculator_method: String,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -165,6 +189,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let raw: serde_json::Value = serde_json::from_str(&config_text)?;
     let mut model = adapter::normalize(&raw)?;
     model.weights.checkpoint_total_size_bytes = load_index_total_size(&cli)?;
+    model.speculator = load_speculator(&cli)?;
 
     let gpu = GpuConfig {
         sku: cli.gpu.clone(),
@@ -284,4 +309,156 @@ fn load_index_total_size(cli: &Cli) -> Result<Option<u128>, Box<dyn std::error::
         }
     }
     Ok(None)
+}
+
+/// Resolve the speculative drafter for this run.
+///
+/// Three sources, in priority order: `--no-speculator` suppresses everything,
+/// `--speculator` supplies one by hand, and otherwise the checkpoint's own
+/// `generation_config.json` is consulted. That file is where the declaration
+/// lives — `config.json` has no idea a drafter exists, which is why a planner
+/// reading only `config.json` silently under-counts every speculative
+/// deployment.
+fn load_speculator(
+    cli: &Cli,
+) -> Result<Option<capacity_planner::model::Speculator>, Box<dyn std::error::Error>> {
+    use capacity_planner::sources::{parse_speculator_ref, SpeculatorRef};
+
+    if cli.no_speculator {
+        return Ok(None);
+    }
+
+    // Explicit override, or the checkpoint's own declaration.
+    let declared: Option<(SpeculatorRef, String)> = if let Some(m) = &cli.speculator {
+        Some((
+            SpeculatorRef {
+                method: cli.speculator_method.clone(),
+                source: None,
+                model: Some(m.clone()),
+                num_speculative_tokens: None,
+            },
+            m.clone(),
+        ))
+    } else {
+        let gc: Option<serde_json::Value> = if let Some(path) = &cli.file {
+            let dir = if path.is_dir() {
+                Some(path.clone())
+            } else {
+                path.parent().map(|p| p.to_path_buf())
+            };
+            match dir.map(|d| d.join("generation_config.json")) {
+                Some(p) if p.exists() => Some(serde_json::from_str(&std::fs::read_to_string(p)?)?),
+                _ => None,
+            }
+        } else {
+            #[cfg(feature = "sources")]
+            {
+                match &cli.url {
+                    Some(url) => SourceService::new(std::env::var("HF_TOKEN").ok())
+                        .fetch_generation_config(url)?,
+                    None => None,
+                }
+            }
+            #[cfg(not(feature = "sources"))]
+            {
+                None
+            }
+        };
+        gc.as_ref()
+            .and_then(parse_speculator_ref)
+            .map(|s| (s, String::new()))
+    };
+
+    let Some((spec, _)) = declared else {
+        return Ok(None);
+    };
+
+    // Local directory: read the drafter's config and weights off disk.
+    if let Some(m) = &cli.speculator {
+        let dir = std::path::PathBuf::from(m);
+        if dir.is_dir() {
+            return Ok(Some(speculator_from_dir(&dir, &spec.method)?));
+        }
+    }
+
+    #[cfg(feature = "sources")]
+    {
+        // A bundled drafter resolves against the target repo, so the target URL
+        // is needed even when the drafter was named by hand.
+        if let Some(url) = &cli.url {
+            return Ok(
+                SourceService::new(std::env::var("HF_TOKEN").ok()).fetch_speculator(url, &spec)?
+            );
+        }
+        // Named a repo without a --url target: resolve it as a bare repo id.
+        if let Some(m) = &cli.speculator {
+            let url = format!("https://huggingface.co/{m}");
+            return Ok(
+                SourceService::new(std::env::var("HF_TOKEN").ok()).fetch_speculator(&url, &spec)?
+            );
+        }
+    }
+
+    eprintln!(
+        "note: checkpoint declares a '{}' speculator but it could not be resolved offline; \
+         pass --speculator <dir> or rebuild with --features sources",
+        spec.method
+    );
+    Ok(None)
+}
+
+/// Build a `Speculator` from a local drafter directory.
+fn speculator_from_dir(
+    dir: &std::path::Path,
+    method: &str,
+) -> Result<capacity_planner::model::Speculator, Box<dyn std::error::Error>> {
+    use capacity_planner::model::method_allocates_full_context;
+
+    let cfg: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(dir.join("config.json"))?)?;
+    let layers = cfg
+        .get("num_hidden_layers")
+        .and_then(|v| v.as_u64())
+        .unwrap_or(0) as u32;
+    let full_context_layers = if method_allocates_full_context(method) {
+        layers
+    } else {
+        cfg.get("layer_types")
+            .and_then(|v| v.as_array())
+            .map(|a| {
+                a.iter()
+                    .filter(|t| t.as_str() == Some("full_attention"))
+                    .count() as u32
+            })
+            .unwrap_or(layers)
+    };
+    let weight_bytes: u128 = std::fs::read_dir(dir)?
+        .filter_map(|e| e.ok())
+        .filter(|e| {
+            e.path()
+                .extension()
+                .is_some_and(|x| x.eq_ignore_ascii_case("safetensors"))
+        })
+        .filter_map(|e| e.metadata().ok().map(|m| m.len() as u128))
+        .sum();
+
+    Ok(capacity_planner::model::Speculator {
+        method: method.to_string(),
+        source: Some(dir.display().to_string()),
+        num_speculative_tokens: None,
+        full_context_layers,
+        kv_heads: cfg
+            .get("num_key_value_heads")
+            .and_then(|v| v.as_u64())
+            .map(|v| v as u32),
+        head_dimension: cfg
+            .get("head_dim")
+            .and_then(|v| v.as_u64())
+            .map(|v| v as u32),
+        weight_bytes: (weight_bytes > 0).then_some(weight_bytes),
+        weight_precision: cfg
+            .get("torch_dtype")
+            .and_then(|v| v.as_str())
+            .and_then(capacity_planner::precision::Precision::from_torch_dtype),
+    })
 }

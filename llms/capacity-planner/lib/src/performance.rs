@@ -243,8 +243,12 @@ pub(crate) fn kv_bytes_exact(
         kv_precision,
         tp,
         context,
+        // Bandwidth, not capacity: a decode step schedules one token per
+        // sequence, so the sliding reservation collapses to the attended
+        // window. `bytes_attended_per_sequence` reads this back out.
+        1,
     );
-    kv_cfg.bytes_per_sequence_exact()
+    kv_cfg.bytes_attended_per_sequence()
 }
 
 /// KV bytes appended per token across **every** cache-bearing layer, per rank.

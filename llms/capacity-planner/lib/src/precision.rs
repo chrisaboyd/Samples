@@ -22,6 +22,19 @@ pub enum Precision {
 }
 
 impl Precision {
+    /// Parse a HuggingFace `torch_dtype` string. `None` for anything not
+    /// recognized, so an unexpected value surfaces rather than defaulting to a
+    /// width that happens to be common.
+    pub fn from_torch_dtype(s: &str) -> Option<Self> {
+        match s.trim().to_ascii_lowercase().as_str() {
+            "bfloat16" | "bf16" => Some(Precision::Bf16),
+            "float16" | "fp16" | "half" => Some(Precision::Fp16),
+            "float32" | "fp32" | "float" => Some(Precision::Fp32),
+            "float8_e4m3fn" | "float8_e5m2" | "fp8" => Some(Precision::Fp8),
+            _ => None,
+        }
+    }
+
     /// Weight element size in bytes for a single tensor element (no scales).
     pub fn bytes_per_element(self) -> f64 {
         match self {
@@ -95,6 +108,31 @@ pub enum WeightCategory {
 impl WeightCategory {
     pub fn is_quantizable(self) -> bool {
         !matches!(self, WeightCategory::Norms | WeightCategory::Routers)
+    }
+
+    /// True when tensor parallelism copies this category whole onto every rank
+    /// instead of splitting it, so per-GPU cost is the full tensor and not
+    /// `bytes / tp`.
+    ///
+    /// Tensor parallelism exists to split the large matmuls. After each block's
+    /// all-reduce every rank holds an identical copy of the full hidden vector,
+    /// and anything that reads that vector and produces something small is
+    /// cheaper to recompute redundantly than to shard, because sharding it
+    /// would put a collective back in.
+    ///
+    /// - **Norms** need the sum of squares over the whole hidden dimension, so
+    ///   a hidden-dim split would need a collective just to normalize. The
+    ///   weight is one scalar per channel, 6 KB at BF16 on a 3072-wide model.
+    /// - **Routers** must produce byte-identical top-k expert selections on
+    ///   every rank or the dispatch desynchronizes. Column-sharding the logits
+    ///   would need an all-gather before the top-k.
+    ///
+    /// vLLM states this in the model structure it prints at load: sharded
+    /// modules are `ColumnParallelLinear` / `RowParallelLinear` / `QKVParallelLinear`
+    /// / `VocabParallelEmbedding` and carry a `tp_size=` field, while replicated
+    /// ones are `ReplicatedLinear` or a bare `RMSNorm` and carry none.
+    pub fn replicates_under_tp(self) -> bool {
+        matches!(self, WeightCategory::Norms | WeightCategory::Routers)
     }
 }
 

@@ -39,6 +39,8 @@ const DEFAULT_INPUT: AnalyzeInput = {
   // so `weightPrecision` only applies when the user asks for a what-if.
   isHypotheticalWeight: false,
   indexJson: null,
+  speculatorJson: null,
+  disableSpeculator: false,
   // vLLM defaults with chunked prefill on.
   maxNumBatchedTokens: 8192,
   maxNumSeqs: 256,
