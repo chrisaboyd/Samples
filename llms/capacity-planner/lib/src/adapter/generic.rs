@@ -201,6 +201,8 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
         estimated_parameter_count: Some(exact),
         source_precision: Some(precision.label().to_string()),
         quantization: checkpoint_marker(quantization.as_ref(), precision),
+        // Not in config.json; filled in by the caller when an index was fetched.
+        checkpoint_total_size_bytes: None,
     };
 
     Ok(NormalizedModel {

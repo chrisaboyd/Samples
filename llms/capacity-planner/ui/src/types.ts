@@ -14,7 +14,13 @@ export interface MemoryResult {
   weightGiBPerGpu: number;
   checkpointStorageGiB: number;
   checkpointPrecisionLabel: string;
+  /** Whole PRD §14 estimate: fixed + activation + per-sequence. */
   runtimeGiBPerGpu: number;
+  runtimeFixedGiBPerGpu: number;
+  runtimeActivationGiBPerGpu: number;
+  runtimeSequenceGiBPerGpu: number;
+  /** True when max_num_seqs bound concurrency rather than KV memory. */
+  concurrencyCappedByScheduler: boolean;
   kvGiBPerAverageSequence: number;
   kvGiBPerMaximumSequence: number;
   freeGiBPerGpu: number;
@@ -132,6 +138,8 @@ export interface ScenarioResult {
 export type Precision = "fp32" | "fp16" | "bf16" | "fp8" | "nvfp4" | "int8" | "int4";
 
 // Field names mirror the backend's AnalyzeCommand (camelCase).
+export type MemoryProfile = "conservative" | "balanced" | "aggressive";
+
 export interface AnalyzeInput {
   configJson: string;
   gpu: string;
@@ -146,4 +154,17 @@ export interface AnalyzeInput {
   avgOutputTokens: number;
   sloTargetSeconds: number;
   isHypotheticalWeight: boolean;
+  /** Engine `max_num_batched_tokens`: the widest scheduler step. Transient
+   *  activation memory scales with it (PRD §14). */
+  maxNumBatchedTokens: number;
+  /** Engine `max_num_seqs`: reserves per-sequence logits and sampling buffers,
+   *  and caps the reported concurrency. */
+  maxNumSeqs: number;
+  memoryProfile: MemoryProfile;
+  /**
+   * Raw `model.safetensors.index.json`. Its `metadata.total_size` is the
+   * checkpoint's exact byte total and replaces the architecture-derived
+   * estimate. null when none was supplied or the repository has no index.
+   */
+  indexJson: string | null;
 }

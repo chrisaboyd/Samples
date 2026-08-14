@@ -38,6 +38,11 @@ const DEFAULT_INPUT: AnalyzeInput = {
   // states its own precision — including which tensors it left unquantized —
   // so `weightPrecision` only applies when the user asks for a what-if.
   isHypotheticalWeight: false,
+  indexJson: null,
+  // vLLM defaults with chunked prefill on.
+  maxNumBatchedTokens: 8192,
+  maxNumSeqs: 256,
+  memoryProfile: "balanced",
 };
 
 export const useStore = create<UiState>()((set) => ({

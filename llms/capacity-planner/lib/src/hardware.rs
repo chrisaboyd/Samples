@@ -5,9 +5,24 @@
 //! the memory-fit engine (PRD §15) does not conflate hardware fit with runtime
 //! headroom.
 //!
-//! Units: `memory_marketed_gb` is decimal (10^9 bytes) as vendors advertise;
-//! `usable_gib` is the exact binary-GiB conversion (`GB->GiB`, PRD §33
-//! "GPU memory unit conversion: exact"). f64 is lossless here (< 2^53 bytes).
+//! Units: `memory_marketed_gb` is the number on the spec sheet and is used for
+//! labels only. `usable_gib` is the total the driver actually reports
+//! (`nvidia-smi --query-gpu=memory.total`), which is what an engine's
+//! utilization ceiling multiplies against.
+//!
+//! It is not derived from the marketed figure, because no single conversion
+//! reproduces it. Marketed capacity sits ~0.63% below the driver total on
+//! Ada-class parts and ~6.9–7.4% below it on HBM parts and on GDDR7 Blackwell:
+//! NVIDIA overprovisions each die by however much that product needs to survive
+//! row-remapping of bad cells over its service life, so the gap is a per-SKU
+//! manufacturing decision rather than a GB-vs-GiB unit question. Treating the
+//! marketed number as decimal GB and converting understated the RTX PRO 6000 by
+//! 6.2 GiB and the B200 by 11.4 GiB.
+//!
+//! Where ECC costs capacity (GDDR6 parts, which lack on-die ECC and reserve
+//! ~6.25% of the framebuffer for it) the ECC-enabled figure is used, since that
+//! is the shipping default. GDDR7 and HBM parts do ECC on-die at no capacity
+//! cost. f64 is lossless here (< 2^53 bytes).
 
 use serde::{Deserialize, Serialize};
 
@@ -40,9 +55,10 @@ pub struct Gpu {
     pub product_family: &'static str,
     pub sku: &'static str,
     pub architecture: &'static str,
-    /// Marketed memory capacity in decimal GB (10^9 bytes).
+    /// Marketed memory capacity as printed on the spec sheet. Display only —
+    /// never the basis for a capacity calculation (see module docs).
     pub memory_marketed_gb: f64,
-    /// Usable capacity in GiB (exact GB->GiB conversion).
+    /// Total capacity the driver reports, in GiB. Measured, not derived.
     pub usable_gib: f64,
     /// Memory bandwidth in GB/s (decimal).
     pub memory_bandwidth_gbs: f64,
@@ -91,7 +107,13 @@ pub struct Gpu {
 pub const GB: f64 = 1_000_000_000.0;
 pub const GIB: f64 = 1024.0 * 1024.0 * 1024.0;
 
-/// Exact marketed-GB -> GiB conversion, usable in `const` context.
+/// Exact MiB -> GiB conversion for driver-reported totals, `const`-usable.
+const fn gib_from_mib(driver_total_mib: f64) -> f64 {
+    driver_total_mib / 1024.0
+}
+
+/// Fallback for SKUs with no driver figure on record. Only the unified-memory
+/// parts use this, and only because `nvidia-smi` reports `N/A` on them.
 const fn gib_from_gb(marketed_gb: f64) -> f64 {
     (marketed_gb * GB) / GIB
 }
@@ -105,7 +127,10 @@ pub const GPU_CATALOG: &[Gpu] = &[
         sku: "RTX 6000 Ada Generation",
         architecture: "Ada Lovelace",
         memory_marketed_gb: 48.0,
-        usable_gib: gib_from_gb(48.0),
+        // GDDR6 without on-die ECC: enabling ECC (the shipping default, and not
+        // reliably disableable on this card) costs ~6.25% of the framebuffer.
+        // 49_140 MiB with ECC off.
+        usable_gib: gib_from_mib(46_068.0),
         memory_bandwidth_gbs: 960.0,
         bf16_fp16_tflops: 130.0,
         fp8_tflops: None,
@@ -120,7 +145,7 @@ pub const GPU_CATALOG: &[Gpu] = &[
         typical_runtime_reserve_gib: 1.0,
         default_utilization: 0.90,
         default_topology: Topology::PciE,
-        source: "PRD §9 / NVIDIA spec sheet",
+        source: "PRD §9 / NVIDIA spec sheet; memory.total 46068 MiB (ECC on)",
     },
     Gpu {
         manufacturer: "NVIDIA",
@@ -128,7 +153,8 @@ pub const GPU_CATALOG: &[Gpu] = &[
         sku: "RTX PRO 6000 Blackwell Workstation Edition",
         architecture: "Blackwell",
         memory_marketed_gb: 96.0,
-        usable_gib: gib_from_gb(96.0),
+        // GDDR7 ECC is on-die, so this figure already has ECC enabled.
+        usable_gib: gib_from_mib(97_887.0),
         memory_bandwidth_gbs: 1_792.0,
         bf16_fp16_tflops: 130.0,
         fp8_tflops: Some(260.0),
@@ -143,7 +169,7 @@ pub const GPU_CATALOG: &[Gpu] = &[
         typical_runtime_reserve_gib: 1.0,
         default_utilization: 0.90,
         default_topology: Topology::PciE,
-        source: "PRD §9 lines 413, 420",
+        source: "PRD §9 lines 413, 420; memory.total 97887 MiB",
     },
     Gpu {
         manufacturer: "NVIDIA",
@@ -151,7 +177,7 @@ pub const GPU_CATALOG: &[Gpu] = &[
         sku: "H100 SXM 80 GB",
         architecture: "Hopper",
         memory_marketed_gb: 80.0,
-        usable_gib: gib_from_gb(80.0),
+        usable_gib: gib_from_mib(81_559.0),
         memory_bandwidth_gbs: 3_300.0, // 3.3 TB/s, PRD §422
         bf16_fp16_tflops: 1_000.0,
         // Hopper's FP8 tensor cores run at 2× the BF16 rate. This was previously
@@ -170,7 +196,7 @@ pub const GPU_CATALOG: &[Gpu] = &[
         typical_runtime_reserve_gib: 1.0,
         default_utilization: 0.90,
         default_topology: Topology::NvLink4,
-        source: "PRD §9 lines 416, 422",
+        source: "PRD §9 lines 416, 422; memory.total 81559 MiB",
     },
     Gpu {
         manufacturer: "NVIDIA",
@@ -181,7 +207,7 @@ pub const GPU_CATALOG: &[Gpu] = &[
         // part look 4× faster than it is on FP4 workloads it cannot run.
         architecture: "Hopper",
         memory_marketed_gb: 141.0,
-        usable_gib: gib_from_gb(141.0),
+        usable_gib: gib_from_mib(143_771.0),
         memory_bandwidth_gbs: 4_800.0,
         bf16_fp16_tflops: 1_000.0,
         fp8_tflops: Some(2_000.0),
@@ -197,7 +223,7 @@ pub const GPU_CATALOG: &[Gpu] = &[
         typical_runtime_reserve_gib: 1.0,
         default_utilization: 0.90,
         default_topology: Topology::NvLink4,
-        source: "PRD §9 lines 417, 422",
+        source: "PRD §9 lines 417, 422; memory.total 143771 MiB",
     },
     Gpu {
         manufacturer: "NVIDIA",
@@ -205,7 +231,7 @@ pub const GPU_CATALOG: &[Gpu] = &[
         sku: "B200 SXM 180 GB",
         architecture: "Blackwell",
         memory_marketed_gb: 180.0,
-        usable_gib: gib_from_gb(180.0),
+        usable_gib: gib_from_mib(183_359.0),
         memory_bandwidth_gbs: 8_000.0, // 8 TB/s per GPU, PRD §422
         bf16_fp16_tflops: 1_000.0,
         fp8_tflops: Some(2_000.0),
@@ -220,7 +246,7 @@ pub const GPU_CATALOG: &[Gpu] = &[
         typical_runtime_reserve_gib: 1.0,
         default_utilization: 0.90,
         default_topology: Topology::NvLink5,
-        source: "PRD §9 lines 418, 422",
+        source: "PRD §9 lines 418, 422; memory.total 183359 MiB",
     },
     // ---- Grace Blackwell desktop parts (unified memory) --------------------
     //
@@ -241,6 +267,11 @@ pub const GPU_CATALOG: &[Gpu] = &[
         sku: "DGX Spark (GB10)",
         architecture: "Grace Blackwell",
         memory_marketed_gb: 128.0,
+        // UNVERIFIED. `nvidia-smi` reports memory.total as N/A on unified-memory
+        // parts — there is no private frame buffer to report — so the driver
+        // figure that every other entry uses does not exist here. Falling back
+        // to the decimal conversion, which the discrete SKUs have now shown to
+        // run 0.6-7.4% low. Replace with `free -b` MemTotal from a real GB10.
         usable_gib: gib_from_gb(128.0),
         memory_bandwidth_gbs: 273.0,
         bf16_fp16_tflops: 125.0,
@@ -266,6 +297,7 @@ pub const GPU_CATALOG: &[Gpu] = &[
         sku: "Dell Pro Max with GB10",
         architecture: "Grace Blackwell",
         memory_marketed_gb: 128.0,
+        // UNVERIFIED — same GB10 superchip, same missing driver figure.
         usable_gib: gib_from_gb(128.0),
         memory_bandwidth_gbs: 273.0,
         bf16_fp16_tflops: 125.0,
@@ -369,8 +401,38 @@ mod tests {
         let g = find("RTX PRO 6000 Blackwell Workstation").unwrap();
         assert_eq!(g.memory_marketed_gb, 96.0);
         assert!((g.memory_bandwidth_gbs - 1_792.0).abs() < 1e-6);
-        // exact decimal->GiB
-        assert!((g.usable_gib - (96.0 * GB / GIB)).abs() < 1e-9);
+        // The driver reports 97887 MiB, not the 89.41 GiB a decimal GB->GiB
+        // conversion of the marketed 96 GB produces.
+        assert!((g.usable_gib - 97_887.0 / 1024.0).abs() < 1e-9);
+        assert!((g.usable_gib - 95.5928).abs() < 1e-4, "{}", g.usable_gib);
+    }
+
+    /// Marketed capacity is not the driver total, and no conversion turns one
+    /// into the other: every discrete part is overprovisioned relative to its
+    /// decimal-GB reading, by 0.6% on Ada and ~7% on HBM and GDDR7. Deriving
+    /// `usable_gib` instead of measuring it cost 5-11 GiB per card.
+    #[test]
+    fn discrete_capacity_is_measured_not_converted_from_marketed_gb() {
+        for g in catalog().iter().filter(|g| !g.unified_memory) {
+            let decimal = g.memory_marketed_gb * GB / GIB;
+            assert!(
+                g.usable_gib > decimal,
+                "{}: usable {:.4} GiB is not above the {:.4} GiB decimal conversion — \
+                 looks like a derived value crept back in",
+                g.sku,
+                g.usable_gib,
+                decimal
+            );
+            // Driver totals also stay under the marketed number read as binary
+            // GiB; a few hundred MiB is always carved out.
+            assert!(
+                g.usable_gib < g.memory_marketed_gb,
+                "{}: usable {:.4} GiB exceeds {} GiB of physical DRAM",
+                g.sku,
+                g.usable_gib,
+                g.memory_marketed_gb
+            );
+        }
     }
 
     #[test]

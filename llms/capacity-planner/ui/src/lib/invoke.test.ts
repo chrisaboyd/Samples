@@ -23,6 +23,10 @@ const INPUT: AnalyzeInput = {
   avgOutputTokens: 512,
   sloTargetSeconds: 10,
   isHypotheticalWeight: true,
+  indexJson: null,
+  maxNumBatchedTokens: 8192,
+  maxNumSeqs: 256,
+  memoryProfile: "balanced",
 };
 
 // Mirrors the field list on the Rust `AnalyzeCommand` struct. Every one of these
@@ -41,6 +45,13 @@ const REQUIRED_FIELDS = [
   "avgOutputTokens",
   "sloTargetSeconds",
   "isHypotheticalWeight",
+  // Optional on the Rust side (`#[serde(default)]`), but always sent, so an
+  // index cleared in the UI actually clears in the backend rather than being
+  // omitted and leaving a stale value.
+  "indexJson",
+  "maxNumBatchedTokens",
+  "maxNumSeqs",
+  "memoryProfile",
 ] as const;
 
 describe("analyzeArgs", () => {

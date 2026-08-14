@@ -92,7 +92,7 @@ pub(crate) fn gib_precise(bytes: u128) -> String {
 
 /// Auto-scaled byte size. Per-step byte terms span from a few KiB of activations
 /// to tens of GiB of weights, so a fixed GiB unit renders half of them as 0.00.
-pub(crate) fn bytes_h(bytes: f64) -> String {
+pub fn bytes_h(bytes: f64) -> String {
     const KIB: f64 = 1024.0;
     const MIB: f64 = KIB * 1024.0;
     const GIB: f64 = MIB * 1024.0;
@@ -179,6 +179,9 @@ pub struct ExplainContext<'a> {
     pub load_factor: f64,
     pub loaded_per_rank: u128,
     pub runtime_bytes: u128,
+    /// The PRD §14 coefficients behind `runtime_bytes`, so the derivation can
+    /// show which term dominates rather than a single opaque reserve.
+    pub runtime: crate::runtime::RuntimeMemory,
     pub draft_bytes: u128,
     pub free_for_kv: u128,
 
@@ -215,13 +218,18 @@ pub fn memory_derivations(c: &ExplainContext) -> Vec<Derivation> {
     out.push(d(
         "m-physical",
         "Physical VRAM per GPU",
-        "The card's advertised memory, converted from decimal GB (what vendors \
-         market) to binary GiB (what allocators report).",
-        "M_physical = marketed_GB × 10^9 / 2^30",
+        "What the driver reports the card has, which is not the number on the \
+         box. NVIDIA overprovisions each part so it can retire bad memory cells \
+         over its service life, by ~0.6% on Ada-class cards and ~7% on HBM and \
+         GDDR7 ones, so no arithmetic gets you from the marketed figure to this \
+         one. It is read from the catalog, measured per SKU.",
+        "M_physical = nvidia-smi memory.total",
         format!(
-            "{} GB × 10^9 / 2^30\n= {} bytes / 1,073,741,824",
+            "{} reports {} MiB\n= {} bytes  (marketed as {} GB)",
+            c.gpu.sku,
+            commas(c.physical_bytes / (1024 * 1024)),
+            commas(c.physical_bytes),
             c.gpu.memory_marketed_gb,
-            commas(c.physical_bytes)
         ),
         gib_s(c.physical_bytes),
     ));
@@ -306,11 +314,38 @@ pub fn memory_derivations(c: &ExplainContext) -> Vec<Derivation> {
 
     out.push(d(
         "m-runtime",
-        "Runtime reserve per GPU",
-        "Fixed allowance for the CUDA context, memory allocator, and compiled \
-         kernels. Held back before any KV cache is budgeted.",
-        "M_runtime = per-SKU fixed reserve",
-        format!("{} catalog default", c.gpu.sku),
+        "Runtime memory per GPU",
+        "Everything the engine holds that is neither weights nor KV blocks: the \
+         CUDA context, allocator, compiled kernels, captured CUDA graphs and \
+         collective buffers, plus the transient activations of the widest \
+         scheduler step and the logits and sampling buffers for every running \
+         sequence. Held back before any KV cache is budgeted.",
+        "M_runtime = M_fixed + M_token × N_scheduledTokens + M_sequence × N_runningSequences",
+        format!(
+            "{} fixed ({} catalog reserve + CUDA graphs{})\n\
+             + {}/token × {} scheduled tokens = {}\n\
+             + {}/seq × {} running sequences = {}\n\
+             ({} profile, ×{:.2})",
+            gib_s(c.runtime.fixed_bytes),
+            c.gpu.sku,
+            if c.tp > 1 { " + collectives" } else { "" },
+            bytes_h(c.runtime.per_token_bytes as f64),
+            commas(c.workload.max_num_batched_tokens as u128),
+            gib_s(
+                c.runtime
+                    .per_token_bytes
+                    .saturating_mul(c.workload.max_num_batched_tokens as u128)
+            ),
+            bytes_h(c.runtime.per_sequence_bytes as f64),
+            commas(c.workload.max_num_seqs as u128),
+            gib_s(
+                c.runtime
+                    .per_sequence_bytes
+                    .saturating_mul(c.workload.max_num_seqs as u128)
+            ),
+            c.workload.memory_profile.label(),
+            c.workload.memory_profile.factor(),
+        ),
         gib_s(c.runtime_bytes),
     ));
 

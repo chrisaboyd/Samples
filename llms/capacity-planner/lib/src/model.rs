@@ -102,6 +102,16 @@ pub struct Weights {
     pub estimated_parameter_count: Option<u128>,
     pub source_precision: Option<String>,
     pub quantization: Option<QuantizationMetadata>,
+    /// `metadata.total_size` from the checkpoint's `model.safetensors.index.json`
+    /// — every tensor byte the repository actually holds, scales included.
+    ///
+    /// An adapter can never set this: it is not in `config.json`. It is filled in
+    /// by whoever fetched the index, and when present it replaces the
+    /// architecture-derived total outright (Level B beats Level C). It describes
+    /// the checkpoint as built, so the hypothetical-requantization path ignores
+    /// it.
+    #[serde(default)]
+    pub checkpoint_total_size_bytes: Option<u128>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -56,7 +56,19 @@ impl Rule {
 
     fn matches(&self, module: &str) -> bool {
         match self {
-            Rule::Literal(name) => name == module,
+            // A literal entry names a *module*, and naming a module excludes
+            // everything under it — `model.layers.44.mlp.experts` is an
+            // nn.ModuleList, so it stands for all 256 experts inside it, not for
+            // a tensor of that exact name. Requiring exact equality here read
+            // that entry as matching nothing and sized 9 GiB of BF16 experts as
+            // FP8. The boundary check keeps `model.layers.4` off
+            // `model.layers.44...`.
+            Rule::Literal(name) => {
+                module == name
+                    || module
+                        .strip_prefix(name.as_str())
+                        .is_some_and(|rest| rest.starts_with('.'))
+            }
             Rule::Pattern(re) => re.is_match(module),
             Rule::ClassName => true,
         }
@@ -192,17 +204,20 @@ impl CheckpointQuantization {
     /// vLLM's FP8 checkpoints declare.
     ///
     /// It carries no `targets` list because it has no need of one: every
-    /// `nn.Linear` weight is FP8 except `modules_to_not_convert`. Two modules
-    /// are always excluded and are not usually listed — `model.embed_tokens` is
-    /// an `nn.Embedding` and is never converted, and `lm_head` is in the
+    /// `nn.Linear` weight is FP8 except the exclusion list. Two modules are
+    /// always excluded and are not usually listed — `model.embed_tokens` is an
+    /// `nn.Embedding` and is never converted, and `lm_head` is in the
     /// quantizer's default skip set.
     ///
-    /// `weight_block_size` (typically 128×128) gives one FP32 scale per 16,384
-    /// weights — 0.02% overhead, below the resolution of everything else in this
-    /// model, so it is not added to the byte total the way NVFP4's per-16 scales
-    /// are.
+    /// The exclusion list has two spellings in the wild and a checkpoint may use
+    /// either: `modules_to_not_convert` (what transformers' own FP8 quantizer
+    /// writes) and `ignored_layers` (what llm-compressor and vLLM's FP8 path
+    /// write). Reading only the first sized a checkpoint whose attention, shared
+    /// experts, layer-0 MLP and last four expert layers are all BF16 as though
+    /// every one of them were FP8, 12.2 GiB under its real 122.25 GiB.
     fn from_hf_fp8(cfg: &serde_json::Map<String, Value>, format: String) -> Self {
         let mut ignore = rules_from(cfg.get("modules_to_not_convert"));
+        ignore.extend(rules_from(cfg.get("ignored_layers")));
         ignore.push(Rule::Literal("lm_head".to_string()));
         ignore.push(Rule::Literal("model.embed_tokens".to_string()));
 

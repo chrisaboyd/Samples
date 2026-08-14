@@ -161,13 +161,16 @@ impl<'a> ComponentBuilder<'a> {
     }
 
     /// Add `count` elements of a tensor at module path `module`.
+    ///
+    /// A category that cannot be quantized keeps the base dtype whatever the
+    /// scheme says, so no adapter has to remember to special-case it.
     pub(crate) fn add(&mut self, category: WeightCategory, module: &str, count: u128) {
         if count == 0 {
             return;
         }
         let precision = match self.quant {
-            Some(q) => q.precision_for(module, self.base),
-            None => self.base,
+            Some(q) if category.is_quantizable() => q.precision_for(module, self.base),
+            _ => self.base,
         };
         match self
             .buckets

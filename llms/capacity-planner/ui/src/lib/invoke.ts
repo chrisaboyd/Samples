@@ -23,3 +23,9 @@ export async function analyze(input: AnalyzeInput): Promise<ScenarioResult> {
 export async function fetchConfig(url: string): Promise<string> {
   return invoke<string>("fetch_config", { url });
 }
+
+/// Fetch the repository's `model.safetensors.index.json`, or null when it has
+/// none. Single-shard checkpoints publish no index, so absence is normal.
+export async function fetchIndex(url: string): Promise<string | null> {
+  return invoke<string | null>("fetch_index", { url });
+}

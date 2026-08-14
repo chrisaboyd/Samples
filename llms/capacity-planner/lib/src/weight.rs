@@ -47,9 +47,19 @@ pub fn reassign_precision(
         .collect()
 }
 
-/// Bytes for one weight component, including NVFP4 scale overhead when relevant.
+/// Elements covered by one FP8 block scale, and the width of that scale.
+///
+/// HF's native FP8 scheme declares `weight_block_size: [128, 128]`, so one FP32
+/// `weight_scale_inv` covers a 128×128 tile. At 0.02% this is small next to the
+/// weights, but it is inside the `total_size` a checkpoint reports, so leaving
+/// it out puts a floor under how exact the analytic path can be.
+const FP8_BLOCK_ELEMENTS: u64 = 128 * 128;
+const FP8_SCALE_BYTES: f64 = 4.0;
+
+/// Bytes for one weight component, including scale overhead when relevant.
 /// PRD §12.2: NVFP4 "includes per-group FP8 scales rather than costing exactly
-/// half a byte per parameter."
+/// half a byte per parameter." FP8 block quantization carries the same kind of
+/// overhead at coarser granularity.
 pub fn component_bytes(component: &WeightComponent, nvfp4_group_size: u32) -> f64 {
     let base = (component.element_count as f64) * component.precision.bytes_per_element();
     let scale = match component.precision {
@@ -58,6 +68,12 @@ pub fn component_bytes(component: &WeightComponent, nvfp4_group_size: u32) -> f6
             // one FP8 (1 byte) scale per group
             let groups = (component.element_count as u64).div_ceil(group);
             groups as f64
+        }
+        // Block size is not taken from `nvfp4_group_size`: that is a workload
+        // knob for the hypothetical-NVFP4 path, not the checkpoint's FP8 tile.
+        Precision::Fp8 => {
+            let blocks = (component.element_count as u64).div_ceil(FP8_BLOCK_ELEMENTS);
+            blocks as f64 * FP8_SCALE_BYTES
         }
         _ => 0.0,
     };
@@ -101,6 +117,20 @@ pub fn load_factor(precision: Precision) -> f64 {
         // FP8 resident storage; dequant-to-BF16 compute buffers not included here.
         Precision::Fp8 => 1.00,
         // NVFP4 requires a dequant buffer path.
+        //
+        // Checked against a real serve rather than fitted to it: a Laguna NVFP4
+        // checkpoint holding 92.8354 GiB of tensor data loaded as 98.08 GiB
+        // across TP=4, a whole-model factor of 1.0565. This constant is
+        // per-precision and that checkpoint is only 53% NVFP4 by stored bytes,
+        // so the two are not the same quantity — 1.07 here byte-weights to 1.037
+        // and predicts 24.08 GiB/rank against 24.52 observed, 1.8% low.
+        //
+        // Closing that 1.8% by raising this to 1.106 would assume every byte of
+        // overhead belongs to the NVFP4 tensors. It does not: allocator
+        // alignment across 126,625 tensors is precision-independent, and the run
+        // also had a speculative draft model whose weights may sit inside the
+        // 98.08. One mixed checkpoint cannot separate those, so the constant
+        // stays put and the measurement stands as a validation.
         Precision::Nvfp4 => 1.07,
         // INT8/INT4 dequantize up to BF16 for kernels that lack int compute.
         Precision::Int8 => 1.15,
@@ -281,8 +311,9 @@ mod tests {
         ];
         let f = effective_load_factor(&mixed, 16);
         assert!(f > 1.0 && f < load_factor(Precision::Nvfp4), "got {f}");
-        // 4500 B at 1.07 + 4000 B at 1.00, over 8500 B.
-        assert!((f - (4500.0 * 1.07 + 4000.0) / 8500.0).abs() < 1e-12);
+        // 4500 B at the NVFP4 factor + 4000 B at 1.00, over 8500 B.
+        let nvfp4 = load_factor(Precision::Nvfp4);
+        assert!((f - (4500.0 * nvfp4 + 4000.0) / 8500.0).abs() < 1e-12);
 
         // Uniform sets must reduce to the plain per-precision factor.
         let uniform = [comp(WeightCategory::RoutedExperts, 8_000, Precision::Nvfp4)];

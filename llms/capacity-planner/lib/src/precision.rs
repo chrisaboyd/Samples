@@ -79,15 +79,22 @@ pub enum WeightCategory {
     Biases,
 }
 
-/// Per-category quantization compatibility for hypothetical estimates.
+/// Per-category quantization compatibility.
 ///
-/// Conservative MVP table: everything except norms can take a compressed
-/// format; the PRD's mixed-precision NVFP4 example leaves attention/embeddings
-/// in BF16 while experts go NVFP4 — the scenario layer decides which categories
-/// are reassigned.
+/// Conservative table: most categories can take a compressed format; the PRD's
+/// mixed-precision NVFP4 example leaves attention/embeddings in BF16 while
+/// experts go NVFP4 — the scenario layer decides which categories are
+/// reassigned.
+///
+/// Norms and routers are the exceptions, and routers for a reason worth stating:
+/// top-k expert selection is sensitive to precision, so vLLM's fused-MoE path
+/// keeps the gate at the base dtype and llm-compressor's ignore lists name it
+/// explicitly. Every MoE checkpoint examined stores `mlp.gate` in BF16 even when
+/// the surrounding experts are FP8. Treating it as quantizable meant a scheme
+/// that did not bother to list the router got it sized at half its real weight.
 impl WeightCategory {
     pub fn is_quantizable(self) -> bool {
-        !matches!(self, WeightCategory::Norms)
+        !matches!(self, WeightCategory::Norms | WeightCategory::Routers)
     }
 }
 

@@ -83,9 +83,23 @@ pub struct MemoryResult {
     #[serde(rename = "checkpointStorageGiB")]
     pub checkpoint_storage_gib: f64,
     pub checkpoint_precision_label: String,
-    /// Fixed runtime reserve per GPU, GiB.
+    /// Total runtime overhead per GPU, GiB — the whole PRD §14 estimate:
+    /// `M_fixed + M_token × scheduledTokens + M_sequence × runningSequences`.
     #[serde(rename = "runtimeGiBPerGpu")]
     pub runtime_gib_per_gpu: f64,
+    /// The `M_fixed` share: CUDA context, kernels, allocator, CUDA graphs, NCCL.
+    #[serde(rename = "runtimeFixedGiBPerGpu")]
+    pub runtime_fixed_gib_per_gpu: f64,
+    /// The `M_token × scheduledTokens` share: transient activations for the
+    /// widest scheduler step.
+    #[serde(rename = "runtimeActivationGiBPerGpu")]
+    pub runtime_activation_gib_per_gpu: f64,
+    /// The `M_sequence × runningSequences` share: logits and sampling buffers.
+    #[serde(rename = "runtimeSequenceGiBPerGpu")]
+    pub runtime_sequence_gib_per_gpu: f64,
+    /// True when the scheduler's `max_num_seqs` bound the reported concurrency
+    /// rather than KV memory running out.
+    pub concurrency_capped_by_scheduler: bool,
     /// KV cache cost per average-maximum sequence, GiB.
     #[serde(rename = "kvGiBPerAverageSequence")]
     pub kv_gib_per_average_sequence: f64,
@@ -271,6 +285,10 @@ impl ScenarioResult {
                 checkpoint_storage_gib: 0.0,
                 checkpoint_precision_label: "n/a".to_string(),
                 runtime_gib_per_gpu: 0.0,
+                runtime_fixed_gib_per_gpu: 0.0,
+                runtime_activation_gib_per_gpu: 0.0,
+                runtime_sequence_gib_per_gpu: 0.0,
+                concurrency_capped_by_scheduler: false,
                 kv_gib_per_average_sequence: 0.0,
                 kv_gib_per_maximum_sequence: 0.0,
                 free_gib_per_gpu: 0.0,

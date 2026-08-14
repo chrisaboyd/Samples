@@ -231,6 +231,11 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
                 &format!("model.layers.{i}.mlp.gate"),
                 hidden * num_experts,
             );
+            // `experts.e_score_correction_bias`: one bias per expert, for the
+            // aux-loss-free load balancing this config selects with
+            // `router_aux_loss_coef: 0.0`. Tiny, and always BF16, but it is in
+            // the checkpoint, so omitting it stops the total short of exact.
+            builder.add_unquantized(WeightCategory::Routers, num_experts);
         }
     }
 
@@ -273,6 +278,8 @@ pub(crate) fn normalize_family(raw: &Value) -> Result<NormalizedModel> {
         estimated_parameter_count: None,
         source_precision: Some(precision.label().to_string()),
         quantization: checkpoint_marker(quantization.as_ref(), precision),
+        // Not in config.json; filled in by the caller when an index was fetched.
+        checkpoint_total_size_bytes: None,
     };
 
     Ok(NormalizedModel {
@@ -335,8 +342,9 @@ mod tests {
         let p = m.parameter_count().unwrap();
         // Hand calc: emb 616,562,688 + attn 2,803,138,560 + dense mlp 113,246,208
         // + routed (47 sparse layers) 113,548,197,888 + shared 443,547,648
-        // + router 36,962,304 + norms 310,272 = 117,561,965,568 (~117.56B).
-        assert_eq!(p, 117_561_965_568);
+        // + router 36,962,304 + e_score_correction_bias 12,032 + norms 310,272
+        // = 117,561,977,600 (~117.56B).
+        assert_eq!(p, 117_561_977_600);
     }
 
     /// `o_proj` maps `heads × head_dim → hidden`, not `hidden → hidden`. Laguna's
@@ -460,7 +468,7 @@ mod tests {
 
         // Parameter count is a property of the architecture, so quantizing must
         // not change it — only the bytes those parameters occupy.
-        assert_eq!(m.parameter_count().unwrap(), 117_561_965_568);
+        assert_eq!(m.parameter_count().unwrap(), 117_561_977_600);
     }
 
     /// Everything the `ignore` list names stays at the checkpoint's base dtype.
@@ -505,7 +513,7 @@ mod tests {
         let bytes = |m: &NormalizedModel| checkpoint_storage_bytes(&m.weights.components, 16);
         let (plain_bytes, quant_bytes) = (bytes(&plain), bytes(&quant));
         // BF16 throughout: 117.56B × 2 B.
-        assert_eq!(plain_bytes, 117_561_965_568 * 2);
+        assert_eq!(plain_bytes, 117_561_977_600 * 2);
         // NVFP4 on 39 of 47 expert layers takes it to ~42% of the BF16 size.
         // A blanket NVFP4 reading — the bug — claims ~28%, because it also
         // shrinks the 22.5B parameters the checkpoint left alone.

@@ -26,6 +26,7 @@ use crate::kv::{self, derive_kv_config};
 use crate::model::NormalizedModel;
 use crate::performance::{self, PerformanceInputs};
 use crate::precision::Precision;
+use crate::runtime::{self, MemoryProfile};
 use crate::result::{
     AssumptionRecord, BindingConstraint, ConfidenceSummary, EvidenceRecord, MemoryResult,
     PerformanceResult, PracticalCapacity, Provenance, ScenarioResult, TopologyResult, Verdict,
@@ -33,9 +34,6 @@ use crate::result::{
 use crate::weight;
 use crate::GIB_BYTES;
 
-/// Phase-1 memory-profile ceiling. The PRD (§14) defines Conservative / Balanced /
-/// Aggressive as a UI knob; Phase 1 ships Conservative (absorb per-scheduler
-/// overhead into the fixed runtime reserve).
 const DEFAULT_VLLM_BLOCK_TOKENS: u32 = 128;
 
 /// Workload snapshot driving a memory evaluation.
@@ -55,6 +53,16 @@ pub struct Workload {
     pub avg_output_tokens: u64,
     /// Target model-step completion time in seconds (PRD §8).
     pub slo_target_seconds: f64,
+    /// Engine `max_num_batched_tokens`: the widest scheduler step, and so
+    /// `N_scheduledTokens` in the PRD §14 runtime formula. Transient activation
+    /// memory scales with it directly.
+    pub max_num_batched_tokens: u64,
+    /// Engine `max_num_seqs`: the running-sequence ceiling, and so
+    /// `N_runningSequences` in PRD §14. vLLM profiles at this value and reserves
+    /// the result up front, so it both costs memory and caps concurrency.
+    pub max_num_seqs: u64,
+    /// Conservative / Balanced / Aggressive runtime estimate (PRD §14).
+    pub memory_profile: MemoryProfile,
 }
 
 impl Default for Workload {
@@ -75,6 +83,10 @@ impl Default for Workload {
             avg_output_tokens: 512,
             // 10 s "Step target" from PRD §21.2 / §8.
             slo_target_seconds: 10.0,
+            // vLLM defaults with chunked prefill on.
+            max_num_batched_tokens: 8_192,
+            max_num_seqs: 256,
+            memory_profile: MemoryProfile::Balanced,
         }
     }
 }
@@ -85,10 +97,14 @@ pub struct Inputs<'a> {
     pub workload: Workload,
 }
 
-/// Physical VRAM bytes from a marketed-GB figure (exact 1e9/2^30 conversion;
-/// PRD §33 "GPU memory unit conversion: exact").
-fn physical_bytes(marketed_gb: f64) -> u128 {
-    (marketed_gb * 1_000_000_000.0) as u128
+/// Physical VRAM bytes from the driver-reported total in GiB.
+///
+/// This used to take the marketed GB figure and multiply by 1e9, on the theory
+/// that "96GB" meant 96 × 10^9 bytes. It does not — see the `hardware` module
+/// docs — and the utilization ceiling an engine applies is a fraction of the
+/// driver total, so that is the only number the fit math may start from.
+fn physical_bytes(usable_gib: f64) -> u128 {
+    (usable_gib * GIB_BYTES as f64) as u128
 }
 
 fn to_gib(bytes: u128) -> f64 {
@@ -146,19 +162,63 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
     validate(inputs)?;
     let gpu = inputs.gpu.gpu()?;
     let tp = inputs.workload.tensor_parallel.max(1);
-    let physical = physical_bytes(gpu.memory_marketed_gb);
+    let physical = physical_bytes(gpu.usable_gib);
     let available = (physical as f64 * inputs.gpu.utilization()?) as u128;
-    let reserve_gib = inputs.gpu.runtime_reserve_gib()?;
-    let runtime_bytes = (reserve_gib * GIB_BYTES as f64) as u128;
 
     let w = &inputs.workload;
-    let loaded_per_rank = weight::loaded_weight_bytes_per_rank(
+
+    // PRD §14: fixed footprint + per-scheduled-token activations + per-running-
+    // sequence logits and sampling buffers. Everything but the weights and the
+    // KV blocks themselves.
+    //
+    // The sequence term is reserved at `max_num_seqs` rather than at the
+    // concurrency this function is computing, because that is what vLLM's
+    // profile run does: it measures peak at the configured maxima and subtracts
+    // the result before allocating a single block. The reservation does not
+    // shrink when fewer requests are in flight.
+    let rt = runtime::estimate(
+        inputs.model,
+        gpu,
+        tp,
+        w.memory_profile,
+        inputs.gpu.runtime_reserve_gib,
+        w.max_num_seqs,
+    );
+    let runtime_bytes = rt.total_bytes(w.max_num_batched_tokens, w.max_num_seqs);
+    let reserve_gib = to_gib(runtime_bytes);
+
+    // Components describe how the checkpoint is laid out; the index (when one
+    // was fetched) states what it weighs. Prefer the measurement, but only for
+    // the checkpoint as built — under a hypothetical requantization the index
+    // describes a checkpoint that is not the one being sized.
+    let components = weight::reassign_precision(
         inputs.model,
         w.weight_precision,
         w.is_hypothetical_weight,
         w.nvfp4_group_size,
-        tp,
     );
+    let measured_checkpoint_bytes = if w.is_hypothetical_weight {
+        None
+    } else {
+        inputs.model.weights.checkpoint_total_size_bytes
+    };
+    let checkpoint_bytes = measured_checkpoint_bytes
+        .unwrap_or_else(|| weight::checkpoint_storage_bytes(&components, w.nvfp4_group_size));
+
+    let loaded_per_rank = match measured_checkpoint_bytes {
+        // Same repack/dequant factor, applied to the real storage figure.
+        Some(total) => {
+            let factor = weight::effective_load_factor(&components, w.nvfp4_group_size);
+            ((total as f64 * factor) / tp as f64).floor() as u128
+        }
+        None => weight::loaded_weight_bytes_per_rank(
+            inputs.model,
+            w.weight_precision,
+            w.is_hypothetical_weight,
+            w.nvfp4_group_size,
+            tp,
+        ),
+    };
     let run_reserve_and_load = loaded_per_rank
         .saturating_add(runtime_bytes)
         .saturating_add(w.draft_kv_bytes_per_seq);
@@ -193,18 +253,14 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
     let kv_bytes_avg_exact = cfg_avg.bytes_per_sequence_exact();
     let kv_bytes_max_exact = cfg_max.bytes_per_sequence_exact();
 
-    let c_avg = kv::memory_concurrency(free_for_kv, kv_bytes_avg);
-    let c_max = kv::memory_concurrency(free_for_kv, kv_bytes_max);
-
-    // Kept in scope (rather than scoped to the sum) so the derivation can show
-    // the per-category breakdown that actually produced `checkpoint_bytes`.
-    let components = weight::reassign_precision(
-        inputs.model,
-        w.weight_precision,
-        w.is_hypothetical_weight,
-        w.nvfp4_group_size,
-    );
-    let checkpoint_bytes = weight::checkpoint_storage_bytes(&components, w.nvfp4_group_size);
+    // Memory says how many sequences fit; the scheduler says how many may run.
+    // Reserving activations for `max_num_seqs` and then reporting more than that
+    // would be counting the same ceiling twice.
+    let c_avg_memory = kv::memory_concurrency(free_for_kv, kv_bytes_avg);
+    let c_max_memory = kv::memory_concurrency(free_for_kv, kv_bytes_max);
+    let c_avg = c_avg_memory.min(w.max_num_seqs);
+    let c_max = c_max_memory.min(w.max_num_seqs);
+    let scheduler_capped = c_avg_memory > w.max_num_seqs;
 
     let verdict = if !weights_fit {
         Verdict::DoesNotFit
@@ -225,6 +281,15 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         checkpoint_storage_gib: to_gib(checkpoint_bytes),
         checkpoint_precision_label: checkpoint_label,
         runtime_gib_per_gpu: to_gib(runtime_bytes),
+        runtime_fixed_gib_per_gpu: to_gib(rt.fixed_bytes),
+        runtime_activation_gib_per_gpu: to_gib(
+            rt.per_token_bytes
+                .saturating_mul(w.max_num_batched_tokens as u128),
+        ),
+        runtime_sequence_gib_per_gpu: to_gib(
+            rt.per_sequence_bytes.saturating_mul(w.max_num_seqs as u128),
+        ),
+        concurrency_capped_by_scheduler: scheduler_capped,
         kv_gib_per_average_sequence: to_gib(kv_bytes_avg),
         kv_gib_per_maximum_sequence: to_gib(kv_bytes_max),
         free_gib_per_gpu: to_gib(free_for_kv),
@@ -251,6 +316,28 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         .any(|c| Some(c.precision.label()) != base_precision);
 
     let mut warnings = Vec::new();
+
+    // When both figures exist they should agree. A gap means the adapter is
+    // mis-modelling the architecture or misreading the quantization scheme, and
+    // the index is the one telling the truth. Saying so beats silently
+    // substituting the right number and leaving the formula broken for every
+    // model that has no index to check it against.
+    if let Some(measured) = measured_checkpoint_bytes {
+        let derived = weight::checkpoint_storage_bytes(&components, w.nvfp4_group_size);
+        let delta = measured.abs_diff(derived);
+        if measured > 0 && (delta as f64 / measured as f64) > 0.01 {
+            warnings.push(format!(
+                "The architecture-derived weight total ({:.2} GiB) disagrees with the \
+                 checkpoint index ({:.2} GiB) by {:.2} GiB. The index figure is used below. \
+                 A gap this size usually means a quantization scheme the config declares was \
+                 not fully read, or tensors the adapter does not model.",
+                to_gib(derived),
+                to_gib(measured),
+                to_gib(delta),
+            ));
+        }
+    }
+
     if hypothesis_warning {
         // A checkpoint that declares its own quantization already knows what it
         // is. Overriding that is a legitimate what-if, but silently reporting
@@ -287,6 +374,15 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
     }
     if c_max == 0 && weights_fit {
         warnings.push("Weights fit but no KV-cache room remains at maximum context.".to_string());
+    }
+    if scheduler_capped {
+        warnings.push(format!(
+            "KV memory holds {c_avg_memory} sequences at average context but max_num_seqs is {}, \
+             so the scheduler binds first. Raising it would convert spare KV memory into \
+             concurrency, at {} of logits and sampling buffers per added sequence.",
+            w.max_num_seqs,
+            explain::bytes_h(rt.per_sequence_bytes as f64),
+        ));
     }
 
     if cfg_max.kv_is_replicated() {
@@ -351,19 +447,27 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         warnings.push(format!("Inferred from an incomplete config: {note}"));
     }
 
+    // The index only settles weight *bytes*. KV geometry still comes from
+    // config.json, so a model with unreadable attention dimensions stays at D no
+    // matter how exact its weights are.
+    let indexed = measured_checkpoint_bytes.is_some();
     let confidence = Confidence {
         grade: if analytical {
             ConfidenceGrade::Analytical
         } else {
             ConfidenceGrade::Speculative
         },
-        level: if analytical {
-            AnalyzeLevel::C
-        } else {
-            AnalyzeLevel::D
+        level: match (analytical, indexed) {
+            (true, true) => AnalyzeLevel::B,
+            (true, false) => AnalyzeLevel::C,
+            (false, _) => AnalyzeLevel::D,
         },
         reasons: vec![
-            if analytical {
+            if analytical && indexed {
+                "Checkpoint index (Level B) — weight bytes read from \
+                 model.safetensors.index.json; KV from config.json"
+                    .to_string()
+            } else if analytical {
                 "Architecture-derived (Level C) from config.json".to_string()
             } else if !kv_geometry_known {
                 "Generic approximation (Level D) — key architecture fields missing".to_string()
@@ -394,12 +498,30 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
     let mut assumptions = vec![
         AssumptionRecord {
             id: "m-avail".into(),
-            description: "M_available = M_physical * U with U from GPU memory utilization (Phase-1 conservative profile).".into(),
+            description: "M_available = M_physical * U with U from GPU memory utilization."
+                .into(),
             scope: "memory".into(),
         },
         AssumptionRecord {
             id: "runtime-reserve".into(),
-            description: "Fixed runtime reserve absorbs per-scheduler-token/sequence overhead (§14) in the conservative profile.".into(),
+            description: format!(
+                "Runtime memory follows PRD §14: M_fixed + M_token × {} scheduled tokens + \
+                 M_sequence × {} running sequences, on the {} profile ({}). Coefficients are \
+                 architecture-derived and await benchmark calibration (§17).",
+                w.max_num_batched_tokens,
+                w.max_num_seqs,
+                w.memory_profile.label(),
+                w.memory_profile.purpose(),
+            ),
+            scope: "memory".into(),
+        },
+        AssumptionRecord {
+            id: "seq-reservation".into(),
+            description:
+                "Per-sequence activation is reserved at max_num_seqs, not at the concurrency \
+                 solved for: vLLM profiles at its configured maxima and subtracts the result \
+                 before allocating KV blocks, so the reservation does not shrink under light load."
+                    .into(),
             scope: "memory".into(),
         },
         AssumptionRecord {
@@ -408,8 +530,11 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
             scope: "memory".into(),
         },
         AssumptionRecord {
-            id: "gb-to-gib".into(),
-            description: "Marketeted GB converted to GiB via 1e9/2^30 (exact for these magnitudes).".into(),
+            id: "driver-reported-capacity".into(),
+            description: "Capacity is the total the driver reports (nvidia-smi memory.total), \
+                          not a conversion of the marketed GB figure — the two differ by \
+                          0.6-7.4% depending on how much NVIDIA overprovisioned the part."
+                .into(),
             scope: "memory".into(),
         },
     ];
@@ -418,12 +543,35 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         EvidenceRecord {
             what: "physical VRAM".into(),
             value: format!("{:.4} GiB", gpu.usable_gib),
-            source: "PRD §9".into(),
+            source: "GPU catalog (driver-reported memory.total)".into(),
+        },
+        EvidenceRecord {
+            what: "checkpoint storage".into(),
+            value: format!("{:.4} GiB", to_gib(checkpoint_bytes)),
+            source: match measured_checkpoint_bytes {
+                Some(_) => "model.safetensors.index.json metadata.total_size".into(),
+                None => "architecture-derived from config.json".into(),
+            },
         },
         EvidenceRecord {
             what: "utilization U".into(),
             value: format!("{:.2}", inputs.gpu.utilization()? * 100.0),
             source: "GPU-catalog default".into(),
+        },
+        EvidenceRecord {
+            what: "runtime M_fixed".into(),
+            value: format!("{:.4} GiB", to_gib(rt.fixed_bytes)),
+            source: "catalog reserve + CUDA graphs + collectives (PRD §14)".into(),
+        },
+        EvidenceRecord {
+            what: "runtime M_token".into(),
+            value: format!("{} bytes/token", rt.per_token_bytes),
+            source: "architecture-derived peak layer activation".into(),
+        },
+        EvidenceRecord {
+            what: "runtime M_sequence".into(),
+            value: format!("{} bytes/sequence", rt.per_sequence_bytes),
+            source: "FP32 logits over vocabulary + sampling workspace".into(),
         },
         EvidenceRecord {
             what: "loaded weight/rank".into(),
@@ -566,6 +714,7 @@ pub fn evaluate(inputs: &Inputs) -> Result<ScenarioResult> {
         checkpoint_bytes,
         loaded_per_rank,
         runtime_bytes,
+        runtime: rt,
         draft_bytes: w.draft_kv_bytes_per_seq,
         free_for_kv,
         kv_avg_exact: kv_bytes_avg_exact,

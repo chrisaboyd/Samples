@@ -7,6 +7,7 @@
 use capacity_planner::hardware::{GpuConfig, Topology};
 use capacity_planner::memory::{Inputs, Workload};
 use capacity_planner::precision::Precision;
+use capacity_planner::runtime::MemoryProfile;
 use capacity_planner::{adapter, memory, ScenarioResult};
 use serde::Deserialize;
 
@@ -30,12 +31,33 @@ pub struct AnalyzeCommand {
     avg_output_tokens: u64,
     slo_target_seconds: f64,
     is_hypothetical_weight: bool,
+    /// Engine `max_num_batched_tokens` — drives PRD §14 activation memory.
+    max_num_batched_tokens: u64,
+    /// Engine `max_num_seqs` — reserves per-sequence buffers and caps concurrency.
+    max_num_seqs: u64,
+    /// Conservative / Balanced / Aggressive runtime estimate (PRD §14).
+    memory_profile: MemoryProfile,
+    /// Raw `model.safetensors.index.json`, when the user supplied one or the URL
+    /// fetch found one. Optional: most inputs are a bare config.json, and the
+    /// architecture-derived total is the fallback.
+    #[serde(default)]
+    index_json: Option<String>,
 }
 
 /// Pure calculation behind the `analyze` command (no `AppHandle` needed).
 pub fn analyze_core(cmd: &AnalyzeCommand) -> capacity_planner::Result<ScenarioResult> {
     let raw: serde_json::Value = serde_json::from_str(&cmd.config_json)?;
-    let model = adapter::normalize(&raw)?;
+    let mut model = adapter::normalize(&raw)?;
+
+    // A malformed index is not fatal: the analytic total still describes the
+    // model, and failing the whole analysis over an optional input would be
+    // worse than sizing it the way a config-only run does.
+    if let Some(text) = &cmd.index_json {
+        model.weights.checkpoint_total_size_bytes = serde_json::from_str(text)
+            .ok()
+            .as_ref()
+            .and_then(capacity_planner::sources::index_total_size);
+    }
 
     let gpu = GpuConfig {
         sku: cmd.gpu.clone(),
@@ -59,6 +81,9 @@ pub fn analyze_core(cmd: &AnalyzeCommand) -> capacity_planner::Result<ScenarioRe
         draft_kv_bytes_per_seq: 0,
         avg_output_tokens: cmd.avg_output_tokens,
         slo_target_seconds: cmd.slo_target_seconds,
+        max_num_batched_tokens: cmd.max_num_batched_tokens,
+        max_num_seqs: cmd.max_num_seqs,
+        memory_profile: cmd.memory_profile,
     };
 
     memory::evaluate(&Inputs {
@@ -83,11 +108,23 @@ fn fetch_config(url: String) -> Result<String, String> {
     svc.fetch_config(&url).map_err(|e| e.to_string())
 }
 
+/// Fetch `model.safetensors.index.json` for the same repository. Returns `None`
+/// when the repository has no index — single-shard checkpoints do not publish
+/// one, and that is not an error.
+#[tauri::command]
+fn fetch_index(url: String) -> Result<Option<String>, String> {
+    let token = std::env::var("HF_TOKEN").ok();
+    let svc = capacity_planner::sources::SourceService::new(token);
+    svc.fetch_index(&url)
+        .map_err(|e| e.to_string())
+        .map(|v| v.map(|v| v.to_string()))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![analyze, fetch_config])
+        .invoke_handler(tauri::generate_handler![analyze, fetch_config, fetch_index])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -112,18 +149,29 @@ mod tests {
             avg_output_tokens: 512,
             slo_target_seconds: 10.0,
             is_hypothetical_weight: true,
+            index_json: None,
+            max_num_batched_tokens: 8_192,
+            max_num_seqs: 256,
+            memory_profile: MemoryProfile::Balanced,
         }
     }
 
     /// Golden numbers for the *public* (unquantized) Laguna config with the
     /// NVFP4 what-if override on. The concurrency moved 107 → 106 when the
     /// adapter picked up the attention output gate and the true `o_proj` shape,
-    /// which added ~800M parameters to the model.
+    /// which added ~800M parameters to the model. It then moved 106 → 119: the
+    /// B200's capacity came off a decimal GB→GiB conversion of "180 GB" and is
+    /// now the 183,359 MiB the driver reports (+11.4 GiB), less the router,
+    /// which is no longer sized as if a quantizer would touch it. Then 119 → 116
+    /// when runtime memory became the PRD §14 model (3.44 GiB on Balanced at
+    /// 8192 batched tokens and 256 sequences) instead of a flat 1 GiB. Then
+    /// 116 held once the CUDA-graph constant was
+    /// calibrated against a measured vLLM serve (the reservation, not the capture).
     #[test]
     fn analyze_core_laguna_b200_matches_golden_numbers() {
         let r = analyze_core(&laguna_cmd()).expect("evaluates");
         assert_eq!(r.verdict, capacity_planner::result::Verdict::Comfortable);
-        assert_eq!(r.memory.memory_concurrency_average, 106);
+        assert_eq!(r.memory.memory_concurrency_average, 116);
         assert_eq!(r.memory.memory_concurrency_maximum, 3);
         assert!(r
             .memory
@@ -164,12 +212,15 @@ mod tests {
               "maxContextTokens": 1048576,
               "avgOutputTokens": 512,
               "sloTargetSeconds": 10.0,
-              "isHypotheticalWeight": true
+              "isHypotheticalWeight": true,
+              "maxNumBatchedTokens": 8192,
+              "maxNumSeqs": 256,
+              "memoryProfile": "balanced"
             }}"#
         );
         let cmd: AnalyzeCommand = serde_json::from_str(&payload).expect("payload deserializes");
         let r = analyze_core(&cmd).expect("evaluates");
-        assert_eq!(r.memory.memory_concurrency_average, 106);
+        assert_eq!(r.memory.memory_concurrency_average, 116);
         assert_eq!(r.memory.memory_concurrency_maximum, 3);
         assert_eq!(r.provenance.gpu_sku, "B200 SXM 180 GB");
     }
@@ -206,9 +257,12 @@ mod tests {
             "avgOutputTokens": 512,
             "sloTargetSeconds": 10.0,
             "isHypotheticalWeight": true,
+            "maxNumBatchedTokens": 8192,
+            "maxNumSeqs": 256,
+            "memoryProfile": "balanced",
         });
         let keys: Vec<String> = full.as_object().unwrap().keys().cloned().collect();
-        assert_eq!(keys.len(), 11, "AnalyzeCommand field count changed");
+        assert_eq!(keys.len(), 14, "AnalyzeCommand field count changed");
         for key in &keys {
             let mut partial = full.clone();
             partial.as_object_mut().unwrap().remove(key);

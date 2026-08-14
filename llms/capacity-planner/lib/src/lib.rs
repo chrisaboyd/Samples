@@ -25,6 +25,7 @@ pub mod performance;
 pub mod precision;
 pub mod quant;
 pub mod result;
+pub mod runtime;
 pub mod sources;
 pub mod weight;
 

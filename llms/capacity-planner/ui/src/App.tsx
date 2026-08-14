@@ -22,8 +22,8 @@ const BINDING_LABEL: Record<BindingConstraint, string> = {
 import { InputsUsed } from "./components/InputsUsed";
 import { indexDerivations, levelKey } from "./glossary";
 import { useStore, GPU_SKUS } from "./store";
-import type { Precision, Range, ScenarioResult, Verdict } from "./types";
-import { analyze, fetchConfig } from "./lib/invoke";
+import type { MemoryProfile, Precision, Range, ScenarioResult, Verdict } from "./types";
+import { analyze, fetchConfig, fetchIndex } from "./lib/invoke";
 import "./App.css";
 
 const PRECISIONS: Precision[] = ["fp16", "bf16", "fp8", "nvfp4", "int8", "int4", "fp32"];
@@ -111,7 +111,11 @@ export default function App() {
     setLoading(true);
     try {
       const cfg = await fetchConfig(url);
-      setInputs({ configJson: cfg });
+      // The index is what makes the weight total exact rather than derived, so
+      // it is fetched with the config rather than as a separate opt-in. A repo
+      // without one is normal and must not fail the config fetch.
+      const idx = await fetchIndex(url).catch(() => null);
+      setInputs({ configJson: cfg, indexJson: idx });
     } catch (e) {
       setError(String(e));
     } finally {
@@ -171,16 +175,36 @@ export default function App() {
     e.target.value = "";
   };
 
-  const handleLoadConfig = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setInputs({ configJson: (ev.target?.result as string) ?? "" });
-      setError(null);
-    };
-    reader.readAsText(file);
+  // Accepts config.json and model.safetensors.index.json together — both live in
+  // the same model directory, and the index is what turns a derived weight total
+  // into a measured one. Files are told apart by shape rather than by filename,
+  // since a downloaded copy is often renamed.
+  const handleLoadConfig = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
     e.target.value = "";
+    if (files.length === 0) return;
+
+    let config: string | null = null;
+    let index: string | null = null;
+    for (const file of files) {
+      const text = await file.text();
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(text);
+      } catch {
+        setError(`${file.name} is not valid JSON`);
+        return;
+      }
+      const obj = parsed as Record<string, unknown>;
+      if (obj?.weight_map || obj?.metadata) index = text;
+      else config = text;
+    }
+
+    // Always set both. Leaving a previously fetched index in place while the
+    // config changes underneath it would size one checkpoint with another's
+    // byte total.
+    setInputs({ configJson: config ?? inputs.configJson, indexJson: index });
+    setError(null);
   };
 
   const hasModel = !!inputs.configJson.trim();
@@ -215,7 +239,11 @@ export default function App() {
             <textarea
               placeholder="Paste model config.json here"
               value={inputs.configJson}
-              onChange={(e) => setInputs({ configJson: e.target.value })}
+              onChange={(e) =>
+                // Clear any index fetched for a previous model: it describes a
+                // checkpoint that is no longer the one in the box.
+                setInputs({ configJson: e.target.value, indexJson: null })
+              }
               rows={8}
             />
             <div className="row">
@@ -223,15 +251,20 @@ export default function App() {
                 type="file"
                 ref={configFileRef}
                 accept=".json,application/json"
+                multiple
                 onChange={handleLoadConfig}
                 style={{ display: "none" }}
               />
               <button
                 type="button"
                 onClick={() => configFileRef.current?.click()}
+                title="Select config.json, and model.safetensors.index.json too for an exact weight total"
               >
                 Choose config.json…
               </button>
+              {inputs.indexJson && (
+                <span className="provenance">index loaded — exact weights</span>
+              )}
               <span className="hint">or paste above</span>
             </div>
             <div className="row url-row">
@@ -306,6 +339,36 @@ export default function App() {
               value={inputs.sloTargetSeconds}
               onChange={(v) => setInputs({ sloTargetSeconds: Math.max(0.1, v) })}
             />
+            {/* Engine scheduler settings. These are not cosmetic: activation
+                memory scales with the widest step, and max_num_seqs both
+                reserves per-sequence buffers and caps concurrency (PRD §14). */}
+            <NumberInput
+              label="max_num_batched_tokens"
+              value={inputs.maxNumBatchedTokens}
+              onChange={(v) => setInputs({ maxNumBatchedTokens: Math.max(1, v) })}
+            />
+            <NumberInput
+              label="max_num_seqs"
+              value={inputs.maxNumSeqs}
+              onChange={(v) => setInputs({ maxNumSeqs: Math.max(1, v) })}
+            />
+            <div className="field">
+              <span>Memory profile</span>
+              <select
+                value={inputs.memoryProfile}
+                onChange={(e) =>
+                  setInputs({ memoryProfile: e.target.value as MemoryProfile })
+                }
+              >
+                <option value="conservative">
+                  Conservative — procurement and production planning
+                </option>
+                <option value="balanced">Balanced — typical deployment</option>
+                <option value="aggressive">
+                  Aggressive — maximum technical fit
+                </option>
+              </select>
+            </div>
             {/* Unchecked, weights are sized from the checkpoint's own
                 `quantization_config` — including the tensors it left at full
                 precision. The selector below is a what-if that replaces that,

@@ -48,9 +48,44 @@ pub fn parse_hf_url(url: &str) -> Result<ParsedUrl> {
     })
 }
 
+/// `metadata.total_size` from a `model.safetensors.index.json`: the summed byte
+/// length of every tensor in the checkpoint, quantization scales included.
+///
+/// Pure parsing, so it works on a file the user supplied as well as on a fetched
+/// one, and needs no `sources` feature. Returns `None` for an index that omits
+/// the field rather than guessing from the shard list.
+pub fn index_total_size(index: &serde_json::Value) -> Option<u128> {
+    index
+        .get("metadata")?
+        .get("total_size")?
+        .as_u64()
+        .map(u128::from)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn reads_total_size_from_an_index() {
+        let idx = serde_json::json!({
+            "metadata": { "total_size": 131_264_796_160u64 },
+            "weight_map": { "lm_head.weight": "model-00001-of-00049.safetensors" }
+        });
+        assert_eq!(index_total_size(&idx), Some(131_264_796_160));
+    }
+
+    #[test]
+    fn index_without_metadata_is_none_not_zero() {
+        assert_eq!(
+            index_total_size(&serde_json::json!({ "weight_map": {} })),
+            None
+        );
+        assert_eq!(
+            index_total_size(&serde_json::json!({ "metadata": {} })),
+            None
+        );
+    }
 
     #[test]
     fn bare_repo_url() {

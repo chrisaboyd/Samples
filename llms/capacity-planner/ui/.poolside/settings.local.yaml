@@ -1,0 +1,17 @@
+tools:
+    shell:
+        allow:
+            - ls *
+            - head *
+            - echo *
+            - find *
+            - grep *
+            - wc *
+            - aws *
+            - aws sts get-caller-identity *
+            - sed *
+paths:
+    allow:
+        - path: /Users/chris.boyd/.config/poolside/skills/vllm-perf-analysis/references/**
+        - path: /Users/chris.boyd/Documents/Devault/AI Notes/**
+        - path: /Users/chris.boyd/gitrepos/Samples/llms/capacity-planner/**

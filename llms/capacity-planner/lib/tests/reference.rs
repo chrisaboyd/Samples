@@ -10,6 +10,8 @@ use capacity_planner::memory::{Inputs, Workload};
 use capacity_planner::model::{AttentionKind, NormalizedModel};
 use capacity_planner::precision::Precision;
 use capacity_planner::result::{BindingConstraint, Verdict};
+use capacity_planner::runtime::MemoryProfile;
+use capacity_planner::weight;
 use capacity_planner::ScenarioResult;
 use capacity_planner::GIB_BYTES;
 use serde_json::Value;
@@ -53,6 +55,9 @@ fn run(
         draft_kv_bytes_per_seq: 0,
         avg_output_tokens: 512,
         slo_target_seconds: 10.0,
+        max_num_batched_tokens: 8_192,
+        max_num_seqs: 256,
+        memory_profile: MemoryProfile::Balanced,
     };
     capacity_planner::memory::evaluate(&Inputs {
         model: &model,
@@ -90,10 +95,338 @@ const TINY_LLAMA: &str = r#"{
 #[test]
 fn laguna_param_count_is_architecture_exact() {
     let m = adapter::normalize(&laguna()).unwrap();
-    // 117,561,965,568 (Level C, derived from config.json alone), including the
+    // 117,561,977,600 (Level C, derived from config.json alone), including the
     // attention output gate and an `o_proj` shaped `heads × head_dim → hidden`
     // rather than `hidden → hidden`.
-    assert_eq!(m.parameter_count(), Some(117_561_965_568));
+    assert_eq!(m.parameter_count(), Some(117_561_977_600));
+}
+
+/// The published `poolside/Laguna-S-2.1-FP8` config, sized against the byte
+/// total its own `model.safetensors.index.json` reports.
+///
+/// This is the only test in the suite anchored to a real checkpoint's ground
+/// truth rather than to a hand calculation, and it is the one that would have
+/// caught all four defects behind the 12.19 GiB shortfall this file's other
+/// numbers were consistent with:
+///
+///   * `ignored_layers` unread, so attention, shared experts, the layer-0 dense
+///     MLP and the last four expert layers were all sized FP8   11.99 GiB
+///   * literal ignore entries compared by equality, so the ModuleList entry
+///     `model.layers.44.mlp.experts` matched none of its 256 children
+///   * the MoE router sized FP8 when every checkpoint stores it BF16  0.03 GiB
+///   * FP8 block scales (one FP32 per 128×128 tile) never counted    0.02 GiB
+#[test]
+fn laguna_fp8_checkpoint_storage_matches_the_safetensors_index() {
+    let raw: Value =
+        serde_json::from_str(include_str!("assets/laguna-s-2.1-fp8-config.json")).unwrap();
+    let m = adapter::normalize(&raw).unwrap();
+
+    // `metadata.total_size` from
+    // https://huggingface.co/poolside/Laguna-S-2.1-FP8 — the sum of every
+    // tensor in the checkpoint, scales included.
+    const INDEX_TOTAL_SIZE: u128 = 131_264_796_160;
+
+    let bytes = weight::checkpoint_storage_bytes(&m.weights.components, 16);
+    assert_eq!(
+        bytes, INDEX_TOTAL_SIZE,
+        "config-derived storage {bytes} != index total_size {INDEX_TOTAL_SIZE} \
+         (delta {} bytes)",
+        bytes as i128 - INDEX_TOTAL_SIZE as i128
+    );
+
+    // Quantized share by bytes, not by tensor count: this checkpoint is far less
+    // FP8 than the `quant_method: "fp8"` marker alone suggests, and a label
+    // reading "FP8" flat would be the same class of overclaim.
+    let label = weight::checkpoint_label(false, &m.weights.components, 16);
+    assert_eq!(label, "Exact checkpoint — FP8 79% + BF16 21%");
+}
+
+/// The published `poolside/Laguna-S-2.1-NVFP4` config, checked against the byte
+/// total of its real shard headers.
+///
+/// A second real checkpoint, and deliberately a different scheme from the FP8
+/// one: compressed-tensors rather than HF-native FP8, regex `ignore` rather than
+/// literal `ignored_layers`, 4-bit packing with per-16 FP8 group scales rather
+/// than FP32 per-128×128-tile scales.
+///
+/// Two things this pins that the FP8 test cannot:
+///
+///   * `metadata.total_size` is not a portable definition. This repo reports
+///     99,697,287,856, which is the tensor data *plus* ~15.5 MiB of safetensors
+///     JSON headers — file bytes, not GPU-resident bytes. The FP8 repo's figure
+///     was pure tensor data. So the comparison here is against summed tensor
+///     data, and `checkpoint_total_size_bytes` carries whichever convention the
+///     publishing tool used.
+///   * NVFP4 `tensor_group` stores two FP32 scalars per quantized tensor
+///     (`weight_global_scale`, `input_global_scale`) on top of the per-group
+///     scales. Components are aggregated by category and carry no tensor count,
+///     so those 239,616 bytes are not modelled. At 0.00026% of the checkpoint
+///     that is far below the load-factor uncertainty, and plumbing tensor counts
+///     through to recover it would not buy accuracy anywhere else.
+#[test]
+fn laguna_nvfp4_checkpoint_storage_matches_the_real_shard_headers() {
+    let raw: Value =
+        serde_json::from_str(include_str!("assets/laguna-s-2.1-nvfp4-config.json")).unwrap();
+    let m = adapter::normalize(&raw).unwrap();
+
+    // Summed from the safetensors headers of all 49 shards.
+    const TENSOR_DATA_BYTES: u128 = 99_681_730_048;
+    const UNMODELLED_GLOBAL_SCALES: u128 = 239_616;
+
+    let bytes = weight::checkpoint_storage_bytes(&m.weights.components, 16);
+    assert_eq!(
+        bytes,
+        TENSOR_DATA_BYTES - UNMODELLED_GLOBAL_SCALES,
+        "delta {} bytes from the real checkpoint",
+        TENSOR_DATA_BYTES as i128 - bytes as i128
+    );
+
+    // The regex ignore list leaves everything but 39 layers of routed experts at
+    // BF16, so the checkpoint is a minority NVFP4 by stored bytes.
+    assert_eq!(
+        weight::checkpoint_label(false, &m.weights.components, 16),
+        "Exact checkpoint — NVFP4 53% + BF16 47%"
+    );
+}
+
+/// Evaluate a model with a checkpoint index attached, as the CLI and the Tauri
+/// command do once one has been fetched or loaded.
+fn run_with_index(
+    model: &Value,
+    index_total_size: Option<u128>,
+    hypothetical: bool,
+) -> ScenarioResult {
+    let mut model = adapter::normalize(model).expect("model normalizes");
+    model.weights.checkpoint_total_size_bytes = index_total_size;
+    capacity_planner::memory::evaluate(&Inputs {
+        model: &model,
+        gpu: GpuConfig {
+            sku: "B200 SXM 180 GB".to_string(),
+            count: 1,
+            topology: Topology::PciE,
+            tensor_parallel: 1,
+            replicas: None,
+            utilization: None,
+            runtime_reserve_gib: None,
+        },
+        workload: Workload {
+            avg_context_tokens: 32_768,
+            max_context_tokens: 1_048_576,
+            weight_precision: Precision::Nvfp4,
+            kv_precision: Precision::Fp8,
+            is_hypothetical_weight: hypothetical,
+            nvfp4_group_size: 16,
+            tensor_parallel: 1,
+            prefix_cache_enabled: true,
+            draft_kv_bytes_per_seq: 0,
+            avg_output_tokens: 512,
+            slo_target_seconds: 10.0,
+            max_num_batched_tokens: 8_192,
+            max_num_seqs: 256,
+            memory_profile: MemoryProfile::Balanced,
+        },
+    })
+    .expect("evaluates")
+}
+
+/// A measured checkpoint size beats a derived one, and saying so is the point of
+/// the level: Level B means the weight bytes were read, not computed.
+#[test]
+fn checkpoint_index_replaces_the_derived_total_and_raises_the_level() {
+    let cfg: Value =
+        serde_json::from_str(include_str!("assets/laguna-s-2.1-fp8-config.json")).unwrap();
+
+    let derived = run_with_index(&cfg, None, false);
+    assert_eq!(derived.confidence.analyze_level, AnalyzeLevel::C);
+
+    let indexed = run_with_index(&cfg, Some(131_264_796_160), false);
+    assert_eq!(indexed.confidence.analyze_level, AnalyzeLevel::B);
+    assert_eq!(
+        indexed.memory.checkpoint_storage_gib,
+        131_264_796_160.0 / GIB_BYTES as f64
+    );
+    assert!(indexed
+        .confidence
+        .reasons
+        .iter()
+        .any(|r| r.contains("model.safetensors.index.json")));
+}
+
+/// The index measures the checkpoint on disk. Under a what-if requantization the
+/// figure being sized is deliberately not that checkpoint, so substituting the
+/// measurement would report the current weights under a hypothetical label.
+#[test]
+fn hypothetical_requantization_ignores_the_index() {
+    let cfg: Value =
+        serde_json::from_str(include_str!("assets/laguna-s-2.1-fp8-config.json")).unwrap();
+    let r = run_with_index(&cfg, Some(131_264_796_160), true);
+    assert_eq!(r.confidence.analyze_level, AnalyzeLevel::C);
+    assert!(
+        r.memory.checkpoint_storage_gib < 122.0,
+        "NVFP4 what-if reported {} GiB, the FP8 checkpoint's own size",
+        r.memory.checkpoint_storage_gib
+    );
+}
+
+/// When the formula and the index disagree the index wins, but quietly swapping
+/// in the right number would hide a broken adapter from every model that has no
+/// index to check it against.
+#[test]
+fn a_derived_total_that_contradicts_the_index_is_surfaced() {
+    let cfg: Value =
+        serde_json::from_str(include_str!("assets/laguna-s-2.1-fp8-config.json")).unwrap();
+
+    // The pre-fix figure: `ignored_layers` unread, so 12.19 GiB of BF16 tensors
+    // were sized FP8.
+    let r = run_with_index(&cfg, Some(118_178_838_528), false);
+    let warning = r
+        .warnings
+        .iter()
+        .find(|w| w.contains("disagrees with the checkpoint index"))
+        .expect("mismatch must be reported");
+    assert!(warning.contains("122.25"), "{warning}");
+    assert!(warning.contains("110.06"), "{warning}");
+
+    // An index that agrees says nothing.
+    let ok = run_with_index(&cfg, Some(131_264_796_160), false);
+    assert!(!ok.warnings.iter().any(|w| w.contains("disagrees")));
+}
+
+// ---------------- PRD §14 runtime and activation memory ----------------
+
+/// Evaluate with explicit scheduler settings and memory profile.
+fn run_with_scheduler(
+    gpu_sku: &str,
+    max_num_batched_tokens: u64,
+    max_num_seqs: u64,
+    profile: MemoryProfile,
+) -> ScenarioResult {
+    let model = adapter::normalize(&laguna()).expect("normalizes");
+    capacity_planner::memory::evaluate(&Inputs {
+        model: &model,
+        gpu: GpuConfig {
+            sku: gpu_sku.to_string(),
+            count: 1,
+            topology: Topology::PciE,
+            tensor_parallel: 1,
+            replicas: None,
+            utilization: None,
+            runtime_reserve_gib: None,
+        },
+        workload: Workload {
+            avg_context_tokens: 32_768,
+            max_context_tokens: 1_048_576,
+            weight_precision: Precision::Nvfp4,
+            kv_precision: Precision::Fp8,
+            is_hypothetical_weight: true,
+            nvfp4_group_size: 16,
+            tensor_parallel: 1,
+            prefix_cache_enabled: true,
+            draft_kv_bytes_per_seq: 0,
+            avg_output_tokens: 512,
+            slo_target_seconds: 10.0,
+            max_num_batched_tokens,
+            max_num_seqs,
+            memory_profile: profile,
+        },
+    })
+    .expect("evaluates")
+}
+
+/// Activation memory scales with the scheduler's widest step. A flat reserve
+/// reports the same capacity whether the engine batches 512 tokens or 32,768,
+/// which is what made every concurrency figure optimistic.
+#[test]
+fn activation_memory_scales_with_max_num_batched_tokens() {
+    let narrow = run_with_scheduler("B200", 512, 256, MemoryProfile::Balanced);
+    let wide = run_with_scheduler("B200", 32_768, 256, MemoryProfile::Balanced);
+
+    assert!(
+        wide.memory.runtime_activation_gib_per_gpu
+            > narrow.memory.runtime_activation_gib_per_gpu * 8.0,
+        "activation did not scale: {} vs {}",
+        narrow.memory.runtime_activation_gib_per_gpu,
+        wide.memory.runtime_activation_gib_per_gpu
+    );
+    assert!(
+        wide.memory.free_gib_per_gpu < narrow.memory.free_gib_per_gpu,
+        "a wider scheduler step must leave less room for KV"
+    );
+
+    // The fixed term is the part that does not move with the scheduler.
+    assert_eq!(
+        narrow.memory.runtime_fixed_gib_per_gpu,
+        wide.memory.runtime_fixed_gib_per_gpu
+    );
+}
+
+/// The three terms must add up to the published total, so the breakdown can be
+/// trusted to explain the figure rather than merely accompany it.
+#[test]
+fn runtime_terms_sum_to_the_reported_total() {
+    let r = run_with_scheduler("B200", 8_192, 256, MemoryProfile::Balanced);
+    let m = &r.memory;
+    let sum = m.runtime_fixed_gib_per_gpu
+        + m.runtime_activation_gib_per_gpu
+        + m.runtime_sequence_gib_per_gpu;
+    assert!(
+        (sum - m.runtime_gib_per_gpu).abs() < 1e-9,
+        "{sum} != {}",
+        m.runtime_gib_per_gpu
+    );
+    // And it is materially more than the flat 1 GiB that preceded it.
+    assert!(m.runtime_gib_per_gpu > 3.0, "{}", m.runtime_gib_per_gpu);
+}
+
+/// Conservative reserves the most and therefore reports the least capacity.
+#[test]
+fn memory_profiles_order_capacity_inversely_to_reserve() {
+    let c = run_with_scheduler("B200", 8_192, 256, MemoryProfile::Conservative);
+    let b = run_with_scheduler("B200", 8_192, 256, MemoryProfile::Balanced);
+    let a = run_with_scheduler("B200", 8_192, 256, MemoryProfile::Aggressive);
+
+    assert!(
+        c.memory.runtime_gib_per_gpu > b.memory.runtime_gib_per_gpu
+            && b.memory.runtime_gib_per_gpu > a.memory.runtime_gib_per_gpu
+    );
+    assert!(
+        c.memory.memory_concurrency_average <= b.memory.memory_concurrency_average
+            && b.memory.memory_concurrency_average <= a.memory.memory_concurrency_average
+    );
+}
+
+/// Reserving activations for `max_num_seqs` and then reporting more concurrency
+/// than that would count the same ceiling twice. The cap is reported, not hidden.
+#[test]
+fn concurrency_is_capped_by_max_num_seqs_and_says_so() {
+    let capped = run_with_scheduler("B200", 8_192, 64, MemoryProfile::Balanced);
+    assert_eq!(capped.memory.memory_concurrency_average, 64);
+    assert!(capped.memory.concurrency_capped_by_scheduler);
+    assert!(capped
+        .warnings
+        .iter()
+        .any(|w| w.contains("max_num_seqs is 64") && w.contains("scheduler binds first")));
+
+    // With headroom the memory ceiling is the one that binds, and no cap is claimed.
+    let uncapped = run_with_scheduler("B200", 8_192, 4_096, MemoryProfile::Balanced);
+    assert!(uncapped.memory.memory_concurrency_average < 4_096);
+    assert!(!uncapped.memory.concurrency_capped_by_scheduler);
+}
+
+/// Every FP8 tensor the index lists carries an FP32 `weight_scale_inv` per
+/// 128×128 tile, and those bytes are inside `total_size`.
+#[test]
+fn fp8_block_scales_are_counted() {
+    use capacity_planner::model::WeightComponent;
+    use capacity_planner::precision::WeightCategory;
+    let c = WeightComponent {
+        category: WeightCategory::RoutedExperts,
+        element_count: 128 * 128 * 3,
+        precision: Precision::Fp8,
+        is_hypothetical: false,
+    };
+    // 49,152 weight bytes + 3 FP32 scales.
+    assert_eq!(weight::component_bytes(&c, 16), 49_152.0 + 12.0);
 }
 
 #[test]
@@ -152,7 +485,7 @@ fn laguna_does_not_fit_on_48gb_gpu() {
 
 #[test]
 fn laguna_constrained_on_single_rtx_pro_6000() {
-    // Weights fit (~65 GiB < ~80 GiB available) but max-context KV (24 GiB) does not.
+    // Weights fit (~65 GiB < ~86 GiB available) but max-context KV (24 GiB) does not.
     let r = run(
         &laguna(),
         "RTX PRO 6000 Blackwell Workstation Edition",
@@ -164,7 +497,17 @@ fn laguna_constrained_on_single_rtx_pro_6000() {
         1_048_576,
     );
     assert_eq!(r.verdict, Verdict::Constrained);
-    assert_eq!(r.memory.memory_concurrency_average, 17);
+    // 17 → 24 when capacity stopped being a decimal GB→GiB conversion of "96 GB"
+    // and became the 97,887 MiB the driver reports (+5.6 GiB of KV after
+    // utilization), then 24 → 21 when runtime memory stopped being a flat 1 GiB
+    // and became the PRD §14 model: 2.12 GiB fixed (catalog reserve + CUDA
+    // graphs for 48 layers) + 1.12 GiB of activations at 8192 batched tokens +
+    // 0.19 GiB of logits at 256 sequences. Then 21 → 21 again with the
+    // CUDA-graph term calibrated against a real serve: it now models what vLLM
+    // *reserves* during profiling (1.5677 GiB for 48 layers at 51 captured
+    // shapes), which is what actually shrinks the KV cache, rather than the
+    // 2.06 GiB capture eventually cost.
+    assert_eq!(r.memory.memory_concurrency_average, 21);
     assert_eq!(r.memory.memory_concurrency_maximum, 0);
     assert_eq!(r.confidence.memory, ConfidenceGrade::Analytical);
     assert_eq!(r.confidence.analyze_level, AnalyzeLevel::C);

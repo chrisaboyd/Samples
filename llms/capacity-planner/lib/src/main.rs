@@ -18,6 +18,7 @@ use capacity_planner::memory::{Inputs, Workload};
 use capacity_planner::precision::Precision;
 #[cfg(feature = "sources")]
 use capacity_planner::sources::SourceService;
+use capacity_planner::runtime::MemoryProfile;
 use capacity_planner::ScenarioResult;
 use clap::{Parser, ValueEnum};
 
@@ -46,6 +47,23 @@ impl PrecArg {
     }
 }
 
+#[derive(Debug, ValueEnum, Clone, Copy)]
+enum ProfileArg {
+    Conservative,
+    Balanced,
+    Aggressive,
+}
+
+impl ProfileArg {
+    fn to_profile(self) -> MemoryProfile {
+        match self {
+            ProfileArg::Conservative => MemoryProfile::Conservative,
+            ProfileArg::Balanced => MemoryProfile::Balanced,
+            ProfileArg::Aggressive => MemoryProfile::Aggressive,
+        }
+    }
+}
+
 #[derive(Parser, Debug)]
 #[command(
     name = "capacity-planner",
@@ -63,6 +81,12 @@ struct Cli {
     /// Path to a local config.json or model directory.
     #[arg(long)]
     file: Option<PathBuf>,
+
+    /// Path to a local `model.safetensors.index.json`. Its `metadata.total_size`
+    /// is the checkpoint's exact byte total and replaces the architecture-derived
+    /// estimate. With `--url` the index is fetched automatically.
+    #[arg(long)]
+    index_file: Option<PathBuf>,
 
     /// GPU SKU to evaluate (substring match on catalog names).
     #[arg(long, default_value = "RTX PRO 6000 Blackwell Workstation Edition")]
@@ -105,6 +129,21 @@ struct Cli {
     #[arg(long, default_value_t = 10.0)]
     slo_target: f64,
 
+    /// Engine `max_num_batched_tokens`. Sets the widest scheduler step, which is
+    /// what transient activation memory scales with (PRD §14).
+    #[arg(long, default_value_t = 8_192)]
+    max_num_batched_tokens: u64,
+
+    /// Engine `max_num_seqs`. Both reserves per-sequence logits and sampling
+    /// buffers and caps the reported concurrency.
+    #[arg(long, default_value_t = 256)]
+    max_num_seqs: u64,
+
+    /// Runtime memory profile (PRD §14): conservative for procurement,
+    /// aggressive for maximum technical fit.
+    #[arg(long, value_enum, default_value_t = ProfileArg::Balanced)]
+    memory_profile: ProfileArg,
+
     /// Override the checkpoint's own precision with `--weight-precision`,
     /// answering "what if this model were quantized to X?". The result is
     /// labelled hypothetical per PRD §12.2.
@@ -124,7 +163,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let config_text = load_config_text(&cli)?;
     let raw: serde_json::Value = serde_json::from_str(&config_text)?;
-    let model = adapter::normalize(&raw)?;
+    let mut model = adapter::normalize(&raw)?;
+    model.weights.checkpoint_total_size_bytes = load_index_total_size(&cli)?;
 
     let gpu = GpuConfig {
         sku: cli.gpu.clone(),
@@ -148,6 +188,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         draft_kv_bytes_per_seq: 0,
         avg_output_tokens: cli.avg_output,
         slo_target_seconds: cli.slo_target,
+        max_num_batched_tokens: cli.max_num_batched_tokens,
+        max_num_seqs: cli.max_num_seqs,
+        memory_profile: cli.memory_profile.to_profile(),
     };
 
     let inputs = Inputs {
@@ -197,4 +240,48 @@ fn load_config_text(cli: &Cli) -> Result<String, Box<dyn std::error::Error>> {
         std::process::exit(2);
     }
     Ok(buf)
+}
+
+/// `metadata.total_size` from an explicit `--index-file`, from the model
+/// directory given to `--file`, or fetched alongside `--url`.
+///
+/// A missing index is not an error — most of the time there is no index to read,
+/// and the architecture-derived total is the documented fallback.
+fn load_index_total_size(cli: &Cli) -> Result<Option<u128>, Box<dyn std::error::Error>> {
+    let read = |path: std::path::PathBuf| -> Result<Option<u128>, Box<dyn std::error::Error>> {
+        if !path.exists() {
+            return Ok(None);
+        }
+        let v: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(path)?)?;
+        Ok(capacity_planner::sources::index_total_size(&v))
+    };
+
+    if let Some(path) = &cli.index_file {
+        return read(path.clone());
+    }
+    if let Some(path) = &cli.file {
+        if path.is_dir() {
+            return read(path.join("model.safetensors.index.json"));
+        }
+        if let Some(dir) = path.parent() {
+            return read(dir.join("model.safetensors.index.json"));
+        }
+    }
+    if let Some(url) = &cli.url {
+        #[cfg(feature = "sources")]
+        {
+            let svc = SourceService::new(std::env::var("HF_TOKEN").ok());
+            // A repository with no index (single-shard checkpoints have none)
+            // returns Ok(None) rather than failing the run.
+            return Ok(svc
+                .fetch_index(url)?
+                .as_ref()
+                .and_then(capacity_planner::sources::index_total_size));
+        }
+        #[cfg(not(feature = "sources"))]
+        {
+            let _ = url;
+        }
+    }
+    Ok(None)
 }
