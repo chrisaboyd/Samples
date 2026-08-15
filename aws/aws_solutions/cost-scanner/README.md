@@ -5,10 +5,6 @@ resources **you** and the **Solutions Architect team** own, works out how
 long each piece of always-on compute has been running, and estimates how
 much money that has cost so far.
 
-It was built for the `sandbox` account (`992382466748`, `us-east-2`) as you
-(`chris.boyd@poolside.ai`, tagged `creator=boyd`) + the SA team (tagged
-`team` = `sa` / `Solution Architects` / `solutions-architecture`), and
-delivers a **daily morning report**.
 
 > **Why two delivery paths?** An AWS Lambda *cannot* write to your local
 > Obsidian vault. So the scanner has a shared core with **two front-ends**:
@@ -87,7 +83,7 @@ like `https://hooks.slack.com/services/T000.../B000.../XXXX`.
 ### 2. Deploy
 
 You need an S3 bucket in the sandbox account to stage the packaged Lambda
-zip (e.g. `cost-scanner-deploy-992382466748`).
+zip (e.g. `cost-scanner-deploy-<redacted>>`).
 
 ```bash
 # either export it
@@ -95,7 +91,7 @@ export SLACK_WEBHOOK_URL='https://hooks.slack.com/services/...'
 
 # then deploy (no SAM CLI required):
 cd aws_solutions/cost-scanner
-./deploy.sh --bucket cost-scanner-deploy-992382466748
+./deploy.sh --bucket cost-scanner-deploy-<redacted>>
 ```
 
 `deploy.sh` will prompt for the webhook if `SLACK_WEBHOOK_URL` isn't set,
