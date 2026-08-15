@@ -5,7 +5,7 @@
   "tags": ["vllm", "inference", "llm"],
   "editable": true,
   "schemaVersion": 39,
-  "version": 2,
+  "version": 4,
   "refresh": "30s",
   "time": { "from": "now-1h", "to": "now" },
   "timezone": "browser",
@@ -37,21 +37,23 @@
   "panels": [
     {
       "id": 1,
-      "type": "stat",
+      "type": "timeseries",
       "title": "Requests Running",
       "description": "Requests currently in the vLLM engine's running batch.",
-      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
-        "defaults": { "unit": "short", "decimals": 0 },
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "min": 0,
+          "custom": { "lineWidth": 2, "fillOpacity": 10, "showPoints": "never", "spanNulls": true }
+        },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-        "colorMode": "none",
-        "graphMode": "area",
-        "textMode": "auto",
-        "justifyMode": "auto"
+        "legend": { "showLegend": true, "displayMode": "list", "placement": "bottom", "calcs": [] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
       },
       "targets": [
         {
@@ -64,32 +66,23 @@
     },
     {
       "id": 2,
-      "type": "stat",
+      "type": "timeseries",
       "title": "Requests Queued",
       "description": "Requests waiting to be scheduled. Sustained non-zero values mean the engine is saturated.",
-      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
           "unit": "short",
           "decimals": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": null },
-              { "color": "#EAB839", "value": 1 },
-              { "color": "red", "value": 10 }
-            ]
-          }
+          "min": 0,
+          "custom": { "lineWidth": 2, "fillOpacity": 10, "showPoints": "never", "spanNulls": true }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-        "colorMode": "value",
-        "graphMode": "area",
-        "textMode": "auto",
-        "justifyMode": "auto"
+        "legend": { "showLegend": true, "displayMode": "list", "placement": "bottom", "calcs": [] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
       },
       "targets": [
         {
@@ -105,7 +98,7 @@
       "type": "gauge",
       "title": "KV Cache Usage",
       "description": "Fraction of the KV cache block pool in use. Approaching 100% forces preemption.",
-      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
@@ -142,7 +135,7 @@
       "type": "stat",
       "title": "Output Throughput",
       "description": "Generated tokens per second.",
-      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": { "unit": "tps", "decimals": 1 },
@@ -169,7 +162,7 @@
       "type": "stat",
       "title": "Prompt Throughput",
       "description": "Prompt (prefill) tokens per second.",
-      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": { "unit": "tps", "decimals": 1 },
@@ -196,7 +189,7 @@
       "type": "stat",
       "title": "Finished Requests",
       "description": "Successfully finished requests per second, all finish reasons.",
-      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": { "unit": "reqps", "decimals": 2 },
@@ -224,7 +217,7 @@
       "type": "timeseries",
       "title": "Time To First Token (TTFT)",
       "description": "Prefill responsiveness as seen by the client.",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
@@ -264,7 +257,7 @@
       "type": "timeseries",
       "title": "Inter-Token Latency (ITL)",
       "description": "Gap between successive generated tokens — perceived streaming smoothness.",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
@@ -305,7 +298,7 @@
       "type": "timeseries",
       "title": "End-to-End Request Latency",
       "description": "Total wall-clock latency per request, including queue time.",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
@@ -345,7 +338,7 @@
       "type": "timeseries",
       "title": "Request Phase Breakdown (p95)",
       "description": "Where p95 latency is spent: waiting in queue, prefill, or decode.",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
@@ -386,7 +379,7 @@
       "type": "timeseries",
       "title": "Token Throughput",
       "description": "Prompt vs generated tokens per second.",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 28 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
@@ -415,52 +408,12 @@
         }
       ]
     },
-    {
-      "id": 15,
-      "type": "timeseries",
-      "title": "Scheduler State",
-      "description": "Running vs queued requests, with preemptions. Queue growth with flat running count means the engine is at capacity.",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
-      "datasource": { "type": "prometheus", "uid": "${ds}" },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "min": 0,
-          "custom": { "lineWidth": 2, "fillOpacity": 0, "showPoints": "never", "spanNulls": true }
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": { "showLegend": true, "displayMode": "list", "placement": "bottom", "calcs": [] },
-        "tooltip": { "mode": "multi", "sort": "desc" }
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": { "type": "prometheus", "uid": "${ds}" },
-          "expr": "sum(vllm:num_requests_running{model_name=~\"$model\"})",
-          "legendFormat": "running"
-        },
-        {
-          "refId": "B",
-          "datasource": { "type": "prometheus", "uid": "${ds}" },
-          "expr": "sum(vllm:num_requests_waiting{model_name=~\"$model\"})",
-          "legendFormat": "waiting"
-        },
-        {
-          "refId": "C",
-          "datasource": { "type": "prometheus", "uid": "${ds}" },
-          "expr": "sum(vllm:num_preemptions{model_name=~\"$model\"})",
-          "legendFormat": "preemptions"
-        }
-      ]
-    },
 
     {
       "id": 16,
       "type": "timeseries",
       "title": "KV Cache Usage Over Time",
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 28 },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 36 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
@@ -489,7 +442,7 @@
       "type": "timeseries",
       "title": "Prefix Cache Hit Rate",
       "description": "Share of prefix-cache queries served from cache. Higher means less prefill work.",
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 28 },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 36 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
@@ -518,7 +471,7 @@
       "type": "timeseries",
       "title": "Finish Reasons",
       "description": "Completed requests per second by finish reason. Sustained 'error' or 'abort' warrants investigation.",
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 28 },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 36 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
@@ -547,7 +500,7 @@
       "type": "timeseries",
       "title": "Queue Time",
       "description": "Time a request waits in the scheduler queue before prefill starts. Rising p99 means the engine is admission-limited.",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 36 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
@@ -587,7 +540,7 @@
       "type": "timeseries",
       "title": "Prefill Time",
       "description": "Time spent in the prefill phase. Scales with prompt length and is reduced by prefix-cache hits.",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 36 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 44 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
@@ -627,7 +580,7 @@
       "type": "timeseries",
       "title": "Decode Time",
       "description": "Time spent in the decode phase. Grows with output length and with batch contention.",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 52 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
@@ -667,7 +620,7 @@
       "type": "timeseries",
       "title": "Inference Time",
       "description": "Time in the running phase (prefill + decode), excluding queue wait. Compare against end-to-end latency to isolate queueing.",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 44 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 52 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {
@@ -707,7 +660,7 @@
       "type": "timeseries",
       "title": "Time Per Output Token",
       "description": "Decode cost normalized per generated token — length-independent, so it isolates engine slowdown from longer responses.",
-      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 52 },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 60 },
       "datasource": { "type": "prometheus", "uid": "${ds}" },
       "fieldConfig": {
         "defaults": {

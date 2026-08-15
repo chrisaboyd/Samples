@@ -18,5 +18,5 @@ spec:
       - poolside-models
   endpoints:
     - port: http
-      interval: 30s
+      interval: 5s
       path: /metrics

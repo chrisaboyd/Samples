@@ -27,9 +27,10 @@ label) and `dcgm-gpu` adds a multi-select `GPU` variable.
 
 ### vllm-overview
 
-Headline stats (running, queued, KV cache, prompt/output tok/s, finished req/s), then
-latency (TTFT, inter-token latency, end-to-end, and a queue/prefill/decode p95
-breakdown), throughput, scheduler state, and cache effectiveness.
+Headline panels: running and queued requests as over-time graphs (top row), plus
+KV cache gauge, prompt/output tok/s, and finished req/s stats. Then latency
+(TTFT, inter-token latency, end-to-end, and a queue/prefill/decode p95
+breakdown), throughput, and cache effectiveness.
 
 The bottom section breaks each latency histogram out into its own p50/p95/p99 panel —
 queue, prefill, decode, inference (prefill + decode, excluding queue wait), and time
