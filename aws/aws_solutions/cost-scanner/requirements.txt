@@ -1,0 +1,10 @@
+# cost-scanner requires NO third-party packages:
+#   - boto3 ships in the AWS Lambda Python runtime AND is already installed
+#     locally alongside the AWS CLI / SSO tooling,
+#   - Slack delivery uses the Python standard library (urllib).
+#
+# So you can `pip install -r requirements.txt` an empty file and it just works.
+# (The line below is intentionally commented out; uncomment only if you ever
+# want to swap the stdlib Slack client for the `requests`-based one.)
+#
+# requests>=2.28.0
