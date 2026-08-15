@@ -1,6 +1,6 @@
 # vLLM inference behavior benchmark
 
-This directory implements the PRD's T01-T10 suite as one dependency-free Python runner, a Kubernetes Job, and a Grafana dashboard. Prompts are sized with the endpoint's tokenizer (or its completion usage fallback), each request's returned prompt count is verified, and results are emitted as JSON plus concise JSON-lines logs.
+This directory implements a bencharmk suite as one dependency-free Python runner, a Kubernetes Job, and a Grafana dashboard. Prompts are sized with the endpoint's tokenizer (or its completion usage fallback), each request's returned prompt count is verified, and results are emitted as JSON plus concise JSON-lines logs.
 
 ## Run locally
 
@@ -16,14 +16,14 @@ Run unit tests with `make test`.
 
 ## Build for the cluster
 
-The Dockerfile and Makefile force `linux/amd64`, even when built with OrbStack on Apple Silicon:
+The Dockerfile and Makefile force `linux/amd64`.
 
 ```sh
 make build IMAGE=REGISTRY/vllm-behavior-benchmark:TAG
 docker push REGISTRY/vllm-behavior-benchmark:TAG
 ```
 
-The boyd-ref manifest currently uses `992382466748.dkr.ecr.us-east-2.amazonaws.com/vllm-benchmark_boyd:latest`. Validate and run it with:
+The current test job uses  currently uses `<redacte>/vllm-benchmark_boyd:latest`. Validate and run it with:
 
 ```sh
 make validate
@@ -54,24 +54,17 @@ Auto-detection reads `block_size` and `num_gpu_blocks` from `vllm:cache_config_i
 
 Import `grafana/vllm-behavior.json` into the existing Grafana instance. The dashboard uses the existing Prometheus datasource and exposes vLLM latency, queue, KV/cache, token throughput, and DCGM GPU signals.
 
-## Analyze results with the Codex skill
+## Analyze results with a skill
 
 The companion skill in `skills/analyze-vllm-benchmark` implements the second half of the workflow:
 
 1. Create the benchmark Job and wait for it to complete.
-2. Ask Codex to use `$analyze-vllm-benchmark` to extract and summarize the latest run.
+2. Ask your agent to use `analyze-vllm-benchmark` to extract and summarize the latest run.
 
-Install the versioned skill into your personal Codex skills directory:
-
-```sh
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-cp -R skills/analyze-vllm-benchmark "${CODEX_HOME:-$HOME/.codex}/skills/"
-```
-
-Then start a new Codex task and use a prompt such as:
+Install the versioned skill into your agents skills directory, then start a new  task and use a prompt such as:
 
 ```text
-Use $analyze-vllm-benchmark to extract and analyze the latest completed benchmark Job in boyd-ref.
+Use analyze-vllm-benchmark to extract and analyze the latest completed benchmark Job in boyd-ref.
 ```
 
 The skill is read-only against Kubernetes. It selects the newest successful Job by label and writes raw logs, normalized JSON, and a Markdown analysis into `results/`. It can also analyze a specific Job or an already-downloaded file:
