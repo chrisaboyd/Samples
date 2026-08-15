@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  macOS launchd agent: runs the AWS cost scanner every morning and writes
+  a dated Markdown report into the Obsidian vault folder.
+
+  Install:
+    cp com.poolside.cost-scanner.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.poolside.cost-scanner.plist
+  Unload:
+    launchctl unload ~/Library/LaunchAgents/com.poolside.cost-scanner.plist
+
+  Edit EnvironmentVariables / ProgramArguments below to match your checkout.
+  To also post the summary to Slack, set SLACK_WEBHOOK_URL here (or omit the
+  <key>SLACK_WEBHOOK_URL</key> entry to skip Slack from the scheduled run).
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.poolside.cost-scanner</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <!-- Use the absolute Homebrew python3 (has boto3 in its site-packages,
+             which launchd's minimal PATH cannot resolve to). -->
+        <string>/opt/homebrew/bin/python3</string>
+        <string>/Users/chris.boyd/gitrepos/Samples/aws/aws_solutions/cost-scanner/scan.py</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/chris.boyd/gitrepos/Samples/aws/aws_solutions/cost-scanner</string>
+
+    <!-- Every morning at 10:00 local time (gives you time to refresh SSO
+         credentials each day before the scan runs). Adjust as you like. -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key><integer>10</integer>
+        <key>Minute</key><integer>0</integer>
+    </dict>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>AWS_PROFILE</key>
+        <string>sandbox</string>
+        <key>AWS_DEFAULT_REGION</key>
+        <string>us-east-2</string>
+        <key>LOG_LEVEL</key>
+        <string>INFO</string>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+        <!-- Optional: uncomment to also post the summary to Slack each morning.
+        <key>SLACK_WEBHOOK_URL</key>
+        <string>https://hooks.slack.com/services/...</string>
+        -->
+    </dict>
+
+    <key>RunAtLoad</key>
+    <false/>
+
+    <!-- Keep the agent's stdout/stderr so you can debug with
+         `log show --predicate 'subsystem == "com.poolside.cost-scanner"'`. -->
+    <key>StandardOutPath</key>
+    <string>/Users/chris.boyd/Library/Logs/cost-scanner.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/chris.boyd/Library/Logs/cost-scanner.err.log</string>
+</dict>
+</plist>

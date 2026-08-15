@@ -1,0 +1,150 @@
+# AWS CloudFormation / SAM template for the daily cost-scanner Lambda.
+#
+# Deploys WITHOUT the SAM CLI: `aws cloudformation deploy --s3-bucket $BUCKET`
+# (the deploy command uploads the packaged Lambda zip for you).
+#
+# The stack creates:
+#   * an IAM role with the read-only permissions the scanner needs,
+#   * a Python 3.13 Lambda (app.handler) that scans the stack's account and
+#     posts a summary to Slack,
+#   * an EventBridge rule that invokes it every morning (UTC),
+#   * a SlackWebhookUrl parameter (NoEcho, injected as SLACK_WEBHOOK_URL).
+#
+# Note: a Lambda CANNOT write to your local Obsidian vault -- that path is
+# handled by the local scan.py + macOS launchd agent instead (see README).
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Daily AWS cost scanner -- inventories own/Solution-Architect-team
+  always-on compute and estimates accumulated run cost, posting a summary
+  to Slack.  Deploys into the account it runs in.
+
+Parameters:
+
+  SlackWebhookUrl:
+    Type: String
+    NoEcho: true
+    Description: Slack incoming-webhook URL (kept secret via NoEcho).
+
+  Profile:
+    Type: String
+    Default: sandbox
+    Description: Informational label for which profile/account this represents.
+
+  EnableCostExplorer:
+    Type: String
+    Default: '1'
+    AllowedValues: ['1', '0']
+    Description: '1 = include the (slower) Cost Explorer actuals cross-check.'
+
+  ScheduleExpression:
+    Type: String
+    Default: 'cron(0 12 * * ? *)'
+    Description: >
+      EventBridge schedule. Default = daily 12:00 UTC (8am EDT / 7am EST).
+
+  ScheduleEnabled:
+    Type: String
+    Default: 'true'
+    AllowedValues: ['true', 'false']
+    Description: Whether the daily schedule is enabled on first deploy.
+
+Resources:
+
+  CostScannerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: cost-scanner-readonly
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sts:GetCallerIdentity
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeInstances
+                  - ec2:DescribeTags
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - rds:DescribeDBInstances
+                  - rds:DescribeDBClusters
+                  - rds:ListTagsForResource
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - eks:ListClusters
+                  - eks:DescribeCluster
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - lambda:ListFunctions
+                  - lambda:ListTags
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - resource-groups-tagging-api:GetResources
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - pricing:GetProducts
+                  - pricing:DescribeServices
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - ce:GetCostAndUsage
+                  - ce:GetCostForecast
+                Resource: '*'
+
+  CostScannerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: cost-scanner-lambda
+      Runtime: python3.13
+      Handler: app.handler
+      CodeUri: .
+      Timeout: 300
+      MemorySize: 256
+      Role: !GetAtt CostScannerRole.Arn
+      Environment:
+        Variables:
+          PROFILE: !Ref Profile
+          ENABLE_CE: !Ref EnableCostExplorer
+          SLACK_WEBHOOK_URL: !Ref SlackWebhookUrl
+      Events:
+        DailySchedule:
+          Type: Schedule
+          Properties:
+            Schedule: !Ref ScheduleExpression
+            Enabled: !Ref ScheduleEnabled
+            # EventBridge -> Lambda invoke permission is auto-added by SAM.
+
+Outputs:
+
+  FunctionName:
+    Description: The Lambda function name.
+    Value: !Ref CostScannerFunction
+
+  FunctionArn:
+    Description: The Lambda function ARN.
+    Value: !GetAtt CostScannerFunction.Arn
+
+  DailySchedule:
+    Description: The EventBridge rule that fires the scan each morning.
+    Value: !Ref DailySchedule
+
+  ManualInvokeExample:
+    Description: Run a scan on demand (e.g. while wiring up Slack).
+    Value: !Sub 'aws lambda invoke --function-name ${CostScannerFunction} /tmp/out.json --region ${AWS::Region}'
