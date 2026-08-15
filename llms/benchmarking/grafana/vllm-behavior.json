@@ -1,0 +1,128 @@
+{
+  "annotations": {"list": []},
+  "description": "vLLM T01-T10 behavior: latency, saturation, prefix cache, token throughput, and GPU signals.",
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "id": 1, "title": "p95 time to first token", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "targets": [{"expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket[$__rate_interval])))", "legendFormat": "TTFT p95", "refId": "A"}]
+    },
+    {
+      "id": 2, "title": "p95 inter-token latency", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "targets": [{"expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:inter_token_latency_seconds_bucket[$__rate_interval])))", "legendFormat": "ITL p95", "refId": "A"}]
+    },
+    {
+      "id": 3, "title": "p95 time per output token", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "targets": [{"expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_time_per_output_token_seconds_bucket[$__rate_interval])))", "legendFormat": "TPOT p95", "refId": "A"}]
+    },
+    {
+      "id": 4, "title": "p95 end-to-end latency", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "targets": [{"expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:e2e_request_latency_seconds_bucket[$__rate_interval])))", "legendFormat": "E2E p95", "refId": "A"}]
+    },
+    {
+      "id": 5, "title": "p95 request queue time", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 8},
+      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []},
+      "targets": [{"expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_queue_time_seconds_bucket[$__rate_interval])))", "legendFormat": "queue p95", "refId": "A"}]
+    },
+    {
+      "id": 6, "title": "Scheduler requests", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 6, "x": 6, "y": 8},
+      "fieldConfig": {"defaults": {"unit": "short", "min": 0}, "overrides": []},
+      "targets": [
+        {"expr": "sum(vllm:num_requests_running)", "legendFormat": "running", "refId": "A"},
+        {"expr": "sum(vllm:num_requests_waiting)", "legendFormat": "waiting", "refId": "B"}
+      ]
+    },
+    {
+      "id": 7, "title": "KV-cache utilization", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 6, "x": 12, "y": 8},
+      "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}, "overrides": []},
+      "targets": [{"expr": "max(vllm:kv_cache_usage_perc)", "legendFormat": "KV used", "refId": "A"}]
+    },
+    {
+      "id": 8, "title": "Preemptions", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 8},
+      "fieldConfig": {"defaults": {"unit": "ops", "min": 0}, "overrides": []},
+      "targets": [{"expr": "sum(increase(vllm:num_preemptions[$__rate_interval]))", "legendFormat": "preemptions", "refId": "A"}]
+    },
+    {
+      "id": 9, "title": "Prefix-cache token hit ratio", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 16},
+      "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}, "overrides": []},
+      "targets": [{"expr": "sum(rate(vllm:prefix_cache_hits_total[$__rate_interval])) / clamp_min(sum(rate(vllm:prefix_cache_queries_total[$__rate_interval])), 1)", "legendFormat": "token hit ratio", "refId": "A"}]
+    },
+    {
+      "id": 10, "title": "Prefill KV tokens computed", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 16},
+      "fieldConfig": {"defaults": {"unit": "tps", "min": 0}, "overrides": []},
+      "targets": [{"expr": "sum(rate(vllm:request_prefill_kv_computed_tokens_sum[$__rate_interval]))", "legendFormat": "computed tokens/s", "refId": "A"}]
+    },
+    {
+      "id": 11, "title": "Token throughput", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 16},
+      "fieldConfig": {"defaults": {"unit": "tps", "min": 0}, "overrides": []},
+      "targets": [
+        {"expr": "sum(rate(vllm:prompt_tokens_total[$__rate_interval]))", "legendFormat": "prompt", "refId": "A"},
+        {"expr": "sum(rate(vllm:generation_tokens_total[$__rate_interval]))", "legendFormat": "generation", "refId": "B"},
+        {"expr": "sum(rate(vllm:prompt_tokens_cached_total[$__rate_interval]))", "legendFormat": "cached prompt", "refId": "C"}
+      ]
+    },
+    {
+      "id": 12, "title": "GPU utilization", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 5, "x": 0, "y": 24},
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "targets": [{"expr": "DCGM_FI_DEV_GPU_UTIL", "legendFormat": "GPU {{gpu}}", "refId": "A"}]
+    },
+    {
+      "id": 13, "title": "GPU framebuffer memory", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 5, "x": 5, "y": 24},
+      "fieldConfig": {"defaults": {"unit": "decmbytes", "min": 0}, "overrides": []},
+      "targets": [
+        {"expr": "DCGM_FI_DEV_FB_USED", "legendFormat": "GPU {{gpu}} used", "refId": "A"},
+        {"expr": "DCGM_FI_DEV_FB_FREE", "legendFormat": "GPU {{gpu}} free", "refId": "B"}
+      ]
+    },
+    {
+      "id": 14, "title": "GPU memory utilization", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 5, "x": 10, "y": 24},
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "targets": [{"expr": "DCGM_FI_DEV_MEM_COPY_UTIL", "legendFormat": "GPU {{gpu}} memory", "refId": "A"}]
+    },
+    {
+      "id": 15, "title": "GPU power", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 5, "x": 15, "y": 24},
+      "fieldConfig": {"defaults": {"unit": "watt", "min": 0}, "overrides": []},
+      "targets": [{"expr": "DCGM_FI_DEV_POWER_USAGE", "legendFormat": "GPU {{gpu}}", "refId": "A"}]
+    },
+    {
+      "id": 16, "title": "GPU temperature", "type": "timeseries",
+      "gridPos": {"h": 8, "w": 4, "x": 20, "y": 24},
+      "fieldConfig": {"defaults": {"unit": "celsius", "min": 0}, "overrides": []},
+      "targets": [{"expr": "DCGM_FI_DEV_GPU_TEMP", "legendFormat": "GPU {{gpu}}", "refId": "A"}]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 41,
+  "tags": ["vllm", "benchmark", "gpu"],
+  "templating": {
+    "list": [{
+      "name": "DS_PROMETHEUS", "label": "Prometheus", "type": "datasource",
+      "query": "prometheus", "current": {}, "hide": 0, "refresh": 1
+    }]
+  },
+  "time": {"from": "now-30m", "to": "now"},
+  "timezone": "browser",
+  "title": "vLLM Inference Behavior Benchmark",
+  "uid": "vllm-behavior-benchmark",
+  "version": 1
+}

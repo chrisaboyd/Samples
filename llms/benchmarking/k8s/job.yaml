@@ -1,0 +1,70 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: vllm-behavior-benchmark-
+  namespace: poolside-models
+  labels:
+    app.kubernetes.io/name: vllm-behavior-benchmark
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vllm-behavior-benchmark
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: benchmark
+          image: 992382466748.dkr.ecr.us-east-2.amazonaws.com/vllm-benchmark_boyd:latest
+          imagePullPolicy: Always
+          env:
+            - name: BENCH_VLLM_ENDPOINT
+              value: http://inference-laguna-s.poolside-models.svc.cluster.local
+            - name: BENCH_MODEL
+              value: Laguna
+            - name: BENCH_TOKEN_BUDGET
+              value: "4080"
+            - name: BENCH_CONCURRENCY_LEVELS
+              value: "1,0.5,1.0,1.25"
+            # boyd-ref's vLLM startup config sets max_num_seqs=32.
+            - name: BENCH_SCHEDULER_MAX_SEQS
+              value: "32"
+            - name: BENCH_PROMETHEUS_URL
+              value: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+            - name: BENCH_PROMETHEUS_SETTLE_SECONDS
+              value: "15"
+            - name: BENCH_RESULTS_PATH
+              value: /results/results.json
+            - name: BENCH_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: inference-api-key
+                  key: VLLM_API_KEY
+          resources:
+            requests:
+              cpu: "2"
+              memory: 1Gi
+            limits:
+              cpu: "8"
+              memory: 4Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+          volumeMounts:
+            - name: results
+              mountPath: /results
+            - name: tmp
+              mountPath: /tmp
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: results
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "vLLM Benchmark Analysis"
+  short_description: "Extract and analyze vLLM benchmark results"
+  default_prompt: "Use $analyze-vllm-benchmark to extract and summarize the latest benchmark Job results."

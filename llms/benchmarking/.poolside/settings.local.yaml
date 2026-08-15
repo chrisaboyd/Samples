@@ -4,3 +4,10 @@ tools:
             - cd *
             - echo *
             - grep *
+            - docker image *
+            - env
+            - sed *
+            - aws *
+            - aws sts *
+            - head *
+            - docker push *
