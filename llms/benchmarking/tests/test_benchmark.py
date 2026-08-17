@@ -4,10 +4,25 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from benchmark import Config, PromptFactory, concurrency_levels, derive_shapes, parse_cache_capacity, percentile
+from benchmark import (
+    Config, PromptFactory, concurrency_levels, derive_shapes, effective_seconds,
+    exposed_metric_names, parse_cache_capacity, percentile, PrometheusClient,
+    resolve_metrics, steady_window, summarize, sweep_plan, theoretical_concurrency,
+)
 
 
-class BenchmarkTests(unittest.TestCase):
+def make_config(**overrides):
+    base = dict(
+        endpoint="x", api_key=None, model=None, token_budget=4080, max_concurrency=None,
+        scheduler_max_seqs=None, levels=(1, .5, 1, 1.25), sweep_levels=(), prometheus_url=None,
+        metric_selector="", request_timeout=1, results_path="x", prometheus_settle_seconds=0,
+        test_duration_seconds=120, ramp_seconds=15, min_requests_per_worker=2,
+        test_max_seconds=900, prompt_salt="test-salt",
+    )
+    return Config(**{**base, **overrides})
+
+
+class ShapeTests(unittest.TestCase):
     def test_compact_shapes(self):
         shapes = derive_shapes(4080)
         self.assertEqual((shapes["15:1"].input_tokens, shapes["15:1"].output_tokens), (3825, 255))
@@ -20,19 +35,128 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual((shapes["15:1"].input_tokens, shapes["15:1"].output_tokens), (46875, 3125))
         self.assertEqual((shapes["5:1"].input_tokens, shapes["5:1"].output_tokens), (41667, 8333))
 
-    def test_cache_capacity_metric(self):
-        metric = 'vllm:cache_config_info{block_size="16",engine="0",num_gpu_blocks="60798"} 1.0'
-        self.assertEqual(parse_cache_capacity(metric), 972768)
 
-    def test_concurrency_rounds_up_and_keeps_baseline_one(self):
-        config = Config("x", None, None, 4080, None, None, (1, .5, 1, 1.25), None, 1, "x", 0)
-        self.assertEqual(concurrency_levels(config, 31), {
+class ConcurrencyTests(unittest.TestCase):
+    METRICS = 'vllm:cache_config_info{block_size="16",engine="0",num_gpu_blocks="60798"} 1.0'
+
+    def test_cache_capacity_metric(self):
+        self.assertEqual(parse_cache_capacity(self.METRICS), 972768)
+
+    def test_rounds_up_and_keeps_baseline_one(self):
+        self.assertEqual(concurrency_levels(make_config(), 31), {
             "baseline": 1, "moderate": 16, "saturation": 31, "overload": 39
         })
 
+    def test_reports_kv_as_the_binding_constraint(self):
+        value, detail = theoretical_concurrency(make_config(), self.METRICS)
+        self.assertEqual(value, 238)
+        self.assertEqual(detail["binding"], "kv_cache")
+
+    def test_reports_scheduler_cap_as_the_binding_constraint(self):
+        value, detail = theoretical_concurrency(make_config(scheduler_max_seqs=32), self.METRICS)
+        self.assertEqual(value, 32)
+        self.assertEqual(detail["binding"], "max_num_seqs")
+        # The headroom ratio is what tells a reader KV pressure went untested.
+        self.assertGreater(detail["headroom_ratio"], 7)
+
+    def test_sweep_skips_levels_the_named_tests_already_cover(self):
+        config = make_config(sweep_levels=(0.25, 0.5, 0.75))
+        plan = sweep_plan(config, 32, covered={1, 16, 32, 40})
+        self.assertEqual([(value, round(fraction, 2)) for _, value, fraction in plan],
+                         [(8, 0.25), (24, 0.75)])
+
+
+class WindowTests(unittest.TestCase):
+    def test_window_ends_when_the_first_worker_stops(self):
+        start, end, valid = steady_window([130.0, 142.0, 150.0], started=0.0, ramp=15.0)
+        self.assertEqual((start, end, valid), (15.0, 130.0, True))
+
+    def test_window_is_invalid_when_requests_outlast_the_test(self):
+        start, end, valid = steady_window([9.0, 11.0], started=0.0, ramp=15.0)
+        self.assertFalse(valid)
+        self.assertEqual((start, end), (0.0, 11.0))
+
+    def test_effective_seconds_ignores_the_idle_tail_of_a_long_window(self):
+        # One 100s request counted inside a 185s window: the request spanned
+        # 100s of it, and dividing by 185 would halve the reported throughput.
+        requests = [{"e2e_seconds": 100.0, "worker": 0}]
+        self.assertEqual(effective_seconds(requests, fallback=185.0), 100.0)
+
+    def test_effective_seconds_averages_across_contributing_workers(self):
+        requests = [
+            {"e2e_seconds": 50.0, "worker": 0}, {"e2e_seconds": 50.0, "worker": 0},
+            {"e2e_seconds": 100.0, "worker": 1},
+        ]
+        self.assertEqual(effective_seconds(requests, fallback=999.0), 100.0)
+
+    def test_effective_seconds_falls_back_when_nothing_was_counted(self):
+        self.assertEqual(effective_seconds([], fallback=42.0), 42.0)
+
+    def test_summary_rates_use_the_window_not_the_request_count(self):
+        requests = [
+            {"error": None, "prompt_tokens": 100, "output_tokens": 50, "ttft_seconds": 0.2,
+             "mean_itl_seconds": 0.01, "prefill_seconds": 0.2, "decode_seconds": 0.8,
+             "e2e_seconds": 1.0},
+            {"error": None, "prompt_tokens": 100, "output_tokens": 50, "ttft_seconds": 0.4,
+             "mean_itl_seconds": 0.02, "prefill_seconds": 0.4, "decode_seconds": 0.6,
+             "e2e_seconds": 1.0},
+        ]
+        summary = summarize(requests, window_seconds=10.0)
+        self.assertEqual(summary["prompt_tokens_per_second"], 20.0)
+        self.assertEqual(summary["generation_tokens_per_second"], 10.0)
+        self.assertAlmostEqual(summary["prefill_share"], 0.3)
+
+
+class MetricTests(unittest.TestCase):
+    SAMPLE = (
+        "# TYPE vllm:prompt_tokens_total counter\n"
+        'vllm:prompt_tokens_total{model_name="L"} 5\n'
+        "# TYPE vllm:gpu_prefix_cache_hits_total counter\n"
+        "# TYPE vllm:time_to_first_token_seconds histogram\n"
+        'vllm:time_to_first_token_seconds_bucket{le="0.1"} 3\n'
+    )
+
+    def test_exposed_names_cover_histogram_suffixes(self):
+        names = exposed_metric_names(self.SAMPLE)
+        self.assertIn("vllm:time_to_first_token_seconds", names)
+        self.assertIn("vllm:prompt_tokens_total", names)
+
+    def test_alias_resolution_prefers_the_name_the_build_exposes(self):
+        resolved, missing = resolve_metrics(self.SAMPLE)
+        self.assertEqual(resolved["prefix_cache_hits"], "vllm:gpu_prefix_cache_hits_total")
+        self.assertIn("preemptions", missing)
+
+    def test_selector_is_injected_into_every_query(self):
+        resolved, _ = resolve_metrics(self.SAMPLE)
+        client = PrometheusClient("http://p", 'model_name="L"', resolved)
+        queries = client.build_queries("120s")
+        self.assertTrue(all('model_name="L"' in query for query in queries.values()), queries)
+        self.assertIn(
+            'rate(vllm:time_to_first_token_seconds_bucket{model_name="L"}[120s])',
+            queries["p95_ttft_seconds"],
+        )
+
+    def test_absent_metrics_produce_no_query_rather_than_a_null(self):
+        resolved, _ = resolve_metrics(self.SAMPLE)
+        self.assertNotIn("preemptions", PrometheusClient("http://p", "", resolved).build_queries("60s"))
+
+
+class PromptTests(unittest.TestCase):
     def test_percentile(self):
         self.assertEqual(percentile([4, 1, 2, 3], .95), 4)
         self.assertIsNone(percentile([], .5))
+
+    def test_salt_changes_prompts_between_runs(self):
+        class FakeClient:
+            def count_tokens(self, model, prompt):
+                return len(prompt.split())
+
+        first = PromptFactory(FakeClient(), "m", "run-a")
+        second = PromptFactory(FakeClient(), "m", "run-b")
+        # Same test id and index, different run: a cold test must not be able to
+        # hit blocks the previous run left in the prefix cache.
+        self.assertNotEqual(first.marker("T10-1"), second.marker("T10-1"))
+        self.assertEqual(first.marker("T10-1"), PromptFactory(FakeClient(), "m", "run-a").marker("T10-1"))
 
     def test_markers_are_fixed_length_and_unique_at_the_start(self):
         first = PromptFactory.request_marker("T05-0")
@@ -40,6 +164,29 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual(len(first), len(second))
         self.assertNotEqual(first, second)
         self.assertNotEqual(first.split()[0], second.split()[0])
+
+    def test_shared_corpus_is_salted_per_test(self):
+        recorded = []
+
+        class FakeClient:
+            def count_tokens(self, model, prompt):
+                return len(prompt.split())
+
+        factory = PromptFactory(FakeClient(), "m", "salt")
+        original_fit = factory.fit
+
+        def spy(prefix, target):
+            recorded.append(prefix)
+            return original_fit(prefix, target)
+
+        factory.fit = spy
+        factory.build_templates(1200, "hot", "T08")
+        factory.build_templates(1200, "hot", "T09")
+        seeds = {prefix.splitlines()[0] for prefix in recorded
+                 if prefix.startswith("Shared benchmark corpus")}
+        # A shared corpus reused verbatim would leave T09 pre-warmed by T08.
+        self.assertEqual(seeds, {"Shared benchmark corpus salt T08.",
+                                 "Shared benchmark corpus salt T09."})
 
 
 if __name__ == "__main__":

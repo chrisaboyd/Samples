@@ -1,0 +1,113 @@
+# Run 1 of 2: find the hardware throughput ceiling at a short context.
+#
+# PREREQUISITE: this Job is only meaningful once vLLM's max_num_seqs is above 32.
+# On boyd-ref the engine resolved max_num_seqs=32 with no flag setting it, and the
+# 2026-08-17 run showed KV peaking at 18% while sequence slots sat at 100%. Until
+# the cap is raised, every level above 32 here just queues and you measure the
+# same ceiling again.
+#
+# Reference numbers from the engine's own startup log:
+#   GPU KV cache size: 861,597 tokens
+#   at 4,080 tokens/session -> KV allows 211 concurrent sessions
+#   max_num_batched_tokens: 16,384   max_num_partial_prefills: 1
+#
+# Concurrency is capped at 96 on purpose. That is a client-side limit, not a
+# server one: load is generated with one thread per session, and past roughly 64
+# threads the GIL starts adding to measured TTFT. The knee on the previous run was
+# already at 24, so 96 covers the interesting region with room to spare. If the
+# curve is still climbing at 96, run again with several Job replicas rather than
+# raising this number.
+#
+# Nine curve points: 1, 8, 17, 24, 32, 48, 65, 80, 96.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: vllm-bench-ceiling-4080-
+  namespace: poolside-models
+  labels:
+    app.kubernetes.io/name: vllm-behavior-benchmark
+    benchmark.poolside/profile: ceiling-4080
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 86400
+  # 15 tests at 180s plus settle time, with the decode-heavy shapes running long.
+  activeDeadlineSeconds: 14400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vllm-behavior-benchmark
+        benchmark.poolside/profile: ceiling-4080
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: benchmark
+          image: 992382466748.dkr.ecr.us-east-2.amazonaws.com/vllm-benchmark_boyd:latest
+          imagePullPolicy: Always
+          env:
+            - name: BENCH_VLLM_ENDPOINT
+              value: http://inference-laguna-s.poolside-models.svc.cluster.local
+            - name: BENCH_MODEL
+              value: Laguna
+            - name: BENCH_TOKEN_BUDGET
+              value: "4080"
+            # Client-side ceiling. The report's concurrency_constraint.binding will
+            # read BENCH_MAX_CONCURRENCY, which is accurate: this run deliberately
+            # does not push to the server's limit.
+            - name: BENCH_MAX_CONCURRENCY
+              value: "96"
+            # baseline 1, then 32, 65, 96
+            - name: BENCH_CONCURRENCY_LEVELS
+              value: "1,0.33,0.67,1.0"
+            # fills in 8, 17, 24, 48, 80
+            - name: BENCH_SWEEP_LEVELS
+              value: "0.083,0.167,0.25,0.5,0.83"
+            # 180s rather than 120s: the marginal-gain derivative was noisy at
+            # +-20% on the 120s run, which made the knee hard to locate exactly.
+            - name: BENCH_TEST_DURATION_SECONDS
+              value: "180"
+            - name: BENCH_RAMP_SECONDS
+              value: "20"
+            - name: BENCH_MIN_REQUESTS_PER_WORKER
+              value: "3"
+            - name: BENCH_PROMETHEUS_URL
+              value: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+            - name: BENCH_METRIC_SELECTOR
+              value: namespace="poolside-models",model_name="Laguna"
+            - name: BENCH_PROMETHEUS_SETTLE_SECONDS
+              value: "15"
+            - name: BENCH_RESULTS_PATH
+              value: /results/results.json
+            - name: BENCH_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: inference-api-key
+                  key: VLLM_API_KEY
+          resources:
+            requests:
+              # 96 streaming responses parsed in one Python process. More CPU
+              # keeps client-side scheduling out of the TTFT measurement.
+              cpu: "4"
+              memory: 2Gi
+            limits:
+              cpu: "8"
+              memory: 4Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
+          volumeMounts:
+            - name: results
+              mountPath: /results
+            - name: tmp
+              mountPath: /tmp
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: results
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}

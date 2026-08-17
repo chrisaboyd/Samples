@@ -25,7 +25,8 @@
           "p50_ttft_seconds": 0.3594925659999717,
           "p95_ttft_seconds": 0.3594925659999717,
           "p50_itl_seconds": 0.029448874000024716,
-          "p95_itl_seconds": 0.029448874000024716
+          "p95_itl_seconds": 0.029448874000024716,
+          "window_seconds": 0.8414231719998497
         },
         "token_mismatches": [],
         "prometheus": {
@@ -71,7 +72,8 @@
           "p50_ttft_seconds": 0.3265153510001255,
           "p95_ttft_seconds": 0.3265153510001255,
           "p50_itl_seconds": 0.029859175023248523,
-          "p95_itl_seconds": 0.029859175023248523
+          "p95_itl_seconds": 0.029859175023248523,
+          "window_seconds": 1.6112996629999543
         },
         "token_mismatches": [],
         "prometheus": {
@@ -117,7 +119,8 @@
           "p50_ttft_seconds": 0.2602196020006886,
           "p95_ttft_seconds": 0.2602196020006886,
           "p50_itl_seconds": 0.029801188609368978,
-          "p95_itl_seconds": 0.029801188609368978
+          "p95_itl_seconds": 0.029801188609368978,
+          "window_seconds": 4.075487702999453
         },
         "token_mismatches": [],
         "prometheus": {
@@ -163,7 +166,8 @@
           "p50_ttft_seconds": 0.12705706500037195,
           "p95_ttft_seconds": 0.12705706500037195,
           "p50_itl_seconds": 0.029243898309858008,
-          "p95_itl_seconds": 0.029243898309858008
+          "p95_itl_seconds": 0.029243898309858008,
+          "window_seconds": 6.356699253999977
         },
         "token_mismatches": [],
         "prometheus": {
@@ -209,7 +213,8 @@
           "p50_ttft_seconds": 1.2033345139998346,
           "p95_ttft_seconds": 3.9312405169994236,
           "p50_itl_seconds": 0.05172832174218911,
-          "p95_itl_seconds": 0.06436643239843676
+          "p95_itl_seconds": 0.06436643239843676,
+          "window_seconds": 8.64623913899959
         },
         "token_mismatches": [],
         "prometheus": {
@@ -255,7 +260,8 @@
           "p50_ttft_seconds": 2.014982312999564,
           "p95_ttft_seconds": 3.601308961000541,
           "p50_itl_seconds": 0.06260912006249697,
-          "p95_itl_seconds": 0.07468115324218871
+          "p95_itl_seconds": 0.07468115324218871,
+          "window_seconds": 10.243071313000655
         },
         "token_mismatches": [],
         "prometheus": {
@@ -301,7 +307,8 @@
           "p50_ttft_seconds": 2.8202168870002424,
           "p95_ttft_seconds": 12.529191783999522,
           "p50_itl_seconds": 0.07590202554687409,
-          "p95_itl_seconds": 0.08241800082812745
+          "p95_itl_seconds": 0.08241800082812745,
+          "window_seconds": 17.599050888999955
         },
         "token_mismatches": [],
         "prometheus": {
@@ -347,7 +354,8 @@
           "p50_ttft_seconds": 0.909386725999866,
           "p95_ttft_seconds": 0.9139080369996009,
           "p50_itl_seconds": 0.04332688575004795,
-          "p95_itl_seconds": 0.08501709406249347
+          "p95_itl_seconds": 0.08501709406249347,
+          "window_seconds": 1.6120642310006588
         },
         "token_mismatches": [],
         "prometheus": {
@@ -393,7 +401,8 @@
           "p50_ttft_seconds": 1.97448378000081,
           "p95_ttft_seconds": 2.4876519800000096,
           "p50_itl_seconds": 0.06825253587504676,
-          "p95_itl_seconds": 0.17425446187496618
+          "p95_itl_seconds": 0.17425446187496618,
+          "window_seconds": 3.1786111720002737
         },
         "token_mismatches": [],
         "prometheus": {
@@ -439,7 +448,8 @@
           "p50_ttft_seconds": 2.2121757839995553,
           "p95_ttft_seconds": 3.7474852579998696,
           "p50_itl_seconds": 0.1367100654999831,
-          "p95_itl_seconds": 0.2448874266875123
+          "p95_itl_seconds": 0.2448874266875123,
+          "window_seconds": 4.480110094999873
         },
         "token_mismatches": [],
         "prometheus": {
@@ -495,9 +505,29 @@
         "evidence": "token mismatches: 0"
       },
       {
+        "name": "Steady measurement window in every test",
+        "status": "PASS",
+        "evidence": "unsteady: none"
+      },
+      {
+        "name": "1:5 is decode-dominated",
+        "status": "NOT OBSERVED",
+        "evidence": "T04 prefill share n/a"
+      },
+      {
+        "name": "Prefill share falls as the shape tilts toward output",
+        "status": "NOT OBSERVED",
+        "evidence": "T01 n/a > T02 n/a > T03 n/a > T04 n/a"
+      },
+      {
+        "name": "1:1 is decode-bound despite equal token counts",
+        "status": "NOT OBSERVED",
+        "evidence": "T03 prefill share n/a"
+      },
+      {
         "name": "T05 batching payoff",
         "status": "PASS",
-        "evidence": "T05 7550.1 vs T03 1001.1 total tokens/s"
+        "evidence": "T05 7550.1 vs T03 1001.1 tokens/s"
       },
       {
         "name": "T05 controlled TTFT",
@@ -522,12 +552,12 @@
       {
         "name": "T06 throughput flattens",
         "status": "FAIL",
-        "evidence": "T06 12746.2 vs T05 7550.1 total tokens/s"
+        "evidence": "T06 12746.2 vs T05 7550.1 tokens/s"
       },
       {
         "name": "T07 no throughput gain",
         "status": "PASS",
-        "evidence": "T07 9273.2 vs T06 12746.2 total tokens/s"
+        "evidence": "T07 9273.2 vs T06 12746.2 tokens/s"
       },
       {
         "name": "T07 TTFT worsens",
@@ -548,9 +578,18 @@
         "name": "Prefix-cache hit ordering",
         "status": "NOT OBSERVED",
         "evidence": "hot n/a, mixed n/a, cold n/a"
+      },
+      {
+        "name": "Prefix cache leaves decode untouched",
+        "status": "FAIL",
+        "evidence": "hot ITL 0.043s vs cold ITL 0.137s"
       }
     ],
     "missing_tests": [],
+    "notes": [
+      "BENCH_METRIC_SELECTOR was unset, so every Prometheus figure sums all vLLM targets in the cluster. Treat server-side numbers as upper bounds contaminated by unrelated traffic."
+    ],
+    "peak_throughput_concurrency": 32,
     "classification": {
       "T05_healthy": "no",
       "T06_saturated": "no",

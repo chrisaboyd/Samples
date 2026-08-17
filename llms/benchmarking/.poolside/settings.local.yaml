@@ -11,3 +11,9 @@ tools:
             - aws sts *
             - head *
             - docker push *
+            - ls *
+            - cat *
+            - find *
+            - curl *
+            - tr *
+            - fold *

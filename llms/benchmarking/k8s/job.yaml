@@ -1,13 +1,19 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  generateName: vllm-behavior-benchmark-
+  # generateName appends a random suffix, so this needs `kubectl create -f`.
+  # `kubectl apply` rejects it: apply needs a fixed name to diff against.
+  generateName: vllm-behavior-benchmark-tp2-fp8-20260817-
   namespace: poolside-models
   labels:
     app.kubernetes.io/name: vllm-behavior-benchmark
 spec:
   backoffLimit: 0
   ttlSecondsAfterFinished: 86400
+  # Twelve tests at BENCH_TEST_DURATION_SECONDS plus settle time run roughly
+  # 45 minutes at the compact budget. Four hours leaves room for the 50k
+  # profile without letting a hung request pin the Job forever.
+  activeDeadlineSeconds: 14400
   template:
     metadata:
       labels:
@@ -27,11 +33,26 @@ spec:
               value: "4080"
             - name: BENCH_CONCURRENCY_LEVELS
               value: "1,0.5,1.0,1.25"
+            # Extra 1:1 points so the throughput curve shows where the knee is.
+            - name: BENCH_SWEEP_LEVELS
+              value: "0.25,0.75"
+            # Closed-loop load: every worker reissues for this long, and the
+            # first BENCH_RAMP_SECONDS are excluded from the measured window.
+            - name: BENCH_TEST_DURATION_SECONDS
+              value: "120"
+            - name: BENCH_RAMP_SECONDS
+              value: "15"
+            - name: BENCH_MIN_REQUESTS_PER_WORKER
+              value: "2"
             # boyd-ref's vLLM startup config sets max_num_seqs=32.
             - name: BENCH_SCHEDULER_MAX_SEQS
               value: "32"
             - name: BENCH_PROMETHEUS_URL
               value: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+            # Without this every query sums all vLLM targets in the cluster and
+            # unrelated traffic lands in the results.
+            - name: BENCH_METRIC_SELECTOR
+              value: namespace="poolside-models",model_name="Laguna"
             - name: BENCH_PROMETHEUS_SETTLE_SECONDS
               value: "15"
             - name: BENCH_RESULTS_PATH
