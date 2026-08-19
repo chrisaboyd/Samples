@@ -17,3 +17,4 @@ tools:
             - curl *
             - tr *
             - fold *
+            - python3 *

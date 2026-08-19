@@ -50,11 +50,10 @@ spec:
               value: Laguna
             - name: BENCH_TOKEN_BUDGET
               value: "4080"
-            # Client-side ceiling. The report's concurrency_constraint.binding will
-            # read BENCH_MAX_CONCURRENCY, which is accurate: this run deliberately
-            # does not push to the server's limit.
             - name: BENCH_MAX_CONCURRENCY
               value: "96"
+            - name: BENCH_TOKEN_MAX
+              value: "1184878"
             # baseline 1, then 32, 65, 96
             - name: BENCH_CONCURRENCY_LEVELS
               value: "1,0.33,0.67,1.0"

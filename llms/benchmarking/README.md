@@ -59,8 +59,9 @@ KUBECONFIG=$HOME/.kube/contexts/boyd-ref kubectl -n poolside-models logs -l app.
 | `BENCH_TOKEN_BUDGET` | `4080` | Total tokens per session. Shapes derive from it by fixed ratios. |
 | `BENCH_CONCURRENCY_LEVELS` | `1,0.5,1.0,1.25` | Baseline, moderate, saturation, overload as fractions of theoretical concurrency. Exactly four values, first must be `1`. |
 | `BENCH_SWEEP_LEVELS` | `0.25,0.75` | Extra balanced-shape points so the throughput curve shows its knee. Empty string disables. |
-| `BENCH_MAX_CONCURRENCY` | auto | Overrides the ceiling derived from KV capacity. |
-| `BENCH_SCHEDULER_MAX_SEQS` | unset | Caps the KV-derived ceiling at vLLM's `max_num_seqs`. Set to `32` for boyd-ref. |
+| `BENCH_TOKEN_MAX` | auto | KV token pool, in tokens. Concurrency is this divided by `BENCH_TOKEN_BUDGET`. Defaults to what `vllm:cache_config_info` reports; pin it to the engine's `GPU KV cache size` log line, which is smaller. |
+| `BENCH_MAX_CONCURRENCY` | auto | Overrides the ceiling in sessions, bypassing the token division. Use it for a client-side cap, not for KV. |
+| `BENCH_SCHEDULER_MAX_SEQS` | unset | Caps the KV-derived ceiling at vLLM's `max_num_seqs`. boyd-ref now serves with `192`. |
 | `BENCH_TEST_DURATION_SECONDS` | `120` | Closed-loop duration per test. |
 | `BENCH_RAMP_SECONDS` | `15` | Excluded from the front of every measurement window. |
 | `BENCH_MIN_REQUESTS_PER_WORKER` | `2` | Extends a test until each worker has completed this many, so slow decode-heavy shapes still get samples. |
@@ -80,12 +81,23 @@ Without it, every query sums all vLLM targets Prometheus scrapes. On a shared cl
 
 ### Concurrency is bounded by whichever limit binds first
 
-Auto-detection reads `block_size` and `num_gpu_blocks` from `vllm:cache_config_info` and divides by the token budget, then applies `BENCH_SCHEDULER_MAX_SEQS`. The report records both limits and which one binds:
+The ceiling is a division: KV token pool over `BENCH_TOKEN_BUDGET`, then capped by `BENCH_SCHEDULER_MAX_SEQS`. Nothing here is a user count, so the same `BENCH_CONCURRENCY_LEVELS` fractions mean the same KV pressure whether a session is 4k tokens or 50k.
+
+The pool comes from `BENCH_TOKEN_MAX` when set, otherwise from `block_size x num_gpu_blocks` in `vllm:cache_config_info`. Those two disagree. On boyd-ref the metric reports 1,303,120 tokens while the engine logs `GPU KV cache size: 1,184,878 tokens`, 10% lower, and the engine's number is the one the scheduler manages. Read it out of the startup log and pin it:
+
+```bash
+kubectl logs -n poolside-models deploy/inference-laguna-s -c inference \
+  | grep "GPU KV cache size"
+export BENCH_TOKEN_MAX=1184878   # 23 sessions at BENCH_TOKEN_BUDGET=50000
+```
+
+Past 5% apart the runner warns on stderr rather than picking for you. The report records the pool, its source, and which limit binds:
 
 ```json
 "concurrency_constraint": {
-  "kv_cache_tokens": 972768, "kv_limit": 238, "max_num_seqs": 32,
-  "binding": "max_num_seqs", "headroom_ratio": 7.44
+  "kv_cache_tokens": 1184878, "kv_cache_tokens_source": "BENCH_TOKEN_MAX",
+  "kv_cache_tokens_reported": 1303120, "kv_limit": 23, "max_num_seqs": 192,
+  "binding": "kv_cache", "headroom_ratio": 1.0
 }
 ```
 

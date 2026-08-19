@@ -35,6 +35,15 @@ TEST_PURPOSE = {
 SWEEP_PURPOSE = ("Extra point on the concurrency curve, so the shape of the curve is "
                  "visible rather than inferred from four readings.")
 
+SHAPE_MEANING = {
+    "15:1": "Agentic coding and RAG: a large context of files, diffs or documents, then a small "
+            "patch or tool call.",
+    "5:1": "Chat with history, or a summarize-this request: long prompt, reply worth reading.",
+    "1:1": "Rewrites, translation and refactors, where the reply tracks the length of the input.",
+    "1:5": "Short prompt, long generation: scaffolding from a spec, drafting from an outline, or "
+           "a reasoning model working through an answer.",
+}
+
 STATE_MEANING = [
     ("linear", "Scaling efficiency 0.75 or better. Each added session buys at least 75% of what "
                "the first session delivered."),
@@ -47,6 +56,14 @@ STATE_MEANING = [
     ("degraded", "Throughput fell below a lower concurrency, or the scheduler preempted "
                  "sequences, or latency grew faster than the load did."),
 ]
+
+STATE_ONE_LINER = {
+    "linear": "Adding users improves throughput 0.76 to 1.0 relative to the previous level.",
+    "sub-linear": "Adding users improves throughput 0.30 to 0.75 relative to the previous level.",
+    "flat": "Gains fall below 0.30, and concurrency starts trading throughput for latency.",
+    "capped": "No throughput left to gain at this level; added users only add latency.",
+    "degraded": "Worse than earlier levels: timeouts, cache eviction, dropped requests.",
+}
 
 GLOSSARY = [
     ("Prefill", "Processing the prompt. The whole prompt goes through the model at once, "
@@ -530,10 +547,10 @@ def concurrency_ruler(analysis: dict[str, Any]) -> str:
             + (f'<span class="ruler-mark">{escape(mark)}</span>' if mark else "")
             + "</div>"
         )
-    meaning = dict(STATE_MEANING)
     key = "".join(
-        f'<a class="key-link" href="#states" title="{escape(meaning.get(label, ""))}">'
-        f'<i style="background:{color}"></i>{label}</a>'
+        f'<div class="key-row"><i style="background:{color}"></i>'
+        f'<span class="key-label">{label}</span>'
+        f'<span class="key-note">{escape(STATE_ONE_LINER.get(label, ""))}</span></div>'
         for label, color in (("linear", "var(--good)"), ("sub-linear", "var(--good); opacity:.55"),
                              ("flat", "var(--warning)"),
                              ("capped", "var(--critical); opacity:.55"),
@@ -601,6 +618,9 @@ def next_run(report: dict[str, Any], analysis: dict[str, Any]) -> dict[str, Any]
 def test_reference(report: dict[str, Any]) -> list[dict[str, str]]:
     """One row per test explaining what it ran and why."""
     rows = []
+    # The workload example belongs to the ratio, not the test, and eleven of these
+    # rows are 1:1. Print it the first time a ratio appears and leave the repeats blank.
+    described: set[str] = set()
     for test in report.get("tests", []):
         shape = test.get("shape", {})
         test_id = str(test.get("id"))
@@ -614,7 +634,10 @@ def test_reference(report: dict[str, Any]) -> list[dict[str, str]]:
             "sessions": str(test.get("concurrency")),
             "reuse": cache,
             "purpose": TEST_PURPOSE.get(test_id, SWEEP_PURPOSE),
+            "looks_like": "" if shape.get("ratio") in described
+                          else SHAPE_MEANING.get(shape.get("ratio"), ""),
         })
+        described.add(shape.get("ratio"))
     return rows
 
 
@@ -1125,10 +1148,18 @@ h1 {
   font: 600 10.5px/1 var(--mono); letter-spacing: 0.11em; text-transform: uppercase;
   color: var(--ink-3);
 }
-.ruler-key { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 18px; }
-.ruler-key span { display: inline-flex; align-items: center; gap: 7px;
-  font: 500 12px/1 var(--mono); color: var(--ink-2); }
-.ruler-key i { width: 18px; height: 6px; border-radius: 2px; display: inline-block; }
+.ruler-key {
+  display: grid; grid-template-columns: 18px max-content 1fr; column-gap: 14px; row-gap: 9px;
+  margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--rule);
+}
+.key-row { display: contents; }
+.shape-key {
+  display: grid; grid-template-columns: max-content 1fr; column-gap: 14px; row-gap: 9px;
+  margin: 18px 0 4px; padding-top: 16px; border-top: 1px solid var(--rule);
+}
+.ruler-key i { width: 18px; height: 6px; border-radius: 2px; margin-top: 7px; }
+.key-label { font: 600 12px/1.6 var(--mono); color: var(--ink); }
+.key-note { font: 400 13.5px/1.6 var(--sans); color: var(--ink-2); }
 
 /* sections ---------------------------------------------------------------- */
 .eyebrow {
@@ -1228,12 +1259,6 @@ th {
 .glossary dt { font: 700 12.5px var(--mono); margin-top: 12px; color: var(--ink); }
 .glossary dd { margin: 3px 0 0; color: var(--ink-2); max-width: 82ch; }
 a { color: var(--series-1); text-decoration-thickness: 1px; text-underline-offset: 2px; }
-.key-link {
-  display: inline-flex; align-items: center; gap: 7px; font: 500 12px var(--mono);
-  color: var(--ink-2); text-decoration: none; border-bottom: 1px dotted var(--rule-strong);
-  cursor: help;
-}
-.key-link:hover { color: var(--ink); }
 td a[class^="state-"] { text-decoration: none; border-bottom: 1px dotted currentColor;
   cursor: help; }
 .figure-table { margin-top: 18px; border-top: 1px solid var(--rule); padding-top: 4px; }
@@ -1266,6 +1291,10 @@ footer {
   .masthead { padding-top: 36px; }
   .card { padding: 18px 16px 12px; }
   .ruler-n { font-size: 10px; }
+  .ruler-key { grid-template-columns: 18px 1fr; row-gap: 4px; }
+  .shape-key { grid-template-columns: 1fr; row-gap: 2px; }
+  .ruler-key .key-note { grid-column: 2; }
+  .key-note { margin-bottom: 6px; }
 }
 """
 
@@ -1498,6 +1527,19 @@ def build_html(report: dict[str, Any], analysis: dict[str, Any], source: str) ->
             ],
             shape_rows, ["prefill", "decode"], " prefill",
         ))
+        seen_ratios = []
+        for test_id in ("T01", "T02", "T03", "T04"):
+            ratio = (tests.get(test_id) or {}).get("shape", {}).get("ratio")
+            if ratio in SHAPE_MEANING and ratio not in seen_ratios:
+                seen_ratios.append(ratio)
+        if seen_ratios:
+            shape_charts.append(
+                '<div class="shape-key">' + "".join(
+                    f'<div class="key-row"><span class="key-label">{escape(ratio)}</span>'
+                    f'<span class="key-note">{escape(SHAPE_MEANING[ratio])}</span></div>'
+                    for ratio in seen_ratios
+                ) + "</div>"
+            )
 
     cache_ids = ["T08", "T09", "T10"]
     labels = ["hot", "mixed", "cold"]
@@ -1693,11 +1735,13 @@ def build_html(report: dict[str, Any], analysis: dict[str, Any], source: str) ->
                     else "hardware or server config")
     reference_rows = [
         [f'<span id="test-{escape(row["id"])}">{escape(row["id"])}</span>', escape(row["workload"]),
-         escape(row["sessions"]), escape(row["reuse"]), escape(row["purpose"])]
+         escape(row["looks_like"]), escape(row["sessions"]), escape(row["reuse"]),
+         escape(row["purpose"])]
         for row in test_reference(report)
     ]
     reference_block = html_table(
-        ["Test", "Workload", "Sessions", "Prompt reuse", "Purpose"], reference_rows, "text-left")
+        ["Test", "Workload", "Looks like", "Sessions", "Prompt reuse", "Purpose"],
+        reference_rows, "text-left")
     reference_block += '<dl class="glossary">' + "".join(
         f"<dt>{escape(term)}</dt><dd>{escape(meaning)}</dd>" for term, meaning in GLOSSARY) + "</dl>"
 
@@ -1863,12 +1907,12 @@ def markdown(report: dict[str, Any], analysis: dict[str, Any], source: str) -> s
     if reference:
         lines.extend([
             "", "## Appendix: what each test ran", "",
-            "| Test | Workload | Sessions | Prompt reuse | Purpose |",
-            "|---|---|---:|---|---|",
+            "| Test | Workload | Looks like | Sessions | Prompt reuse | Purpose |",
+            "|---|---|---|---:|---|---|",
         ])
         for row in reference:
-            lines.append(f"| {row['id']} | {row['workload']} | {row['sessions']} | "
-                         f"{row['reuse']} | {row['purpose']} |")
+            lines.append(f"| {row['id']} | {row['workload']} | {row['looks_like']} | "
+                         f"{row['sessions']} | {row['reuse']} | {row['purpose']} |")
         lines.extend(["", "### Terms", ""])
         lines.extend(f"- **{term}** — {meaning}" for term, meaning in GLOSSARY)
     lines.extend([

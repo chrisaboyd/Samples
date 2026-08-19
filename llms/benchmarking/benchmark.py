@@ -12,6 +12,7 @@ from __future__ import annotations
 import concurrent.futures
 import dataclasses
 import hashlib
+import http.client
 import json
 import math
 import os
@@ -25,7 +26,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 # Above this many client threads, CPython's GIL and urllib's blocking reads
 # start adding to measured TTFT and the inflation reads as server saturation.
@@ -34,6 +35,35 @@ CLIENT_THREAD_WARNING = 64
 
 class BenchmarkError(RuntimeError):
     pass
+
+
+# Setup traffic (tokenize, /metrics, Prometheus) is retried on transport
+# failures. A single reset while constructing a 46,875-token prompt otherwise
+# discards a multi-hour run, which is how the 50k agentic run died. Measured
+# completions are never retried: a retry would put a request in the steady
+# window that the server had already started once.
+SETUP_RETRY_ATTEMPTS = 4
+SETUP_RETRY_BACKOFF_SECONDS = 1.0
+
+
+def with_retry(description: str, operation: Callable[[], Any]) -> Any:
+    for attempt in range(1, SETUP_RETRY_ATTEMPTS + 1):
+        try:
+            return operation()
+        except urllib.error.HTTPError:
+            # A status code is an answer, not a transport failure. Let the
+            # caller turn it into a BenchmarkError with the response body.
+            raise
+        except (OSError, http.client.HTTPException) as exc:
+            if attempt == SETUP_RETRY_ATTEMPTS:
+                raise BenchmarkError(
+                    f"{description} failed after {attempt} attempts: {exc}"
+                ) from exc
+            delay = SETUP_RETRY_BACKOFF_SECONDS * 2 ** (attempt - 1)
+            print(json.dumps({"retry": description, "attempt": attempt,
+                              "error": str(exc), "sleep_seconds": delay}),
+                  file=sys.stderr, flush=True)
+            time.sleep(delay)
 
 
 def utc_now() -> str:
@@ -65,6 +95,7 @@ class Config:
     api_key: str | None
     model: str | None
     token_budget: int
+    token_max: int | None
     max_concurrency: int | None
     scheduler_max_seqs: int | None
     levels: tuple[float, float, float, float]
@@ -100,6 +131,13 @@ class Config:
         sweep = tuple(float(v.strip()) for v in raw_sweep.split(",")) if raw_sweep else ()
         if any(v <= 0 for v in sweep):
             raise BenchmarkError("BENCH_SWEEP_LEVELS values must be positive")
+        raw_token_max = os.getenv("BENCH_TOKEN_MAX")
+        token_max = int(raw_token_max) if raw_token_max else None
+        if token_max is not None and token_max < budget:
+            raise BenchmarkError(
+                "BENCH_TOKEN_MAX must be at least BENCH_TOKEN_BUDGET; a KV pool smaller "
+                "than one session cannot hold even the baseline test"
+            )
         max_concurrency = os.getenv("BENCH_MAX_CONCURRENCY")
         scheduler_max = os.getenv("BENCH_SCHEDULER_MAX_SEQS")
         duration = float(os.getenv("BENCH_TEST_DURATION_SECONDS", "120"))
@@ -111,6 +149,7 @@ class Config:
             api_key=os.getenv("BENCH_API_KEY"),
             model=os.getenv("BENCH_MODEL"),
             token_budget=budget,
+            token_max=token_max,
             max_concurrency=int(max_concurrency) if max_concurrency else None,
             scheduler_max_seqs=int(scheduler_max) if scheduler_max else None,
             levels=raw_levels,  # type: ignore[arg-type]
@@ -143,20 +182,30 @@ class VLLMClient:
 
     def json_request(self, method: str, path: str, payload: dict[str, Any] | None = None) -> Any:
         body = json.dumps(payload).encode() if payload is not None else None
-        request = urllib.request.Request(
-            f"{self.config.endpoint}{path}", data=body, headers=self._headers(), method=method
-        )
-        try:
+
+        # Rebuilt per attempt: urllib mutates the Request while sending it.
+        def send() -> Any:
+            request = urllib.request.Request(
+                f"{self.config.endpoint}{path}", data=body, headers=self._headers(), method=method
+            )
             with urllib.request.urlopen(request, timeout=self.config.request_timeout) as response:
                 return json.load(response)
+
+        try:
+            return with_retry(f"{method} {path}", send)
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode(errors="replace")
             raise BenchmarkError(f"{method} {path} failed ({exc.code}): {detail}") from exc
 
     def text_request(self, path: str) -> str:
-        request = urllib.request.Request(f"{self.config.endpoint}{path}", headers=self._headers())
-        with urllib.request.urlopen(request, timeout=self.config.request_timeout) as response:
-            return response.read().decode()
+        def send() -> str:
+            request = urllib.request.Request(
+                f"{self.config.endpoint}{path}", headers=self._headers()
+            )
+            with urllib.request.urlopen(request, timeout=self.config.request_timeout) as response:
+                return response.read().decode()
+
+        return with_retry(f"GET {path}", send)
 
     def discover_model(self) -> str:
         if self.config.model:
@@ -316,10 +365,14 @@ class PrometheusClient:
 
     def query(self, promql: str, at: str) -> float | None:
         query = urllib.parse.urlencode({"query": promql, "time": at})
-        with urllib.request.urlopen(
-            f"{self.base_url}/api/v1/query?{query}", timeout=60
-        ) as response:
-            payload = json.load(response)
+
+        def send() -> Any:
+            with urllib.request.urlopen(
+                f"{self.base_url}/api/v1/query?{query}", timeout=60
+            ) as response:
+                return json.load(response)
+
+        payload = with_retry("Prometheus query", send)
         if payload.get("status") != "success":
             raise BenchmarkError(f"Prometheus query failed: {payload}")
         values = payload["data"].get("result", [])
@@ -535,34 +588,83 @@ class PromptFactory:
 
 
 def parse_cache_capacity(metrics: str) -> int | None:
-    match = re.search(r'vllm:cache_config_info\{[^}]*block_size="(\d+)"[^}]*num_gpu_blocks="(\d+)"', metrics)
+    """KV tokens as vLLM reports them: block_size x num_gpu_blocks.
+
+    Labels are read by name because their order in the info metric follows the
+    CacheConfig field names and changes between vLLM releases. num_gpu_blocks is
+    the string "None" before the engine finishes profiling, which reads as absent.
+    """
+    match = re.search(r"^vllm:cache_config_info\{([^}]*)\}", metrics, flags=re.MULTILINE)
     if not match:
         return None
-    return int(match.group(1)) * int(match.group(2))
+    labels = dict(re.findall(r'(\w+)="([^"]*)"', match.group(1)))
+    try:
+        return int(labels["block_size"]) * int(labels["num_gpu_blocks"])
+    except (KeyError, ValueError):
+        return None
+
+
+# vllm:cache_config_info multiplies block_size by num_gpu_blocks, which on
+# boyd-ref reads 10-13% above the "GPU KV cache size: N tokens" the engine logs
+# and schedules against. Past this gap, pin the real number with BENCH_TOKEN_MAX.
+KV_TOKENS_DIVERGENCE_RATIO = 0.05
+
+
+def kv_token_pool(config: Config, metrics_text: str) -> tuple[int | None, dict[str, Any]]:
+    """The KV token pool concurrency divides, and where the number came from."""
+    reported = parse_cache_capacity(metrics_text)
+    pool = config.token_max or reported
+    return pool, {
+        "kv_cache_tokens": pool,
+        "kv_cache_tokens_source": (
+            "BENCH_TOKEN_MAX" if config.token_max
+            else "vllm:cache_config_info" if reported else None
+        ),
+        "kv_cache_tokens_reported": reported,
+    }
+
+
+def kv_tokens_warning(config: Config, detail: dict[str, Any]) -> str | None:
+    reported = detail.get("kv_cache_tokens_reported")
+    if not (config.token_max and reported):
+        return None
+    drift = abs(reported - config.token_max) / config.token_max
+    if drift <= KV_TOKENS_DIVERGENCE_RATIO:
+        return None
+    return (
+        f"BENCH_TOKEN_MAX is {config.token_max} but vllm:cache_config_info reports "
+        f"{reported} ({drift:.0%} apart). Check BENCH_TOKEN_MAX against the engine's "
+        "'GPU KV cache size' startup log line before trusting the ceiling"
+    )
 
 
 def theoretical_concurrency(config: Config, metrics_text: str) -> tuple[int, dict[str, Any]]:
     """Concurrency ceiling plus the constraint that actually binds it.
 
+    The ceiling is one division: KV token pool over per-session token budget. So
+    a level is a statement about tokens resident in KV, not about a user count
+    someone picked, and the same fractions mean the same pressure at any context
+    length.
+
     Reporting the binding constraint matters: on a cluster with a large KV cache
     and a small max_num_seqs, a saturation test demonstrates scheduler queueing
     and says nothing at all about KV pressure.
     """
-    kv_tokens = parse_cache_capacity(metrics_text)
+    kv_tokens, detail = kv_token_pool(config, metrics_text)
     kv_limit = max(1, kv_tokens // config.token_budget) if kv_tokens else None
-    detail: dict[str, Any] = {
-        "kv_cache_tokens": kv_tokens,
+    detail.update({
         "kv_limit": kv_limit,
         "max_num_seqs": config.scheduler_max_seqs,
         "override": config.max_concurrency,
-    }
+    })
     if config.max_concurrency:
         detail["binding"] = "BENCH_MAX_CONCURRENCY"
         detail["source"] = f"operator override of {config.max_concurrency}"
         return config.max_concurrency, detail
     if not kv_limit:
         raise BenchmarkError(
-            "could not auto-detect KV capacity from vllm:cache_config_info; set BENCH_MAX_CONCURRENCY"
+            "could not read KV capacity from vllm:cache_config_info; set BENCH_TOKEN_MAX "
+            "to the engine's 'GPU KV cache size' in tokens"
         )
     concurrency, binding = kv_limit, "kv_cache"
     if config.scheduler_max_seqs and config.scheduler_max_seqs < kv_limit:
@@ -768,6 +870,9 @@ def run() -> int:
     if missing:
         print(json.dumps({"warning": f"metrics absent from /metrics: {', '.join(missing)}"}),
               file=sys.stderr, flush=True)
+    drift = kv_tokens_warning(config, concurrency_detail)
+    if drift:
+        print(json.dumps({"warning": drift}), file=sys.stderr, flush=True)
 
     plan = [(test_id, ratio, levels[level], cache, level) for test_id, ratio, level, cache in TESTS]
     for sweep_id, value, fraction in sweep_plan(config, theoretical, set(levels.values())):
@@ -784,6 +889,7 @@ def run() -> int:
         "endpoint": config.endpoint,
         "model": model,
         "token_budget": config.token_budget,
+        "kv_cache_tokens": concurrency_detail["kv_cache_tokens"],
         "theoretical_concurrency": theoretical,
         "concurrency_constraint": concurrency_detail,
         "concurrency_levels": levels,

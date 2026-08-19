@@ -3,25 +3,25 @@
 # This is the run that finally exercises the PRD's headline objective. At a 50,000
 # token budget the arithmetic flips:
 #
-#   GPU KV cache size: 861,597 tokens (engine startup log)
-#     at  4,080 tokens/session -> 211 sessions  -> max_num_seqs=32 binds
-#     at 26,924 tokens/session ->  32 sessions  -> the crossover
-#     at 50,000 tokens/session ->  17 sessions  -> KV binds
+#   GPU KV cache size: 1,184,878 tokens (engine startup log)
+#     at  4,080 tokens/session -> 290 sessions  -> max_num_seqs=192 binds
+#     at  6,170 tokens/session -> 192 sessions  -> the crossover
+#     at 50,000 tokens/session ->  23 sessions  -> KV binds
 #
-# So no vLLM change is needed here. max_num_seqs=32 is already above what KV
+# So no vLLM change is needed here. max_num_seqs=192 is already above what KV
 # allows at this context length, which means KV exhaustion, recomputation, and
 # preemption are reachable for the first time.
 #
 # max_model_len is 262,144, so the 15:1 shape (46,875 in + 3,125 out) fits with
 # room to spare.
 #
-# Concurrency is pinned to 17 from the engine's real KV number rather than
-# auto-detected. Auto-detection reads block_size x num_gpu_blocks from
-# vllm:cache_config_info and gets 972,768, about 13% higher than the engine
-# reports, which would put the ceiling at 19 instead of 17.
+# The KV pool is pinned in tokens with BENCH_TOKEN_MAX, so the runner does the
+# division itself and the ceiling follows the token budget. Auto-detection reads
+# block_size x num_gpu_blocks from vllm:cache_config_info and gets 1,303,120,
+# about 10% above what the engine reports, which would put the ceiling at 26.
 #
-# Six curve points: 1, 5, 9, 13, 17, 26. The overload level is 1.5x rather than
-# 1.25x because at a ceiling this low, 1.25x rounds to 22 and sits too close to
+# Six curve points: 1, 6, 12, 18, 23, 35. The overload level is 1.5x rather than
+# 1.25x because at a ceiling this low, 1.25x rounds to 29 and sits too close to
 # the limit to produce unambiguous preemption.
 apiVersion: batch/v1
 kind: Job
@@ -57,14 +57,14 @@ spec:
               value: Laguna
             - name: BENCH_TOKEN_BUDGET
               value: "50000"
-            # 861,597 KV tokens / 50,000 per session. Taken from the engine log,
-            # not from cache_config_info.
-            - name: BENCH_MAX_CONCURRENCY
-              value: "17"
-            # baseline 1, then 9, 17, 26. The last one is past the KV ceiling.
+            # The engine's own "GPU KV cache size" line, not cache_config_info.
+            # Concurrency is this divided by BENCH_TOKEN_BUDGET: 23 sessions.
+            - name: BENCH_TOKEN_MAX
+              value: "1184878"
+            # baseline 1, then 12, 23, 35. The last one is past the KV ceiling.
             - name: BENCH_CONCURRENCY_LEVELS
               value: "1,0.5,1.0,1.5"
-            # fills in 5 and 13
+            # fills in 6 and 18
             - name: BENCH_SWEEP_LEVELS
               value: "0.25,0.75"
             - name: BENCH_TEST_DURATION_SECONDS

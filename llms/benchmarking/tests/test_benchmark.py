@@ -1,19 +1,24 @@
+import io
 import os
 import sys
 import unittest
+import urllib.error
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
+import benchmark
 from benchmark import (
-    Config, PromptFactory, concurrency_levels, derive_shapes, effective_seconds,
-    exposed_metric_names, parse_cache_capacity, percentile, PrometheusClient,
-    resolve_metrics, steady_window, summarize, sweep_plan, theoretical_concurrency,
+    BenchmarkError, Config, PromptFactory, concurrency_levels, derive_shapes,
+    effective_seconds, exposed_metric_names, parse_cache_capacity, percentile,
+    kv_tokens_warning, PrometheusClient, resolve_metrics, steady_window, summarize,
+    sweep_plan, theoretical_concurrency, with_retry,
 )
 
 
 def make_config(**overrides):
     base = dict(
-        endpoint="x", api_key=None, model=None, token_budget=4080, max_concurrency=None,
+        endpoint="x", api_key=None, model=None, token_budget=4080, token_max=None,
+        max_concurrency=None,
         scheduler_max_seqs=None, levels=(1, .5, 1, 1.25), sweep_levels=(), prometheus_url=None,
         metric_selector="", request_timeout=1, results_path="x", prometheus_settle_seconds=0,
         test_duration_seconds=120, ramp_seconds=15, min_requests_per_worker=2,
@@ -42,6 +47,14 @@ class ConcurrencyTests(unittest.TestCase):
     def test_cache_capacity_metric(self):
         self.assertEqual(parse_cache_capacity(self.METRICS), 972768)
 
+    def test_cache_capacity_ignores_label_order(self):
+        reordered = 'vllm:cache_config_info{num_gpu_blocks="60798",block_size="16"} 1.0'
+        self.assertEqual(parse_cache_capacity(reordered), 972768)
+
+    def test_cache_capacity_absent_before_profiling(self):
+        unprofiled = 'vllm:cache_config_info{block_size="16",num_gpu_blocks="None"} 1.0'
+        self.assertIsNone(parse_cache_capacity(unprofiled))
+
     def test_rounds_up_and_keeps_baseline_one(self):
         self.assertEqual(concurrency_levels(make_config(), 31), {
             "baseline": 1, "moderate": 16, "saturation": 31, "overload": 39
@@ -58,6 +71,31 @@ class ConcurrencyTests(unittest.TestCase):
         self.assertEqual(detail["binding"], "max_num_seqs")
         # The headroom ratio is what tells a reader KV pressure went untested.
         self.assertGreater(detail["headroom_ratio"], 7)
+
+    def test_token_max_replaces_the_reported_kv_pool(self):
+        config = make_config(token_max=861597)
+        value, detail = theoretical_concurrency(config, self.METRICS)
+        self.assertEqual(value, 211)
+        self.assertEqual(detail["kv_cache_tokens"], 861597)
+        self.assertEqual(detail["kv_cache_tokens_source"], "BENCH_TOKEN_MAX")
+        self.assertEqual(detail["kv_cache_tokens_reported"], 972768)
+        self.assertEqual(detail["binding"], "kv_cache")
+
+    def test_token_max_scales_the_ceiling_with_context_length(self):
+        config = make_config(token_max=1184878, token_budget=50000)
+        self.assertEqual(theoretical_concurrency(config, self.METRICS)[0], 23)
+
+    def test_warns_when_the_metric_disagrees_with_token_max(self):
+        config = make_config(token_max=861597)
+        _, detail = theoretical_concurrency(config, self.METRICS)
+        self.assertIn("972768", kv_tokens_warning(config, detail))
+        close = make_config(token_max=960000)
+        self.assertIsNone(kv_tokens_warning(close, theoretical_concurrency(close, self.METRICS)[1]))
+
+    def test_missing_kv_capacity_asks_for_token_max(self):
+        with self.assertRaises(BenchmarkError) as raised:
+            theoretical_concurrency(make_config(), "")
+        self.assertIn("BENCH_TOKEN_MAX", str(raised.exception))
 
     def test_sweep_skips_levels_the_named_tests_already_cover(self):
         config = make_config(sweep_levels=(0.25, 0.5, 0.75))
@@ -187,6 +225,56 @@ class PromptTests(unittest.TestCase):
         # A shared corpus reused verbatim would leave T09 pre-warmed by T08.
         self.assertEqual(seeds, {"Shared benchmark corpus salt T08.",
                                  "Shared benchmark corpus salt T09."})
+
+
+class RetryTest(unittest.TestCase):
+    """The 50k agentic run died on one reset while building a prompt."""
+
+    def setUp(self):
+        self.backoff = benchmark.SETUP_RETRY_BACKOFF_SECONDS
+        benchmark.SETUP_RETRY_BACKOFF_SECONDS = 0.0
+
+    def tearDown(self):
+        benchmark.SETUP_RETRY_BACKOFF_SECONDS = self.backoff
+
+    def test_transient_transport_failure_recovers(self):
+        attempts = []
+
+        def flaky():
+            attempts.append(1)
+            if len(attempts) < 3:
+                raise BrokenPipeError(32, "Broken pipe")
+            return "ok"
+
+        self.assertEqual(with_retry("tokenize", flaky), "ok")
+        self.assertEqual(len(attempts), 3)
+
+    def test_exhausted_retries_become_benchmark_error(self):
+        def always():
+            raise ConnectionResetError(104, "reset")
+
+        with self.assertRaises(BenchmarkError):
+            with_retry("tokenize", always)
+
+    def test_http_status_is_not_retried(self):
+        attempts = []
+
+        def not_found():
+            attempts.append(1)
+            raise urllib.error.HTTPError("u", 404, "Not Found", {}, io.BytesIO(b""))
+
+        # count_tokens falls back to /v1/completions on 404, so a status has to
+        # reach the caller unchanged and on the first try.
+        with self.assertRaises(urllib.error.HTTPError):
+            with_retry("tokenize", not_found)
+        self.assertEqual(len(attempts), 1)
+
+    def test_benchmark_error_is_not_swallowed(self):
+        def boom():
+            raise BenchmarkError("inner")
+
+        with self.assertRaisesRegex(BenchmarkError, "inner"):
+            with_retry("tokenize", boom)
 
 
 if __name__ == "__main__":

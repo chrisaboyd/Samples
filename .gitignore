@@ -28,3 +28,12 @@ trading_bot.log
 
 ## Sensitive files
 **/.env
+
+## Results
+**/results/vllm-bench*
+
+## MCP
+**/.playwright*
+
+## LLMS
+**/.poolside/*
