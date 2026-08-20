@@ -10,15 +10,15 @@ import benchmark
 from benchmark import (
     BenchmarkError, Config, PromptFactory, concurrency_levels, derive_shapes,
     effective_seconds, exposed_metric_names, parse_cache_capacity, percentile,
-    kv_tokens_warning, PrometheusClient, resolve_metrics, steady_window, summarize,
-    sweep_plan, theoretical_concurrency, with_retry,
+    build_plan, kv_tokens_warning, PrometheusClient, resolve_metrics, steady_window,
+    summarize, sweep_plan, theoretical_concurrency, with_retry,
 )
 
 
 def make_config(**overrides):
     base = dict(
         endpoint="x", api_key=None, model=None, token_budget=4080, token_max=None,
-        max_concurrency=None,
+        curve_shape="1:1", max_concurrency=None,
         scheduler_max_seqs=None, levels=(1, .5, 1, 1.25), sweep_levels=(), prometheus_url=None,
         metric_selector="", request_timeout=1, results_path="x", prometheus_settle_seconds=0,
         test_duration_seconds=120, ramp_seconds=15, min_requests_per_worker=2,
@@ -102,6 +102,49 @@ class ConcurrencyTests(unittest.TestCase):
         plan = sweep_plan(config, 32, covered={1, 16, 32, 40})
         self.assertEqual([(value, round(fraction, 2)) for _, value, fraction in plan],
                          [(8, 0.25), (24, 0.75)])
+
+
+class PlanTests(unittest.TestCase):
+    LEVELS = {"baseline": 1, "moderate": 12, "saturation": 23, "overload": 35}
+
+    def plan(self, **overrides):
+        config = make_config(sweep_levels=(0.25, 0.75), **overrides)
+        return {row[0]: row for row in build_plan(config, self.LEVELS, 23)}
+
+    def test_curve_defaults_to_the_balanced_shape(self):
+        plan = self.plan()
+        self.assertEqual([plan[t][1] for t in ("T05", "T06", "T07")], ["1:1"] * 3)
+        self.assertEqual(plan["S01"][1], "1:1")
+
+    def test_curve_shape_moves_the_curve_tests_and_sweeps(self):
+        plan = self.plan(curve_shape="15:1")
+        self.assertEqual([plan[t][1] for t in ("T05", "T06", "T07")], ["15:1"] * 3)
+        self.assertEqual(plan["S01"][1], "15:1")
+
+    def test_cache_tests_stay_on_15_1_whatever_the_curve_runs(self):
+        for shape in ("1:1", "15:1", "1:5"):
+            plan = self.plan(curve_shape=shape)
+            self.assertEqual([plan[t][1] for t in ("T08", "T09", "T10")], ["15:1"] * 3)
+
+    def test_curve_anchor_follows_the_curve_shape(self):
+        on_curve = lambda plan: {t for t, row in plan.items() if row[5]}
+        self.assertEqual(on_curve(self.plan()),
+                         {"T03", "T05", "T06", "T07", "S01", "S02"})
+        self.assertEqual(on_curve(self.plan(curve_shape="15:1")),
+                         {"T01", "T05", "T06", "T07", "S01", "S02"})
+
+    def test_cache_cold_test_is_never_on_the_curve(self):
+        # T10 runs 15:1 cold at the moderate level, identical to T05 when the
+        # curve is 15:1. Two points at one concurrency would read as a collapse.
+        self.assertFalse(self.plan(curve_shape="15:1")["T10"][5])
+
+    def test_shape_is_validated(self):
+        os.environ.update(BENCH_VLLM_ENDPOINT="http://x", BENCH_CURVE_SHAPE="3:1")
+        try:
+            with self.assertRaises(BenchmarkError):
+                Config.from_env()
+        finally:
+            os.environ.pop("BENCH_CURVE_SHAPE")
 
 
 class WindowTests(unittest.TestCase):

@@ -18,3 +18,5 @@ tools:
             - tr *
             - fold *
             - python3 *
+            - launchctl list
+            - launchctl print *

@@ -23,6 +23,12 @@
 # Six curve points: 1, 6, 12, 18, 23, 35. The overload level is 1.5x rather than
 # 1.25x because at a ceiling this low, 1.25x rounds to 29 and sits too close to
 # the limit to produce unambiguous preemption.
+#
+# The curve runs the 15:1 shape (46,875 in / 3,125 out) via BENCH_CURVE_SHAPE.
+# That is what the 50,000 tier exists to represent, and it holds ~94% of its
+# budget in KV for the life of the request, so KV pressure is sustained rather
+# than sawtoothing between 25k and 50k the way the 1:1 shape does. T01 becomes
+# the single-session anchor for the curve; T03 still runs 1:1 as a baseline.
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -61,6 +67,11 @@ spec:
             # Concurrency is this divided by BENCH_TOKEN_BUDGET: 23 sessions.
             - name: BENCH_TOKEN_MAX
               value: "1184878"
+            # The concurrency curve runs the agentic shape, not the balanced one.
+            # 1:1 at this budget writes 25,000 tokens per request, which no agent
+            # does, and which takes longer than a whole test to produce.
+            - name: BENCH_CURVE_SHAPE
+              value: "15:1"
             # baseline 1, then 12, 23, 35. The last one is past the KV ceiling.
             - name: BENCH_CONCURRENCY_LEVELS
               value: "1,0.5,1.0,1.5"
@@ -69,14 +80,15 @@ spec:
               value: "0.25,0.75"
             - name: BENCH_TEST_DURATION_SECONDS
               value: "420"
-            # Long ramp: at 17 concurrent sessions of 50k tokens the batch takes a
+            # Long ramp: at 23 concurrent sessions of 50k tokens the batch takes a
             # while to fill, and the steady window has to start after that.
             - name: BENCH_RAMP_SECONDS
               value: "60"
-            # One request per worker is enough at this scale, and asking for more
-            # would push several tests past an hour each.
+            # One request per worker leaves nothing to take a percentile of. The
+            # 15:1 curve costs ~30s per request, so three is cheap there; the 1:5
+            # baseline is the slow one and BENCH_TEST_MAX_SECONDS bounds it.
             - name: BENCH_MIN_REQUESTS_PER_WORKER
-              value: "1"
+              value: "3"
             - name: BENCH_TEST_MAX_SECONDS
               value: "1800"
             - name: BENCH_PROMETHEUS_URL

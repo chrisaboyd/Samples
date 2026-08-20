@@ -96,6 +96,7 @@ class Config:
     model: str | None
     token_budget: int
     token_max: int | None
+    curve_shape: str
     max_concurrency: int | None
     scheduler_max_seqs: int | None
     levels: tuple[float, float, float, float]
@@ -131,6 +132,11 @@ class Config:
         sweep = tuple(float(v.strip()) for v in raw_sweep.split(",")) if raw_sweep else ()
         if any(v <= 0 for v in sweep):
             raise BenchmarkError("BENCH_SWEEP_LEVELS values must be positive")
+        curve_shape = os.getenv("BENCH_CURVE_SHAPE", "1:1").strip()
+        if curve_shape not in SHAPE_RATIOS:
+            raise BenchmarkError(
+                f"BENCH_CURVE_SHAPE must be one of {', '.join(SHAPE_RATIOS)}"
+            )
         raw_token_max = os.getenv("BENCH_TOKEN_MAX")
         token_max = int(raw_token_max) if raw_token_max else None
         if token_max is not None and token_max < budget:
@@ -150,6 +156,7 @@ class Config:
             model=os.getenv("BENCH_MODEL"),
             token_budget=budget,
             token_max=token_max,
+            curve_shape=curve_shape,
             max_concurrency=int(max_concurrency) if max_concurrency else None,
             scheduler_max_seqs=int(scheduler_max) if scheduler_max else None,
             levels=raw_levels,  # type: ignore[arg-type]
@@ -476,11 +483,13 @@ class Shape:
     output_tokens: int
 
 
+SHAPE_RATIOS = {"15:1": (15, 1, "prefill-heavy"), "5:1": (5, 1, "input-heavy"),
+                "1:1": (1, 1, "balanced"), "1:5": (1, 5, "decode-heavy")}
+
+
 def derive_shapes(budget: int) -> dict[str, Shape]:
-    ratios = {"15:1": (15, 1, "prefill-heavy"), "5:1": (5, 1, "input-heavy"),
-              "1:1": (1, 1, "balanced"), "1:5": (1, 5, "decode-heavy")}
     result = {}
-    for key, (input_ratio, output_ratio, name) in ratios.items():
+    for key, (input_ratio, output_ratio, name) in SHAPE_RATIOS.items():
         input_tokens = round(budget * input_ratio / (input_ratio + output_ratio))
         result[key] = Shape(name, key, input_tokens, budget - input_tokens)
     return result
@@ -675,6 +684,12 @@ def theoretical_concurrency(config: Config, metrics_text: str) -> tuple[int, dic
     return concurrency, detail
 
 
+# T05-T07 and the sweeps trace the concurrency curve, so they all run whatever
+# BENCH_CURVE_SHAPE names. T08-T10 exist to compare cache states against each
+# other and stay on 15:1 whatever the curve is doing.
+CURVE_TESTS = ("T05", "T06", "T07")
+CACHE_TESTS = ("T08", "T09", "T10")
+
 TESTS = (
     ("T01", "15:1", "baseline", "cold"),
     ("T02", "5:1", "baseline", "cold"),
@@ -687,6 +702,30 @@ TESTS = (
     ("T09", "15:1", "moderate", "mixed"),
     ("T10", "15:1", "moderate", "cold"),
 )
+
+
+def build_plan(config: Config, levels: dict[str, int],
+               theoretical: int) -> list[tuple[str, str, int, str, str, bool]]:
+    """Every test to run, with the ratio it uses and whether it is on the curve.
+
+    Curve membership is recorded per test rather than inferred later from the
+    ratio. When BENCH_CURVE_SHAPE is 15:1 the curve tests and the cache-cold
+    test T10 run identical workloads, and an analyzer that selects by ratio
+    would read T10 as a second, contradictory measurement at that concurrency.
+    """
+    plan = []
+    for test_id, ratio, level, cache in TESTS:
+        if test_id in CURVE_TESTS:
+            ratio = config.curve_shape
+        on_curve = (
+            test_id in CURVE_TESTS
+            or (test_id not in CACHE_TESTS and level == "baseline"
+                and ratio == config.curve_shape and cache == "cold")
+        )
+        plan.append((test_id, ratio, levels[level], cache, level, on_curve))
+    for sweep_id, value, fraction in sweep_plan(config, theoretical, set(levels.values())):
+        plan.append((sweep_id, config.curve_shape, value, "cold", f"sweep-{fraction:g}", True))
+    return plan
 
 
 def concurrency_levels(config: Config, theoretical: int) -> dict[str, int]:
@@ -874,9 +913,7 @@ def run() -> int:
     if drift:
         print(json.dumps({"warning": drift}), file=sys.stderr, flush=True)
 
-    plan = [(test_id, ratio, levels[level], cache, level) for test_id, ratio, level, cache in TESTS]
-    for sweep_id, value, fraction in sweep_plan(config, theoretical, set(levels.values())):
-        plan.append((sweep_id, "1:1", value, "cold", f"sweep-{fraction:g}"))
+    plan = build_plan(config, levels, theoretical)
     if max(item[2] for item in plan) > CLIENT_THREAD_WARNING:
         print(json.dumps({"warning": (
             f"peak concurrency exceeds {CLIENT_THREAD_WARNING} client threads; measured TTFT "
@@ -889,6 +926,7 @@ def run() -> int:
         "endpoint": config.endpoint,
         "model": model,
         "token_budget": config.token_budget,
+        "curve_shape": config.curve_shape,
         "kv_cache_tokens": concurrency_detail["kv_cache_tokens"],
         "theoretical_concurrency": theoretical,
         "concurrency_constraint": concurrency_detail,
@@ -908,10 +946,11 @@ def run() -> int:
     if warm["error"]:
         raise BenchmarkError(f"warmup failed: {warm['error']}")
 
-    for test_id, ratio, concurrency, cache, level in plan:
+    for test_id, ratio, concurrency, cache, level, on_curve in plan:
         shape = shapes[ratio]
         result = run_test(client, factory, config, model, test_id, shape, cache, concurrency)
         result["level"] = level
+        result["curve"] = on_curve
         if prometheus:
             # One scrape has to land after the steady window closes before the
             # counters covering it are queryable.

@@ -51,7 +51,8 @@ STATE_MEANING = [
                    "but the server is now sharing capacity."),
     ("flat", "Scaling efficiency below 0.30. Added sessions mostly wait on each other; total "
              "throughput still creeps up but each session pays for it in latency."),
-    ("capped", "Within 2% of the best throughput observed. Additional concurrency changes "
+    ("capped", "Within 2% of the best throughput observed, and so was the level below it. "
+                "Additional concurrency changes "
                "throughput by nothing measurable and only adds latency."),
     ("degraded", "Throughput fell below a lower concurrency, or the scheduler preempted "
                  "sequences, or latency grew faster than the load did."),
@@ -233,13 +234,42 @@ def ordered(*values: float | None) -> bool | None:
 # -------------------------------------------------------------------- analysis
 
 
-def curve_points(tests: dict[str, Any]) -> list[dict[str, Any]]:
-    """Balanced-shape cold tests ordered by concurrency, including sweep points."""
+MIN_CURVE_SAMPLES = 2   # one request is an observation, not a percentile
+
+
+def on_curve(test: dict[str, Any], curve_shape: str) -> bool:
+    """Curve membership, from the runner's own flag where the report carries it.
+
+    Runs before BENCH_CURVE_SHAPE existed have no flag, so fall back to the
+    shape those runs always used for the curve.
+    """
+    if "curve" in test:
+        return bool(test["curve"])
+    return (test.get("shape", {}).get("ratio") == curve_shape
+            and test.get("cache") == "cold")
+
+
+def curve_points(tests: dict[str, Any], curve_shape: str = "1:1") -> list[dict[str, Any]]:
+    """Curve-shape cold tests ordered by concurrency, including sweep points.
+
+    A test that completed fewer than MIN_CURVE_SAMPLES requests is dropped. Its
+    p95 is a single observation, and left in place it lands on the curve as a
+    throughput collapse that never happened.
+    """
     points = [
         test for test in tests.values()
-        if test.get("shape", {}).get("ratio") == "1:1" and test.get("cache") == "cold"
+        if on_curve(test, curve_shape)
+        and (value(test, "summary", "successes") or 0) >= MIN_CURVE_SAMPLES
     ]
     return sorted(points, key=lambda test: test.get("concurrency", 0))
+
+
+def undersampled_curve_tests(tests: dict[str, Any], curve_shape: str = "1:1") -> list[str]:
+    return sorted(
+        str(test.get("id")) for test in tests.values()
+        if on_curve(test, curve_shape)
+        and (value(test, "summary", "successes") or 0) < MIN_CURVE_SAMPLES
+    )
 
 
 # Band edges, expressed as scaling efficiency X(N) / (N * X(1)). Every edge is
@@ -247,6 +277,8 @@ def curve_points(tests: dict[str, Any]) -> list[dict[str, Any]]:
 LINEAR_EFFICIENCY = 0.75      # still getting most of what each added session costs
 SUBLINEAR_EFFICIENCY = 0.30   # still buying a meaningful share
 CAPPED_FRACTION = 0.98        # within 2% of the best throughput observed
+KV_PRESSURE_FRACTION = 0.90   # KV this full means the cache is the active constraint
+QUEUE_BACKLOG_FRACTION = 0.05  # mean waiting this share of offered load is a real admission cost
 
 
 def classify_curve(curve: list[dict[str, Any]]) -> dict[str, Any]:
@@ -276,6 +308,9 @@ def classify_curve(curve: list[dict[str, Any]]) -> dict[str, Any]:
                          if test.get("concurrency") else None),
             "waiting": value(test, "prometheus", "mean_requests_waiting"),
             "preemptions": value(test, "prometheus", "preemptions"),
+            "kv_usage": value(test, "prometheus", "max_kv_cache_usage"),
+            "steady": bool(test.get("steady_window_valid", True)),
+            "samples": value(test, "summary", "successes"),
         }
         for test in curve
     ]
@@ -310,10 +345,20 @@ def classify_curve(curve: list[dict[str, Any]]) -> dict[str, Any]:
             point["latency_ratio"] > load_ratio if point["latency_ratio"] is not None else None
         )
         efficiency = point["scaling_efficiency"]
-        regressed = point["throughput"] < previous["throughput"] if previous else False
+        # An unsteady window measures ramp and drain as well as load, so its
+        # throughput reads low. Calling that a regression invents a cliff.
+        regressed = bool(
+            previous and point["throughput"] < previous["throughput"]
+            and point["steady"] and previous["steady"]
+        )
         if (point["preemptions"] or 0) > 0 or point["superlinear"] or regressed:
             point["state"] = "degraded"
-        elif point["throughput_fraction"] >= CAPPED_FRACTION and point is not base:
+        elif (point["throughput_fraction"] >= CAPPED_FRACTION and point is not base
+                and previous and previous["throughput_fraction"] >= CAPPED_FRACTION):
+            # The plateau has to be witnessed across two tested levels. The
+            # highest point is always within 2% of itself, so testing it alone
+            # labels every run "capped" at its top level and contradicts the
+            # capacity section, which says the ceiling was never found.
             point["state"] = "capped"
         elif efficiency is None:
             point["state"] = "sub-linear"
@@ -395,15 +440,24 @@ def executive_summary(report: dict[str, Any], analysis: dict[str, Any]) -> dict[
                 sentence += (f" ITL improved {cold_itl / hot_itl:,.1f}x over the same pair "
                              f"({cold_itl:.4f}s without reuse against {hot_itl:.4f}s with it).")
             points.append(sentence)
+    peak_level = next((p for p in curve.get("levels", [])
+                       if p["concurrency"] == curve.get("peak")), None)
     if tuned:
-        points.append(
-            f"Tuned setting: concurrency {tuned['concurrency']} delivers "
-            f"{tuned['throughput_fraction']:.0%} of peak throughput at "
-            f"{tuned['latency_multiple']:.1f}x the single-session latency. Below it the GPU idles "
-            f"between requests; above it throughput gains cost progressively more latency, "
-            f"reaching {top['latency_multiple']:.1f}x at concurrency {top['concurrency']} for "
-            f"{top['throughput_fraction']:.0%} of peak."
+        # Percentages of peak and multiples of baseline are true and hard to act
+        # on. State what one user feels and what the pod produces, in tok/s.
+        sentence = (
+            f"Tuned setting: {tuned['concurrency']} sessions. Each user gets "
+            f"{fnum(tuned['per_user'], 0)} tok/s and waits {fnum(tuned['ttft'], 1)}s for the first "
+            f"token, and the pod produces {fnum(tuned['throughput'], 0)} tok/s across all of them."
         )
+        if peak_level and peak_level["concurrency"] != tuned["concurrency"]:
+            sentence += (
+                f" At {peak_level['concurrency']} sessions the pod produces "
+                f"{fnum(peak_level['throughput'], 0)} tok/s, each user gets "
+                f"{fnum(peak_level['per_user'], 0)} tok/s, and the first-token wait is "
+                f"{fnum(peak_level['ttft'], 1)}s."
+            )
+        points.append(sentence)
 
     actions: list[str] = []
     failed = {item["name"] for item in analysis.get("checks", []) if item["status"] == "FAIL"}
@@ -425,22 +479,52 @@ def executive_summary(report: dict[str, Any], analysis: dict[str, Any]) -> dict[
             f"{constraint.get('kv_limit')} sessions at this context length. Raising the slot count "
             "removes a cliff under traffic spikes; it will not necessarily raise peak throughput."
         )
-    if tuned and curve.get("peak"):
+    levels = curve.get("levels", [])
+    kv_peak = max((p["kv_usage"] for p in levels if p.get("kv_usage") is not None), default=None)
+    preempted = any((p["preemptions"] or 0) > 0 for p in levels)
+    memory_bound = preempted or (kv_peak is not None and kv_peak >= KV_PRESSURE_FRACTION)
+    if tuned and peak_level and peak_level["concurrency"] != tuned["concurrency"]:
+        extra = peak_level["concurrency"] - tuned["concurrency"]
+        gain = (peak_level["throughput"] / tuned["throughput"] - 1) if tuned["throughput"] else None
         actions.append(
-            f"Run at concurrency {tuned['concurrency']} unless you have a reason not to: "
-            f"{tuned['throughput_fraction']:.0%} of peak throughput at {tuned['latency_multiple']:.1f}x "
-            f"baseline latency. Going to {curve['peak']} buys the remaining "
-            f"{1 - tuned['throughput_fraction']:.0%} and costs {top['latency_multiple']:.1f}x baseline "
-            "latency instead."
+            f"Headroom first, hardware second. {tuned['concurrency']} sessions is the efficient "
+            f"point and {peak_level['concurrency']} is the most this pod sustains, so the last "
+            f"{extra} sessions are output you have already paid for: "
+            f"{fnum(gain * 100, 0)}% more total tokens/sec, bought by letting per-user speed fall "
+            f"from {fnum(tuned['per_user'], 0)} to {fnum(peak_level['per_user'], 0)} tok/s and "
+            f"first-token wait rise from {fnum(tuned['ttft'], 1)}s to {fnum(peak_level['ttft'], 1)}s. "
+            "Take that trade unless a latency target forbids it."
         )
-    if balance:
-        aggregate = max(generation_tps(t) or 0 for t in curve_points(tests))
+    if peak_level:
+        if memory_bound:
+            actions.append(
+                f"Scale out past {peak_level['concurrency']} sessions, not up. KV peaked at "
+                f"{kv_peak:.0%} of the pool"
+                + (" and the scheduler preempted sequences" if preempted else "")
+                + ", so no setting on this pod adds capacity at this context length. Add a replica "
+                f"when you need more than {peak_level['concurrency']} sessions at once, or when "
+                f"{fnum(peak_level['per_user'], 0)} tok/s per user is below what the product needs. "
+                "Each replica buys another "
+                f"{fnum(peak_level['throughput'], 0)} tok/s and another "
+                f"{peak_level['concurrency']} sessions."
+            )
+        else:
+            actions.append(
+                f"Scale up before scaling out. KV peaked at {kv_peak:.0%} of the pool"
+                if kv_peak is not None else "Scale up before scaling out."
+            )
+            actions[-1] += (
+                f", so this pod still had memory to give at {peak_level['concurrency']} sessions. "
+                "Raise concurrency and re-measure before adding replicas."
+            )
+    hot_kv = value(tests.get("T08") or {}, "prometheus", "max_kv_cache_usage")
+    cold_kv = value(tests.get("T10") or {}, "prometheus", "max_kv_cache_usage")
+    if memory_bound and None not in (hot_kv, cold_kv) and hot_kv and cold_kv > hot_kv:
         actions.append(
-            f"Capacity ceiling is {aggregate:,.0f} generated tokens/sec across all users combined. "
-            f"Divide by the per-user rate your product needs to get a user count: about "
-            f"{int(aggregate / 30):,} users at 30 tok/s each, or {int(aggregate / 100):,} at "
-            f"100 tok/s each. One user alone gets {balance['decode_rate']:,.0f} tok/s, so per-user "
-            "speed is what you trade away as you add users."
+            f"Prefix reuse is the only lever that raises the session count without hardware. At the "
+            f"same concurrency the cache-hot test held {hot_kv:.0%} of KV against {cold_kv:.0%} "
+            f"cold, so shared context is worth roughly {cold_kv / hot_kv:,.1f}x in sessions per GPU. "
+            "Route sessions that share a system prompt or repo context to the same replica."
         )
     return {"points": points, "actions": actions}
 
@@ -455,7 +539,7 @@ def capacity_table(report: dict[str, Any], analysis: dict[str, Any]) -> dict[str
     tests = {test["id"]: test for test in report.get("tests", []) if test.get("id")}
     curve = analysis.get("curve") or {}
     balance = analysis.get("balance")
-    points = curve_points(tests)
+    points = curve_points(tests, report.get("curve_shape", "1:1"))
     if not points or not balance:
         return {}
     aggregate = max(generation_tps(t) or 0 for t in points)
@@ -596,7 +680,18 @@ def next_run(report: dict[str, Any], analysis: dict[str, Any]) -> dict[str, Any]
                 "generator adding to measured latency. Split it across replicas: run the same "
                 "manifest three times at a third of the count each and sum the throughput."
             )
-    if kv_tokens and seq_limit:
+    kv_peak = max((p["kv_usage"] for p in levels if p.get("kv_usage") is not None), default=None)
+    preempted = any((p["preemptions"] or 0) > 0 for p in levels)
+    memory_bound = preempted or (kv_peak is not None and kv_peak >= KV_PRESSURE_FRACTION)
+    if memory_bound:
+        reason.append(
+            f"Memory bound this run: KV peaked at {kv_peak:.0%} of the pool"
+            + (" and the scheduler preempted sequences" if preempted else "")
+            + f". The {budget:,}-token budget is the right size to exercise KV on this "
+            "configuration, so keep it and vary concurrency around the ceiling rather than "
+            "raising context further."
+        )
+    elif kv_tokens and seq_limit:
         memory_bound_context = int(kv_tokens / seq_limit)
         if budget < memory_bound_context * 0.8:
             reason.append(
@@ -727,7 +822,8 @@ def analyze(report: dict[str, Any]) -> dict[str, Any]:
     # batching payoff through diminishing returns to degradation. A level sitting in a
     # loaded-but-in-tolerance regime is a success, not a failure, so the checks
     # ask what the curve revealed rather than holding each point to a fixed bar.
-    curve = classify_curve(curve_points(tests))
+    curve_shape = report.get("curve_shape", "1:1")
+    curve = classify_curve(curve_points(tests, curve_shape))
     levels = curve["levels"]
     states = {point["state"] for point in levels}
     best_gain = max((p["throughput"] / tps03 for p in levels
@@ -755,7 +851,7 @@ def analyze(report: dict[str, Any]) -> dict[str, Any]:
         check("Curve reaches degradation",
               "degraded" in states,
               f"levels observed: {', '.join(sorted(states))}"
-              + ("" if "overloaded" in states else
+              + ("" if "degraded" in states else
                  "; the run never degraded, so the ceiling was not found. Raise concurrency, "
                  "raise BENCH_TOKEN_BUDGET, or accept that this configuration has no cliff")),
         check("No preemptions below the tuned setting",
@@ -820,6 +916,18 @@ def analyze(report: dict[str, Any]) -> dict[str, Any]:
             "These tests never had all workers busy at once, so their throughput includes ramp-up "
             "and drain and reads low: " + ", ".join(sorted(unsteady))
         )
+    dropped = undersampled_curve_tests(tests, curve_shape)
+    if dropped:
+        notes.append(
+            f"Dropped from the curve for completing fewer than {MIN_CURVE_SAMPLES} requests, which "
+            "leaves nothing to take a percentile of: " + ", ".join(dropped)
+            + ". Raise BENCH_MIN_REQUESTS_PER_WORKER or BENCH_TEST_DURATION_SECONDS so every "
+            "worker finishes several requests at this shape."
+        )
+    notes.append(
+        f"The concurrency curve ran the {curve_shape} shape. Latency at each level describes that "
+        "shape only, and a different ratio at the same concurrency will not match it."
+    )
 
     tuned_point = next((p for p in curve["levels"] if p.get("tuned")), None)
     if tuned_point:
@@ -1310,7 +1418,7 @@ def html_table(headers: list[str], rows: list[list[str]], css_class: str = "") -
 
 def build_html(report: dict[str, Any], analysis: dict[str, Any], source: str) -> str:
     tests = {test["id"]: test for test in report.get("tests", []) if test.get("id")}
-    curve = curve_points(tests)
+    curve = curve_points(tests, report.get("curve_shape", "1:1"))
     peak = analysis.get("peak_throughput_concurrency")
     load: list[str] = []
     shape_charts: list[str] = []
@@ -1447,28 +1555,37 @@ def build_html(report: dict[str, Any], analysis: dict[str, Any], source: str) ->
             top_running = value(curve[-1], "prometheus", "mean_requests_running")
             top_rate = value(curve[-1], "summary", "requests_per_second")
             top_prefill = value(curve[-1], "summary", "mean_prefill_seconds")
+            # Depth only means something against the load offered at that level.
+            share = worst / worst_at if worst_at else 0
+            below = max([d for c, d in queue if c < worst_at], default=0.0)
+            backlogged = share >= QUEUE_BACKLOG_FRACTION
             queue_notes = [
                 "Requests that have arrived but have not yet been admitted to the running batch, "
                 "averaged across each test window. This counts admission backlog only.",
-                f"Peak reading {worst:.2f} requests at concurrency {worst_at}, so admission was "
-                "never a bottleneck: the scheduler had a free slot essentially whenever a request "
-                "showed up.",
+                (f"Peak mean depth {worst:.2f} requests at concurrency {worst_at}, which is "
+                 f"{share:.0%} of the load offered at that level, so admission is a real cost "
+                 f"there. Every level below it stayed at or under {below:.2f}, so the backlog "
+                 "appears only at the top of the curve.")
+                if backlogged else
+                (f"Peak mean depth {worst:.2f} requests at concurrency {worst_at}, under "
+                 f"{QUEUE_BACKLOG_FRACTION:.0%} of the load offered at that level, so admission "
+                 "was never the bottleneck: the scheduler had a free slot essentially whenever a "
+                 "request showed up."),
             ]
-            if None not in (top_running, top_rate, top_prefill) and top_prefill:
+            if not backlogged and None not in (top_running, top_rate, top_prefill) and top_prefill:
                 queue_notes.append(
                     f"That is not the same as being fast. At concurrency {curve[-1]['concurrency']}, "
                     f"{top_running:.0f} requests were in the running state on average and TTFT was "
                     f"{top_prefill:.2f}s. Had requests spent that time queued, average depth would "
                     f"have been about {top_rate * top_prefill:.1f}, not {worst:.2f}."
                 )
-            queue_notes.extend([
-                "The difference is chunked prefill. vLLM admits a request almost immediately and "
-                "then processes its prompt a slice at a time, sharing each forward pass with every "
-                "sequence already generating. The wait moved out of the queue and into execution.",
-                "So a flat line here means the scheduler kept up with admission. It says nothing "
-                "about latency, which is why saturation is judged from the throughput curve rather "
-                "than from this chart.",
-            ])
+            queue_notes.append(
+                "Chunked prefill is why this line stays low for most of the curve. vLLM admits a "
+                "request almost immediately and then processes its prompt a slice at a time, "
+                "sharing each forward pass with every sequence already generating. The wait moves "
+                "out of the queue and into execution, so a low line here says the scheduler kept "
+                "up with admission and says nothing about latency."
+            )
             load.append(line_chart(
                 "Scheduler queue depth against concurrency", queue_notes,
                 "concurrent users", "requests waiting",

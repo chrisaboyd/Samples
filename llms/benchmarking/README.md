@@ -59,6 +59,7 @@ KUBECONFIG=$HOME/.kube/contexts/boyd-ref kubectl -n poolside-models logs -l app.
 | `BENCH_TOKEN_BUDGET` | `4080` | Total tokens per session. Shapes derive from it by fixed ratios. |
 | `BENCH_CONCURRENCY_LEVELS` | `1,0.5,1.0,1.25` | Baseline, moderate, saturation, overload as fractions of theoretical concurrency. Exactly four values, first must be `1`. |
 | `BENCH_SWEEP_LEVELS` | `0.25,0.75` | Extra balanced-shape points so the throughput curve shows its knee. Empty string disables. |
+| `BENCH_CURVE_SHAPE` | `1:1` | Ratio the concurrency curve runs: T05-T07 and every sweep point. `15:1` for the agentic profile, where a 1:1 request writes 25,000 tokens and no agent does that. T08-T10 stay on `15:1` regardless, and the single-session test matching this ratio becomes the curve's anchor. |
 | `BENCH_TOKEN_MAX` | auto | KV token pool, in tokens. Concurrency is this divided by `BENCH_TOKEN_BUDGET`. Defaults to what `vllm:cache_config_info` reports; pin it to the engine's `GPU KV cache size` log line, which is smaller. |
 | `BENCH_MAX_CONCURRENCY` | auto | Overrides the ceiling in sessions, bypassing the token division. Use it for a client-side cap, not for KV. |
 | `BENCH_SCHEDULER_MAX_SEQS` | unset | Caps the KV-derived ceiling at vLLM's `max_num_seqs`. boyd-ref now serves with `192`. |
@@ -74,6 +75,14 @@ KUBECONFIG=$HOME/.kube/contexts/boyd-ref kubectl -n poolside-models logs -l app.
 | `BENCH_MODEL` | discovered | Served model name; otherwise read from `/v1/models`. |
 | `BENCH_REQUEST_TIMEOUT` | `7200` | Per-request timeout in seconds. |
 | `BENCH_RESULTS_PATH` | `/results/results.json` | JSON output path. |
+
+### The curve measures one shape
+
+T05, T06, T07 and the sweep points all run `BENCH_CURVE_SHAPE`, so every latency number on the curve describes that ratio and nothing else. The single-session test with the same ratio anchors the curve: T03 at the default, T01 when the curve is `15:1`. The other baselines still run, and they stay off the curve.
+
+Choose the ratio the workload actually has. At `BENCH_TOKEN_BUDGET=50000` the `1:1` shape writes 25,000 tokens per request, which takes longer than a whole test to produce and leaves one sample per worker, and it holds between 25k and 50k tokens of KV rather than sitting at the budget. The `15:1` shape holds 94% of its budget from the first token, so KV pressure is steady and the ceiling arithmetic describes the shape being run.
+
+T08 through T10 stay on `15:1` whatever the curve does, since they compare cache states with each other. When the curve is also `15:1`, T10 runs the same workload as T05 and gives you a free repeatability check. The runner marks curve membership per test so the analyzer never reads that duplicate as a second measurement at the same concurrency.
 
 ### Set `BENCH_METRIC_SELECTOR`
 
