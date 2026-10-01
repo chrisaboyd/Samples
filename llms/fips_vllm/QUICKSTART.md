@@ -4,7 +4,7 @@ Replaces the Atlas inference image in a Poolside on-prem 2026.07.07 install with
 
 - **Part 1** builds and verifies the image. Both path 2A and 2B need it.
 - **Part 2A** (optional) runs it locally with Podman, to validate the image before touching the cluster.
-- **Part 2B** moves the `06-poolside-inference` deployment from Atlas to the FIPS image, through the bundle's local registry and the phase 6 Terraform.
+- **Part 2B** moves the `06-poolside-inference` deployment from Atlas to the FIPS image via the RKE2 registry and the phase 6 Terraform.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ Replaces the Atlas inference image in a Poolside on-prem 2026.07.07 install with
 | RHEL 9.x host with FIPS enabled | `fips-mode-setup --check` | `FIPS mode is enabled.` |
 | Poolside on-prem 2026.07.07 phases `01-infra-rke2` to `06-poolside-inference` applied, serving Atlas | `kubectl -n poolside-models get deploy inference-agent` | `READY 1/1` |
 | RKE2 local registry on `localhost:30500` | `curl -s http://localhost:30500/v2/_catalog \| jq -c` | `{"repositories":[...]}` |
-| Laguna checkpoint uploaded by phase 05 | `grep -A3 model_s3_uris <bundle>/06-poolside-inference/terraform.tfvars` | `agent = "s3://poolside-models/<checkpoint dir>"` |
+| Laguna checkpoint uploaded by phase 5 (`05-poolside-model-upload`) | `grep -A3 model_s3_uris <bundle>/06-poolside-inference/terraform.tfvars` | `agent = "s3://poolside-models/<checkpoint dir>"` |
 | `kubectl`, `terraform`, `skopeo`, `jq` | `kubectl version --client; terraform version; skopeo --version` | versions print |
 | The Part 1 image, in local storage or as a tar | `podman images localhost/vllm-openai-fips:0.29.0` or `ls vllm-openai-fips-0.29.0.tar` | image or file present |
 
@@ -544,7 +544,10 @@ podman rm -f vllm-fips
 
 ## Part 2B: Move the on-prem deployment from Atlas to FIPS vLLM (RKE2)
 
-Phase 6 deploys the inference stack with the Terraform helm provider. The bundle ships no `helm` CLI. This part patches the files phase 6 reads, then re-applies phase 6.
+This is the requirement for on-prem deployments.  
+Skopeo is used to copy the images into `registry:3` on port 30500 (both fips-vllm + aws-cli).  
+Additionally, the Terraform bundled helm charts require modifications, updating both the image and start arguments.  
+Phase 6 (`06-poolside-inference`) deploys them with the Terraform helm provider and the bundle ships no `helm` CLI, so this part patches the files phase 6 reads, then re-applies phase 6.
 
 ```bash
 export BUNDLE=/path/to/2026.07.07-29088365428
