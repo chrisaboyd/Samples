@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>DC2 Invention Planner</title>
+  <meta name="description" content="Dark Cloud 2 photo and invention planner with progress tracking.">
+  <meta name="theme-color" content="#1d2433">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="DC2 Planner">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">DC2 Planner</div>
+    <label class="chapter-pick">
+      <span>Chapter</span>
+      <select id="chapter"></select>
+    </label>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <a href="#/inventions" data-tab="inventions">Inventions</a>
+    <a href="#/photos" data-tab="photos">Photos</a>
+    <a href="#/checklist" data-tab="checklist">Checklist</a>
+    <a href="#/progress" data-tab="progress">Progress</a>
+  </nav>
+
+  <main id="view" class="view"></main>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      // A new version activating (after a data/app update) reloads once so you see it right away.
+      const hadController = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadController) location.reload(); });
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

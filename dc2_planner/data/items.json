@@ -1,0 +1,5042 @@
+[
+  {
+    "id": "scrap-of-metal",
+    "name": "Scrap of Metal",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Morton's Sundries, Palm Brinks",
+        "chapter": 1,
+        "note": "10 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "10 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Yo-Yo Barrel (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Pirate Tank (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Alexander (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Ultrasonic Bomb (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Clock Knight (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Demon Puppet (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Angry Cannon (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Spinning Saucer (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Last Guardian (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Pirate Eye (Ocean's Roar Cave Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Iron Ghost (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Rolling Rocks (Mount Gundor  /  Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Face_of_Prajna",
+      "https://darkcloud.fandom.com/wiki/Masked_Tribesman",
+      "https://darkcloud.fandom.com/wiki/Pirate_Tank",
+      "https://darkcloud.fandom.com/wiki/Sonic_Bomber",
+      "https://darkcloud.fandom.com/wiki/Yo-Yo_Barrel"
+    ],
+    "verified": true
+  },
+  {
+    "id": "destruction-crystal",
+    "name": "Destruction Crystal",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Mimic (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Face of Prajna (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Ivanoff (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "3rd-place prize x3"
+      },
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "3rd-place prize x5"
+      },
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "150 gilda; needs Georama unlock"
+      },
+      {
+        "type": "drop",
+        "where": "Pirate Tank (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Statue (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Beginner class 2nd-place prize x1"
+      },
+      {
+        "type": "drop",
+        "where": "Alexander (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Magmanoff (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Guardia (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Cerberus (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Face of Yaksa (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Demon Puppet (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Rock Face (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Iwanosuke (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Angry Cannon (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Dark Keeper (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements",
+        "chapter": 8,
+        "note": "150 gilda"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "commonly found in chests or stolen/dropped"
+      },
+      {
+        "type": "drop",
+        "where": "Coral Dog (Ocean's Roar Cave Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Mimic (Mount Gundor Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Living Armor (Mount Gundor (Star Path))",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Looking for the Earth Gem, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Max's Longest Day, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x5"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crystals",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Dog_Statue",
+      "https://darkcloud.fandom.com/wiki/Face_of_Prajna",
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Fishing_Contest",
+      "https://darkcloud.fandom.com/wiki/Ivanoff",
+      "https://darkcloud.fandom.com/wiki/Mimic",
+      "https://darkcloud.fandom.com/wiki/Pirate_Tank",
+      "https://darkcloud.fandom.com/wiki/Spheda",
+      "https://darkcloud.fandom.com/wiki/Statue"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bandit-coin",
+    "name": "Bandit Coin",
+    "sources": [
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Senior class 2nd-place prize x1"
+      },
+      {
+        "type": "shop",
+        "where": "Morton's Sundries, Palm Brinks",
+        "chapter": 8,
+        "note": "7000 gilda; late-game stock"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Mountain Baddie Appears, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Final Trump Card, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "poison",
+    "name": "Poison",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops"
+    ],
+    "verified": true
+  },
+  {
+    "id": "light-element",
+    "name": "Light Element",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Pixie (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements (after recruiting Rufio)",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Goyone (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Sylph (Rainbow Butterfly Wood Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Imp (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Goyone",
+      "https://darkcloud.fandom.com/wiki/Pixie"
+    ],
+    "verified": true
+  },
+  {
+    "id": "gold-bar",
+    "name": "Gold Bar",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "1000 gilda; sells back for 1000"
+      },
+      {
+        "type": "shop",
+        "where": "Borneo's Fine Ore, Blackstone One train",
+        "chapter": 2,
+        "note": "1000 gilda"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Beginner class 1st-place prize x3"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Looking for the Fire Gem, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Living Statue, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Seeping Light, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x2"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "silver-ball",
+    "name": "Silver Ball",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Darkness (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "200 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Borneo's Fine Ore, Blackstone One train",
+        "chapter": 2,
+        "note": "200 gilda"
+      },
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "2nd-place prize x10"
+      },
+      {
+        "type": "drop",
+        "where": "Sooty (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Darker (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Shadow (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Darkness",
+      "https://darkcloud.fandom.com/wiki/Fishing_Contest"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sturdy-rock",
+    "name": "Sturdy Rock",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Gyumo (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Gordon's Bonsai (after recruiting Gordon)",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Ivanoff (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Lava Golem (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Cabuble (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Blumo (Starlight Canyon Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Minotaurus (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Mimic (Mount Gundor Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Burning Undead, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x10"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Golem",
+      "https://darkcloud.fandom.com/wiki/Gyumo",
+      "https://darkcloud.fandom.com/wiki/Ivanoff",
+      "https://darkcloud.fandom.com/wiki/Mimic",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "power-crystal",
+    "name": "Power Crystal",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Vanguard (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Gyumo (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Tigriff (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Crescent Baron (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Dog Statue (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Elfas (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "2nd-place prize x5"
+      },
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "200 gilda; needs Georama unlock"
+      },
+      {
+        "type": "drop",
+        "where": "Sand Moler (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Neo Vanguard (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Senior class 1st-place prize x10"
+      },
+      {
+        "type": "drop",
+        "where": "Stick Joe (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Chimera (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Moon Joe (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Toy Rock (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Moonflowephant (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Leogriff (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Vanguard Mk. 2 (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Moonlight Hulk (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Behemoth (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Cabuble (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements",
+        "chapter": 8,
+        "note": "200 gilda"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "commonly found in chests or stolen/dropped"
+      },
+      {
+        "type": "drop",
+        "where": "Blumo (Starlight Canyon Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Minotaurus (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Busy Moler (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Pirate Eye (Ocean's Roar Cave Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Iron Ghost (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Scary Tree, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crescent_Baron",
+      "https://darkcloud.fandom.com/wiki/Crystals",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Dog_Statue",
+      "https://darkcloud.fandom.com/wiki/Elfas",
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Fishing_Contest",
+      "https://darkcloud.fandom.com/wiki/Gyumo",
+      "https://darkcloud.fandom.com/wiki/Moler",
+      "https://darkcloud.fandom.com/wiki/Pirate_Tank",
+      "https://darkcloud.fandom.com/wiki/Spheda",
+      "https://darkcloud.fandom.com/wiki/Tigriff",
+      "https://darkcloud.fandom.com/wiki/Vanguard"
+    ],
+    "verified": true
+  },
+  {
+    "id": "rolling-log",
+    "name": "Rolling Log",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "King Mimic (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Tore (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Gordon's Bonsai (after recruiting Gordon)",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Mimic (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Steam Tore (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Great Tree (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Mad Tore (Rainbow Butterfly Wood Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/King_Mimic",
+      "https://darkcloud.fandom.com/wiki/Mimic",
+      "https://darkcloud.fandom.com/wiki/Tore"
+    ],
+    "verified": true
+  },
+  {
+    "id": "wind-element",
+    "name": "Wind Element",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements (after recruiting Rufio)",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Dragon (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: We're the Roly-Poly Brothers, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda repeat reward x10"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Dragon_(Dark_Chronicle)",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "paint-pink",
+    "name": "Paint (Pink)",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Parn's Paints (after recruiting Parn)",
+        "chapter": 2,
+        "note": "30 gilda; only paint seller"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Magmanoff, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x15"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hunter-crystal",
+    "name": "Hunter Crystal",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Hunter Fox (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "2nd-place prize x3"
+      },
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "150 gilda; needs Georama unlock"
+      },
+      {
+        "type": "drop",
+        "where": "Rifle Wolf (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Smiling Wolf (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements",
+        "chapter": 8,
+        "note": "150 gilda"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "commonly found in chests or stolen/dropped"
+      },
+      {
+        "type": "drop",
+        "where": "Red Fox (Mount Gundor Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: This is a Geostone?, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x2"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crystals",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Fishing_Contest",
+      "https://darkcloud.fandom.com/wiki/Hunter_Fox",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "holy-element",
+    "name": "Holy Element",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements (after recruiting Rufio)",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hunk-of-copper",
+    "name": "Hunk of Copper",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Vanguard (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Morton's Sundries, Palm Brinks",
+        "chapter": 1,
+        "note": "50 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Sonic Bomber (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "50 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Borneo's Fine Ore, Blackstone One train",
+        "chapter": 2,
+        "note": "50 gilda"
+      },
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "3rd-place prize x50"
+      },
+      {
+        "type": "drop",
+        "where": "Neo Vanguard (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Griffon Soldier (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Vanguard Mk. 2 (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Dark Alchemist (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Krau Mauness (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Metal Bomber (Ocean's Roar Cave Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Hell Elephant, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda repeat reward x5"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Fishing_Contest",
+      "https://darkcloud.fandom.com/wiki/Griffon_Soldier",
+      "https://darkcloud.fandom.com/wiki/Sonic_Bomber",
+      "https://darkcloud.fandom.com/wiki/Spheda",
+      "https://darkcloud.fandom.com/wiki/Vanguard"
+    ],
+    "verified": true
+  },
+  {
+    "id": "gunpowder",
+    "name": "Gunpowder",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Morton's Sundries, Palm Brinks",
+        "chapter": 1,
+        "note": "20 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Hunter Fox (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Bomber Head (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Rifle Wolf (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Danger Bomb (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Sweet Dynamite (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Smiling Wolf (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Triple Cracker (Mount Gundor / (Star Path only))",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Red Fox (Mount Gundor Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "shop",
+        "where": "Erik's Gunpowder, Blackstone One train",
+        "chapter": null,
+        "note": "20 gilda; wiki pages disagree on when Erik's shop opens (ch2 vs ch5)"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Bomber_Head",
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Hunter_Fox"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bomb",
+    "name": "Bomb",
+    "sources": [
+      {
+        "type": "invention",
+        "where": "Invent via Idea Book, build from Make menu",
+        "chapter": 1,
+        "note": "recipe: Flame Crystal x1, Gunpowder x5, Wind Crystal x1"
+      },
+      {
+        "type": "shop",
+        "where": "Morton's Sundries, Palm Brinks",
+        "chapter": 1,
+        "note": "200 gilda"
+      },
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "3rd-place prize x10"
+      },
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "3rd-place prize x2"
+      },
+      {
+        "type": "drop",
+        "where": "Bomber Head (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Triple Cracker (Mount Gundor / (Star Path only))",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Living Statue, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x4"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Monica All Alone, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x4"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Crossroads, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x4"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Mummy Heaven, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x4"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Bomber_Head",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Fishing_Contest",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "holy-crystal",
+    "name": "Holy Crystal",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Darkness (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Skeleton Soldier (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "3rd-place prize x3"
+      },
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "150 gilda; needs Georama unlock"
+      },
+      {
+        "type": "drop",
+        "where": "Captain (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Corsair (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Bundy (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Silver Gear (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Ore Robber (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Darker (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Ghoul (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Revenant (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements",
+        "chapter": 8,
+        "note": "150 gilda"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "commonly found in chests or stolen/dropped"
+      },
+      {
+        "type": "drop",
+        "where": "Zombie Pirate (Ocean's Roar Cave  /  Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Mummy (Starlight Canyon / Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Frightening Forest, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Strange Tree, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Scary Tree, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Captain",
+      "https://darkcloud.fandom.com/wiki/Corsair",
+      "https://darkcloud.fandom.com/wiki/Crystals",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Darkness",
+      "https://darkcloud.fandom.com/wiki/Fishing_Contest",
+      "https://darkcloud.fandom.com/wiki/Mummy",
+      "https://darkcloud.fandom.com/wiki/Silver_Gear",
+      "https://darkcloud.fandom.com/wiki/Skeleton_Soldier",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "glass-material",
+    "name": "Glass Material",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Night Stalker (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Crescent Baron (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Ragstink (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Steam Goyone (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Moon Joe (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Moon Goyone (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Leach (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Mariner (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Wraith (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Walking the Path of Flames, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x10"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Crescent_Baron",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Goyone",
+      "https://darkcloud.fandom.com/wiki/Night_Stalker",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "unknown-bone",
+    "name": "Unknown Bone",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Skeleton Soldier (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Hornhead (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Bone Lord (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Evil Nail (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Silver Gear (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Bone King (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Platinum Gear (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Flaming Nail (Mount Gundor Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Bone_Lord",
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Hornhead",
+      "https://darkcloud.fandom.com/wiki/Silver_Gear",
+      "https://darkcloud.fandom.com/wiki/Skeleton_Soldier"
+    ],
+    "verified": true
+  },
+  {
+    "id": "ruby",
+    "name": "Ruby",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Morton's Sundries, Palm Brinks",
+        "chapter": 8,
+        "note": "10000 gilda; late-game stock"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Headlong Dash, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Magmanoff, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: The Old Woman Saw It, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Omen, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "life-element",
+    "name": "Life Element",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Killer Snake (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements (after recruiting Rufio)",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Sea Serpent (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Stick Joe (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Moonlight Hulk (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Sand Dragon (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Dead Rope (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Crescent_Baron",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Killer_Snake"
+    ],
+    "verified": true
+  },
+  {
+    "id": "thick-hide",
+    "name": "Thick Hide",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Morton's Sundries, Palm Brinks",
+        "chapter": 1,
+        "note": "50 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Burger (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Stormy (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Ladha (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Burger",
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops"
+    ],
+    "verified": true
+  },
+  {
+    "id": "rough-rock",
+    "name": "Rough Rock",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Borneo's Fine Ore, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda; shop table lists it as 'Tough Rock'"
+      },
+      {
+        "type": "drop",
+        "where": "Golem (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Statue (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Magmanoff (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Rock Taster (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Guardia (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Titan (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Rock Face (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Iwanosuke (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Dark Keeper (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Living Armor (Mount Gundor (Star Path))",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Fire Dragon, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x10"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Golem",
+      "https://darkcloud.fandom.com/wiki/Ivanoff",
+      "https://darkcloud.fandom.com/wiki/Spheda",
+      "https://darkcloud.fandom.com/wiki/Statue"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sticky-clay",
+    "name": "Sticky Clay",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Moler (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Sand Moler (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Whitebeard (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Mine Moler (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Busy Moler (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Pirates' Hideout, Ocean's Roar Cave",
+        "chapter": null,
+        "note": "Spheda repeat reward x10"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Captain",
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Moler",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "wind-crystal",
+    "name": "Wind Crystal",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Bat (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Himarra (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements (after recruiting Rufio)",
+        "chapter": 2,
+        "note": "150 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Smiling Fairy (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "2nd-place prize x3"
+      },
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "150 gilda; needs Georama unlock"
+      },
+      {
+        "type": "drop",
+        "where": "Sea Bat (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Lava Bat (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Evil Bat (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Stormflower (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Fairy Helper (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Hell Fairy (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "commonly found in chests or stolen/dropped"
+      },
+      {
+        "type": "drop",
+        "where": "Balalla (Starlight Canyon Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Heat Fairy (Starlight Canyon  /  Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Rama Priests Like Cheese, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda repeat reward x3"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Bat",
+      "https://darkcloud.fandom.com/wiki/Crystals",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Fishing_Contest",
+      "https://darkcloud.fandom.com/wiki/Himarra",
+      "https://darkcloud.fandom.com/wiki/Smiling_Fairy",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sturdy-cloth",
+    "name": "Sturdy Cloth",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Masked Tribesman (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Auntie Medusa (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Miss Gourgon (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Mrs. Gourgon (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Stone Guard (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Fat Naga (Ocean's Roar Cave Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Auntie_Medusa",
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Masked_Tribesman"
+    ],
+    "verified": true
+  },
+  {
+    "id": "protector-crystal",
+    "name": "Protector Crystal",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Clown (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Turtle (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Moler (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Spider Lady (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Masked Tribesman (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Priest of Rama (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Yo-Yo Barrel (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "150 gilda; needs Georama unlock"
+      },
+      {
+        "type": "drop",
+        "where": "Shiva (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Sea Tortoise (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Fintol (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Beginner class 3rd-place prize x1"
+      },
+      {
+        "type": "drop",
+        "where": "Griffon Soldier (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Lava Runner (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Ultrasonic Bomb (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Evil Performer (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Crow Priest (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Clock Knight (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Whitebeard (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Dark Alchemist (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Stone Guard (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Mine Moler (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Garuda (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Spider Lady (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Bolter (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements",
+        "chapter": 8,
+        "note": "150 gilda"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "commonly found in chests or stolen/dropped"
+      },
+      {
+        "type": "drop",
+        "where": "Last Guardian (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Sleeber (Starlight Canyon  /  Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Metal Bomber (Ocean's Roar Cave Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Bambamchoo (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Arkerath (Ocean's Roar Cave Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Something Rare Here!, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Captain",
+      "https://darkcloud.fandom.com/wiki/Clown",
+      "https://darkcloud.fandom.com/wiki/Crystals",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Griffon_Soldier",
+      "https://darkcloud.fandom.com/wiki/Masked_Tribesman",
+      "https://darkcloud.fandom.com/wiki/Moler",
+      "https://darkcloud.fandom.com/wiki/Priest_of_Rama",
+      "https://darkcloud.fandom.com/wiki/Sonic_Bomber",
+      "https://darkcloud.fandom.com/wiki/Spheda",
+      "https://darkcloud.fandom.com/wiki/Spider_Lady",
+      "https://darkcloud.fandom.com/wiki/Tortoise",
+      "https://darkcloud.fandom.com/wiki/Turtle",
+      "https://darkcloud.fandom.com/wiki/Yo-Yo_Barrel"
+    ],
+    "verified": true
+  },
+  {
+    "id": "flame-stone",
+    "name": "Flame Stone",
+    "sources": [
+      {
+        "type": "quest",
+        "where": "Spheda: Sweet, Scary Treasure Chest, Underground Channel",
+        "chapter": null,
+        "note": "Spheda repeat reward x4"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: I'm a Pixie, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Legendary Killer Snake, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Grotesque Spider Lady, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Banquet of the Dead, Ocean's Roar Cave",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Battle with Griffon's Army, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Walking the Path of Flames, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Crazy Mountain, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Ancient Wind, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Road to Memories, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Wandering Knight's Soul, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Undaunted Soldiers, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "thunder-element",
+    "name": "Thunder Element",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Spider Lady (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements (after recruiting Rufio)",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Shiva (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Spider Lady (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Bambamchoo (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Road to Memories, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda repeat reward x10"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Spheda",
+      "https://darkcloud.fandom.com/wiki/Spider_Lady"
+    ],
+    "verified": true
+  },
+  {
+    "id": "holy-water",
+    "name": "Holy Water",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Bat (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Night Stalker (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Face of Prajna (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "House of Healing (church), Palm Brinks",
+        "chapter": 2,
+        "note": "40 gilda"
+      },
+      {
+        "type": "invention",
+        "where": "Invent via Idea Book, build from Make menu",
+        "chapter": 3,
+        "note": "recipe: Tasty Water x2, Holy Element x5, Light Element x5"
+      },
+      {
+        "type": "drop",
+        "where": "Sea Bat (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Ragstink (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Lava Bat (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Alexander (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Leach (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Evil Bat (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Face of Yaksa (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Demon Puppet (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Wraith (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Fire and Ice Don't Mix, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda repeat reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Warrior in Starlight Canyon, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Desperation on the Mountain, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x5"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Get the Zelmite!, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda repeat reward x5"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Indecision, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Firm Belief, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Bat",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Face_of_Prajna",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Night_Stalker",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "flour",
+    "name": "Flour",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Polly's Bakery, Palm Brinks",
+        "chapter": 1,
+        "note": "20 gilda; opens after Channel Pump Room"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Mushroom Burger Eatery, Jurak Mall (future Sindain)",
+        "chapter": 2,
+        "note": "20 gilda; needs Georama/culture unlock"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops"
+    ],
+    "verified": true
+  },
+  {
+    "id": "water-element",
+    "name": "Water Element",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Tortoise (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements (after recruiting Rufio)",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Elfas (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Sea Tortoise (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Fintol (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Moonflowephant (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Behemoth (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Ebony Tortoise (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Bolter (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Star Tortoise (Ocean's Roar Cave Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Arkerath (Ocean's Roar Cave Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Legendary Killer Snake, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda repeat reward x10"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Bat Den, Ocean's Roar Cave",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x20"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Elfas",
+      "https://darkcloud.fandom.com/wiki/Spheda",
+      "https://darkcloud.fandom.com/wiki/Tortoise",
+      "https://darkcloud.fandom.com/wiki/Turtle"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fire-element",
+    "name": "Fire Element",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements (after recruiting Rufio)",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Master Jacket (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Skull Chief (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Heat Wear (Mount Gundor  /  Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Mountain Baddie Appears, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x10"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Skeleton_Soldier",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "tasty-water",
+    "name": "Tasty Water",
+    "sources": [
+      {
+        "type": "invention",
+        "where": "Invent via Idea Book, build from Make menu",
+        "chapter": 1,
+        "note": "recipe: Water Element x5"
+      },
+      {
+        "type": "shop",
+        "where": "Polly's Bakery, Palm Brinks",
+        "chapter": 1,
+        "note": "80 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Adel's Fruits (after recruiting Adel)",
+        "chapter": 2,
+        "note": "80 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Mushroom Burger Eatery, Jurak Mall (future Sindain)",
+        "chapter": 2,
+        "note": "80 gilda; needs Georama/culture unlock"
+      },
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "80 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "G-Tools, Gundorada Workshop (future Heim Rada)",
+        "chapter": 5,
+        "note": "80 gilda"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "super-hot-pepper",
+    "name": "Super Hot Pepper",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Polly's Bakery, Palm Brinks",
+        "chapter": 1,
+        "note": "20 gilda; opens after Channel Pump Room"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Red Dragon (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Earth Dragon (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Dragon_(Dark_Chronicle)"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cheese",
+    "name": "Cheese",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Priest of Rama (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "invention",
+        "where": "Invent via Idea Book, build from Make menu",
+        "chapter": 3,
+        "note": "recipe: Flour x8, Water Element x2, Tasty Water x1"
+      },
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "60 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Griffon Soldier (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "G-Tools, Gundorada Workshop (future Heim Rada)",
+        "chapter": 5,
+        "note": "60 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Crow Priest (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Garuda (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Blumo (Starlight Canyon Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Strange Tree, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Rolling Shells, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Little Dragons on the Mountain, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Secret of Fire Mountain, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Desperation on the Mountain, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Treasure Chest Danger Zone, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Dangerous Treasure, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Missing Gem Dealer, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Final Battle, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Hell, Ward 1, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Little Dragon Army, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Devil Elemental, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda repeat reward x3"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Griffon_Soldier",
+      "https://darkcloud.fandom.com/wiki/Gyumo",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Priest_of_Rama",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "improved-bomb",
+    "name": "Improved Bomb",
+    "sources": [
+      {
+        "type": "invention",
+        "where": "Invent via Idea Book, build from Make menu",
+        "chapter": 2,
+        "note": "recipe: Flame Crystal x3, Bomb x1, Wind Crystal x3"
+      },
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "2nd-place prize x4"
+      },
+      {
+        "type": "shop",
+        "where": "Morton's Sundries, Palm Brinks",
+        "chapter": 4,
+        "note": "1000 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Danger Bomb (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Flaming Nail (Mount Gundor Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "other",
+        "where": "Erik (support character)",
+        "chapter": null,
+        "note": "Erik can produce Improved Bombs with his skill"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Ghost in the Channel, Underground Channel",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x4"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Fire and Ice Don't Mix, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Little Dragon Counterattack, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Smiling Fairy Village, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x4"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Bomber_Head",
+      "https://darkcloud.fandom.com/wiki/Bone_Lord",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Fishing_Contest",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Spheda",
+      "https://darkcloud.fandom.com/wiki/Throwing_items"
+    ],
+    "verified": true
+  },
+  {
+    "id": "stamina-drink",
+    "name": "Stamina Drink",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Tigriff (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "invention",
+        "where": "Invent via Idea Book, build from Make menu",
+        "chapter": 3,
+        "note": "recipe: Tasty Water x2, Super Hot Pepper x30, Mighty Healing x5"
+      },
+      {
+        "type": "drop",
+        "where": "Burger (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Stormy (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Leogriff (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Ladha (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Battle with Rats, Underground Channel",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x4"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Battle with Rats, Underground Channel",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Rolling Shells, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Noise in the Forest, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Elephant Army in the Valley, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x4"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Sand Molers, Ocean's Roar Cave",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Mummy Heaven, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x2"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Burger",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Spheda",
+      "https://darkcloud.fandom.com/wiki/Tigriff"
+    ],
+    "verified": true
+  },
+  {
+    "id": "poison-apple",
+    "name": "Poison Apple",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Skeleton Soldier (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Tore (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Adel's Fruits (after recruiting Adel)",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Mushroom Burger Eatery, Jurak Mall (future Sindain)",
+        "chapter": 2,
+        "note": "60 gilda; needs Georama/culture unlock"
+      },
+      {
+        "type": "drop",
+        "where": "Hornhead (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Steam Tore (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Silver Gear (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Platinum Gear (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Great Tree (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Mad Tore (Rainbow Butterfly Wood Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Steam Goyone, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Deathtrap, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Road to the River of Flames, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Zombie Zone, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Max's Longest Day, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Scary Face, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Captain Returns, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda repeat reward x3"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Hornhead",
+      "https://darkcloud.fandom.com/wiki/Silver_Gear",
+      "https://darkcloud.fandom.com/wiki/Skeleton_Soldier",
+      "https://darkcloud.fandom.com/wiki/Spheda",
+      "https://darkcloud.fandom.com/wiki/Tore"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bomb-nut",
+    "name": "Bomb Nut",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Darkness (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Mushroom Burger Eatery, Jurak Mall (future Sindain)",
+        "chapter": 2,
+        "note": "60 gilda; needs Georama/culture unlock"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Pirates' Hideout, Ocean's Roar Cave",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Little Dragons on the Mountain, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Treasure Chest Danger Zone, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Dangerous Treasure, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Crush the Undead, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Missing Gem Dealer, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Final Battle, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Crossroads of Destiny, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Powerful Wild Boar, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Little Dragon Army, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Darkness",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "mighty-healing",
+    "name": "Mighty Healing",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "300 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Dell's Clinic (after recruiting Dell)",
+        "chapter": 3,
+        "note": "300 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Sooty (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Junior class 2nd-place prize x1"
+      },
+      {
+        "type": "drop",
+        "where": "Darker (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Shadow (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Noise in the Forest, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Grotesque Spider Lady, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Moon Baron, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Danger Zone, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Explosive Hot Spring, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Evil Bat Invasion, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x10"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Flotsam's Broken Army, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Omen, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x2"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Darkness",
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "antidote-drink",
+    "name": "Antidote Drink",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Morton's Sundries, Palm Brinks",
+        "chapter": 1,
+        "note": "40 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Pumpkinhead (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "House of Healing (church), Palm Brinks",
+        "chapter": 2,
+        "note": "40 gilda"
+      },
+      {
+        "type": "invention",
+        "where": "Invent via Idea Book, build from Make menu",
+        "chapter": 3,
+        "note": "recipe: Poison x2, Tasty Water x2, Poison Apple x1"
+      },
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "40 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Mallone (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Scarecrow (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: I'm a Pixie, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Rainbow Falls Entrance, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Evil Spirit in the Valley, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda repeat reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Death Ocean, Ocean's Roar Cave",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Battle with Griffon's Army, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Ancient Wind, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Wandering Knight's Soul, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Pumpkinhead",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "soap",
+    "name": "Soap",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "House of Healing (church), Palm Brinks",
+        "chapter": 2,
+        "note": "40 gilda"
+      },
+      {
+        "type": "invention",
+        "where": "Invent via Idea Book, build from Make menu",
+        "chapter": 3,
+        "note": "recipe: Bomb Nut x1, Unknown Bone x5"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Beginner class 3rd-place prize x1"
+      },
+      {
+        "type": "drop",
+        "where": "Dark Flower (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Mystery Plant (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Cursed Rose (Rainbow Butterfly Wood / Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Headlong Dash, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda repeat reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Pirates' Revenge, Ocean's Roar Cave",
+        "chapter": null,
+        "note": "Spheda repeat reward x5"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Explosive Hot Spring, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x3"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Man-Eating_Grass",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "heart-throb-cherry",
+    "name": "Heart-Throb Cherry",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Pixie (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Adel's Fruits (after recruiting Adel)",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Mushroom Burger Eatery, Jurak Mall (future Sindain)",
+        "chapter": 2,
+        "note": "60 gilda; needs Georama/culture unlock"
+      },
+      {
+        "type": "drop",
+        "where": "Dog Statue (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Toy Rock (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Cerberus (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Faerie (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Coral Dog (Ocean's Roar Cave Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Sylph (Rainbow Butterfly Wood Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Imp (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Earth-Shaking Demon, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Little Dragon Counterattack, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda repeat reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Evil Spirit in the Valley, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Steam Goyone, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Deathtrap, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Road to the River of Flames, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Explosive Hot Spring, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Zombie Zone, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Max's Longest Day, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Palace Watchdog, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda repeat reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Scary Face, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: A Giant Snake!, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda repeat reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Flotsam's Broken Army, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda repeat reward x3"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Dog_Statue",
+      "https://darkcloud.fandom.com/wiki/Pixie",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "stone-berry",
+    "name": "Stone Berry",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Adel's Fruits (after recruiting Adel)",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Earth-Shaking Demon, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Hell's Turning Point, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "holy-stone",
+    "name": "Holy Stone",
+    "sources": [
+      {
+        "type": "quest",
+        "where": "Spheda: Rama Priests Like Cheese, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Banquet of the Dead, Ocean's Roar Cave",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Mountain Baddie Appears, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Dangerous Treasure, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x5"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Nobility, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Palace Watchdog, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Final Battle, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x5"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: A Giant Snake!, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Mummy Heaven, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda repeat reward x1"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "diamond",
+    "name": "Diamond",
+    "sources": [
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "1st-place prize x1"
+      },
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "3rd-place prize x1"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Senior class 1st-place prize x1"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Master class 1st-place prize x1"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Master class 3rd-place prize x1"
+      },
+      {
+        "type": "shop",
+        "where": "Morton's Sundries, Palm Brinks",
+        "chapter": 8,
+        "note": "30000 gilda; late-game stock"
+      },
+      {
+        "type": "other",
+        "where": "Himarra Badge (Monster Badge)",
+        "chapter": null,
+        "note": "maxing the badge rewards several diamonds"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Battle with Rats, Underground Channel",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Scary Women, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Murderous Tank, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Devil Elemental, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Fishing_Contest",
+      "https://darkcloud.fandom.com/wiki/Gemstones",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "experience-coin",
+    "name": "Experience Coin",
+    "sources": [
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "2nd-place prize x1"
+      },
+      {
+        "type": "other",
+        "where": "Dead End 3 boss (Sphinxes), Zelmite Mine",
+        "chapter": 8,
+        "note": "boss reward"
+      },
+      {
+        "type": "shop",
+        "where": "Morton's Sundries, Palm Brinks",
+        "chapter": 8,
+        "note": "12000 gilda; late-game stock"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Smiling Fairy Village, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Moon Mole, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x1"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Fishing_Contest",
+      "https://darkcloud.fandom.com/wiki/Spheda",
+      "https://darkcloud.fandom.com/wiki/Zelmite_Mine"
+    ],
+    "verified": true
+  },
+  {
+    "id": "final-bomb",
+    "name": "Final Bomb",
+    "sources": [
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Master class 1st-place prize x2"
+      },
+      {
+        "type": "invention",
+        "where": "Invent via Idea Book, build from Make menu",
+        "chapter": 5,
+        "note": "recipe: Flame Crystal x7, Bomb x10, Power Crystal x3"
+      },
+      {
+        "type": "shop",
+        "where": "Morton's Sundries, Palm Brinks",
+        "chapter": 6,
+        "note": "3600 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Sweet Dynamite (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Scary Tree, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x3"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Bomber_Head",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "flame-crystal",
+    "name": "Flame Crystal",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Night Stalker (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Tore (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements (after recruiting Rufio)",
+        "chapter": 2,
+        "note": "150 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "150 gilda; needs Georama unlock"
+      },
+      {
+        "type": "drop",
+        "where": "Hornhead (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Ragstink (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Master Jacket (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Bomber Head (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Steam Tore (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Leach (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Skull Chief (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Danger Bomb (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Sweet Dynamite (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Wraith (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Platinum Gear (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Great Tree (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "commonly found in chests or stolen/dropped"
+      },
+      {
+        "type": "drop",
+        "where": "Triple Cracker (Mount Gundor / (Star Path only))",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Heat Wear (Mount Gundor  /  Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Mad Tore (Rainbow Butterfly Wood Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Looking for the Earth Gem, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Bomber_Head",
+      "https://darkcloud.fandom.com/wiki/Crystals",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Hornhead",
+      "https://darkcloud.fandom.com/wiki/Night_Stalker",
+      "https://darkcloud.fandom.com/wiki/Silver_Gear",
+      "https://darkcloud.fandom.com/wiki/Skeleton_Soldier",
+      "https://darkcloud.fandom.com/wiki/Spheda",
+      "https://darkcloud.fandom.com/wiki/Tore"
+    ],
+    "verified": true
+  },
+  {
+    "id": "lightning-crystal",
+    "name": "Lightning Crystal",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Sonic Bomber (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements (after recruiting Rufio)",
+        "chapter": 2,
+        "note": "150 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "150 gilda; needs Georama unlock"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Junior class 3rd-place prize x1"
+      },
+      {
+        "type": "drop",
+        "where": "Miss Gourgon (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Mrs. Gourgon (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Krau Mauness (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Spinning Saucer (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "commonly found in chests or stolen/dropped"
+      },
+      {
+        "type": "drop",
+        "where": "Fat Naga (Ocean's Roar Cave Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Star Tortoise (Ocean's Roar Cave Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Rolling Rocks (Mount Gundor  /  Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Rolling Shells, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x2"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Something Rare Here!, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x3"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Auntie_Medusa",
+      "https://darkcloud.fandom.com/wiki/Crystals",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Sonic_Bomber",
+      "https://darkcloud.fandom.com/wiki/Spheda",
+      "https://darkcloud.fandom.com/wiki/Tortoise",
+      "https://darkcloud.fandom.com/wiki/Yo-Yo_Barrel"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sea-dragon-crystal",
+    "name": "Sea Dragon Crystal",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Killer Snake (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Tortoise (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Dragon (Starlight Canyon)",
+        "chapter": 3,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "150 gilda; needs Georama unlock"
+      },
+      {
+        "type": "drop",
+        "where": "Auntie Medusa (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Goyone (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Sea Serpent (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Junior class 1st-place prize x5"
+      },
+      {
+        "type": "drop",
+        "where": "Red Dragon (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Steam Goyone (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Earth Dragon (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Moon Goyone (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Mariner (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Sand Dragon (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Ebony Tortoise (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements",
+        "chapter": 8,
+        "note": "150 gilda"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "commonly found in chests or stolen/dropped"
+      },
+      {
+        "type": "drop",
+        "where": "Tiamat (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Dead Rope (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Auntie_Medusa",
+      "https://darkcloud.fandom.com/wiki/Crystals",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Dragon_(Dark_Chronicle)",
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Goyone",
+      "https://darkcloud.fandom.com/wiki/Killer_Snake",
+      "https://darkcloud.fandom.com/wiki/Tortoise"
+    ],
+    "verified": true
+  },
+  {
+    "id": "paint-green",
+    "name": "Paint (Green)",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Parn's Paints (after recruiting Parn)",
+        "chapter": 2,
+        "note": "30 gilda; only paint seller"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Sand Molers, Ocean's Roar Cave",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x20"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Nobility, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda repeat reward x10"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "paint-red",
+    "name": "Paint (Red)",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Parn's Paints (after recruiting Parn)",
+        "chapter": 2,
+        "note": "30 gilda; only paint seller"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Mt. Gundor Wind, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda repeat reward x10"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "chill-crystal",
+    "name": "Chill Crystal",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Rufio's Elements (after recruiting Rufio)",
+        "chapter": 2,
+        "note": "150 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Starlight Items, Starlight Temple (future Balance Valley)",
+        "chapter": 3,
+        "note": "150 gilda; needs Georama unlock"
+      },
+      {
+        "type": "drop",
+        "where": "Sooty (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Junior class 3rd-place prize x2"
+      },
+      {
+        "type": "drop",
+        "where": "Shadow (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "commonly found in chests or stolen/dropped"
+      },
+      {
+        "type": "drop",
+        "where": "Blackbeard (Ocean's Roar Cave Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Oyakata (Zelmite Mine Depths)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Noise in the Forest, Rainbow Butterfly Wood",
+        "chapter": null,
+        "note": "Spheda repeat reward x2"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Captain",
+      "https://darkcloud.fandom.com/wiki/Crystals",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Darkness",
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "earth-element",
+    "name": "Earth Element",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements (after recruiting Rufio)",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Dragon Slayer, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda repeat reward x10"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "paint-black",
+    "name": "Paint (Black)",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Parn's Paints (after recruiting Parn)",
+        "chapter": 2,
+        "note": "30 gilda; only paint seller"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops"
+    ],
+    "verified": true
+  },
+  {
+    "id": "paint-yellow",
+    "name": "Paint (Yellow)",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Parn's Paints (after recruiting Parn)",
+        "chapter": 2,
+        "note": "30 gilda; only paint seller"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Sand Molers, Ocean's Roar Cave",
+        "chapter": null,
+        "note": "Spheda repeat reward x10"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "paint-purple",
+    "name": "Paint (Purple)",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Parn's Paints (after recruiting Parn)",
+        "chapter": 2,
+        "note": "30 gilda; only paint seller"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops"
+    ],
+    "verified": true
+  },
+  {
+    "id": "indestructible-coin",
+    "name": "Indestructible Coin",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Woody Tailor, Jurak Mall (future Sindain)",
+        "chapter": 2,
+        "note": "1500 gilda; only until Donny is recruited"
+      },
+      {
+        "type": "shop",
+        "where": "Julia's Ringware (after recruiting Parn)",
+        "chapter": 2,
+        "note": "1500 gilda; only until Donny is recruited"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Dangerous Treasure Chest, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Lighthouse Appears, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Pains in the Neck, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Fire Dragon, Mount Gundor",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bull-s-eye-coin",
+    "name": "Bull's-Eye Coin",
+    "sources": [
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "2nd-place prize x1"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Senior class 3rd-place prize x1"
+      },
+      {
+        "type": "shop",
+        "where": "Morton's Sundries, Palm Brinks",
+        "chapter": 8,
+        "note": "6500 gilda; late-game stock"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: We're the Roly-Poly Brothers, Starlight Canyon",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Crush the Undead, Moon Flower Palace",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Moon Mole, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 1st-clear reward x1"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Fishing_Contest",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sun-stone",
+    "name": "Sun Stone",
+    "sources": [
+      {
+        "type": "fishing",
+        "where": "Fishing Contest, Palm Brinks",
+        "chapter": 3,
+        "note": "1st-place prize x1"
+      },
+      {
+        "type": "fishing",
+        "where": "Finny Frenzy fish race, Palm Brinks",
+        "chapter": 4,
+        "note": "Master class 1st-place prize x1"
+      },
+      {
+        "type": "other",
+        "where": "Boss of Dead End 1, Zelmite Mine",
+        "chapter": 8,
+        "note": "boss reward"
+      },
+      {
+        "type": "other",
+        "where": "Road to Truth floor, Zelmite Mine",
+        "chapter": 8,
+        "note": "floor reward"
+      },
+      {
+        "type": "other",
+        "where": "Moon Flower Palace Georama",
+        "chapter": null,
+        "note": "awarded at 100% Georama completion"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Road to Truth, Zelmite Mine",
+        "chapter": null,
+        "note": "Spheda 2nd-clear reward x1"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Finny_Frenzy",
+      "https://darkcloud.fandom.com/wiki/Fishing_Contest",
+      "https://darkcloud.fandom.com/wiki/Gemstones",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bundle-of-hay",
+    "name": "Bundle of Hay",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Bat (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Sea Bat (Ocean's Roar Cave)",
+        "chapter": 4,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Lava Bat (Mount Gundor)",
+        "chapter": 5,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Evil Bat (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Bat",
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops"
+    ],
+    "verified": true
+  },
+  {
+    "id": "chill-element",
+    "name": "Chill Element",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Rufio's Elements (after recruiting Rufio)",
+        "chapter": 2,
+        "note": "60 gilda"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "quest",
+        "where": "Spheda: Bat Den, Ocean's Roar Cave",
+        "chapter": null,
+        "note": "Spheda repeat reward x10"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Spheda"
+    ],
+    "verified": true
+  },
+  {
+    "id": "forest-dew",
+    "name": "Forest Dew",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Himarra (Rainbow Butterfly Wood)",
+        "chapter": 2,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Gordon's Bonsai (after recruiting Gordon)",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "drop",
+        "where": "Stormflower (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Dark Flower (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "drop",
+        "where": "Mystery Plant (Zelmite Mine)",
+        "chapter": 8,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      },
+      {
+        "type": "drop",
+        "where": "Balalla (Starlight Canyon Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      },
+      {
+        "type": "drop",
+        "where": "Cursed Rose (Rainbow Butterfly Wood / Star Path)",
+        "chapter": null,
+        "note": "in this monster's item pool (drop/steal); Star Path/Depths area"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Himarra",
+      "https://darkcloud.fandom.com/wiki/Man-Eating_Grass"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sugar-cane",
+    "name": "Sugar Cane",
+    "sources": [
+      {
+        "type": "drop",
+        "where": "Clown (Underground Channel)",
+        "chapter": 1,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "shop",
+        "where": "Polly's Bakery, Palm Brinks",
+        "chapter": 1,
+        "note": "20 gilda; opens after Channel Pump Room"
+      },
+      {
+        "type": "shop",
+        "where": "Conda's Goods, Blackstone One train",
+        "chapter": 2,
+        "note": "20 gilda"
+      },
+      {
+        "type": "shop",
+        "where": "Mushroom Burger Eatery, Jurak Mall (future Sindain)",
+        "chapter": 2,
+        "note": "20 gilda; needs Georama/culture unlock"
+      },
+      {
+        "type": "drop",
+        "where": "Evil Performer (Moon Flower Palace)",
+        "chapter": 6,
+        "note": "in this monster's item pool (drop/steal)"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Clown",
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops",
+      "https://darkcloud.fandom.com/wiki/Griffon_Soldier"
+    ],
+    "verified": true
+  },
+  {
+    "id": "paint-blue",
+    "name": "Paint (Blue)",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Parn's Paints (after recruiting Parn)",
+        "chapter": 2,
+        "note": "30 gilda; only paint seller"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops"
+    ],
+    "verified": true
+  },
+  {
+    "id": "paint-orange",
+    "name": "Paint (Orange)",
+    "sources": [
+      {
+        "type": "shop",
+        "where": "Parn's Paints (after recruiting Parn)",
+        "chapter": 2,
+        "note": "30 gilda; only paint seller"
+      },
+      {
+        "type": "chest",
+        "where": "Dungeon treasure chests (various)",
+        "chapter": null,
+        "note": "materials often appear in chests in bulk; no per-floor data found"
+      }
+    ],
+    "refs": [
+      "https://darkcloud.fandom.com/wiki/Crafting_materials",
+      "https://darkcloud.fandom.com/wiki/Dark_Chronicle_shops"
+    ],
+    "verified": true
+  }
+]

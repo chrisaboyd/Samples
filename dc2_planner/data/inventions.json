@@ -1,0 +1,4525 @@
+[
+  {
+    "id": "clown-shoes",
+    "name": "Clown Shoes",
+    "category": "footwear",
+    "group": "Maximilian's clothing",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Cloth",
+        "Clown Robo's Attack",
+        "Parasol"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Sturdy Cloth",
+        "qty": 4
+      },
+      {
+        "item": "Wind Crystal",
+        "qty": 2
+      },
+      {
+        "item": "Thick Hide",
+        "qty": 2
+      }
+    ],
+    "description": "Clown's Shoes.  Might make you a snappy dancer.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "dragon-shoes",
+    "name": "Dragon Shoes",
+    "category": "footwear",
+    "group": "Maximilian's clothing",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Cloth",
+        "Runaway Dragon",
+        "Waterfall"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Sturdy Cloth",
+        "qty": 3
+      },
+      {
+        "item": "Flame Stone",
+        "qty": 2
+      },
+      {
+        "item": "Thunder Element",
+        "qty": 2
+      }
+    ],
+    "description": "Made from dragon scales.  Lets you walk on hot floors.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "knight-boots",
+    "name": "Knight Boots",
+    "category": "footwear",
+    "group": "Monica's clothing",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Belt",
+        "Shield",
+        "The Moon"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Thick Hide",
+        "qty": 2
+      },
+      {
+        "item": "Sturdy Cloth",
+        "qty": 1
+      }
+    ],
+    "description": "Light boots made especially for female knights.",
+    "notes": "Monica starts the game equipped with these.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://www.thegamer.com/dark-cloud-sequel-greatest-worst-inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "leather-shoes",
+    "name": "Leather Shoes",
+    "category": "footwear",
+    "group": "Maximilian's clothing",
+    "chapter": 2,
+    "recipes": [
+      [
+        "Chair",
+        "Cloth",
+        "Gyumo's Yell"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Thick Hide",
+        "qty": 2
+      }
+    ],
+    "description": "Maximilian's favorite shoes.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "metal-boots",
+    "name": "Metal Boots",
+    "category": "footwear",
+    "group": "Monica's clothing",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Belt",
+        "Drum Can",
+        "Work Robot"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Thick Hide",
+        "qty": 2
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 1
+      }
+    ],
+    "description": "Boots made of metal.  Great against heat, but heavy.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "panther-boots",
+    "name": "Panther Boots",
+    "category": "footwear",
+    "group": "Monica's clothing",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Bone",
+        "The Moon",
+        "The Ultimate Gaspard"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Thick Hide",
+        "qty": 4
+      },
+      {
+        "item": "Unknown Bone",
+        "qty": 1
+      },
+      {
+        "item": "Hunter Crystal",
+        "qty": 1
+      }
+    ],
+    "description": "Boots for the elegant, sexy lady.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "princess-boots",
+    "name": "Princess Boots",
+    "category": "footwear",
+    "group": "Monica's clothing",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Flower Chandelier",
+        "Moon Flower Palace",
+        "Waterfall Curtain"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Sturdy Cloth",
+        "qty": 4
+      },
+      {
+        "item": "Holy Water",
+        "qty": 2
+      },
+      {
+        "item": "Glass Material",
+        "qty": 2
+      }
+    ],
+    "description": "Wear them with the Princess Dress.  The perfect princess!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "spike-boots",
+    "name": "Spike Boots",
+    "category": "footwear",
+    "group": "Monica's clothing",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Moon Crystal",
+        "Parasol",
+        "Pumpkin"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Thick Hide",
+        "qty": 4
+      },
+      {
+        "item": "Holy Crystal",
+        "qty": 2
+      }
+    ],
+    "description": "Let you walk normally over slippery floors.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "wing-boots",
+    "name": "Wing Boots",
+    "category": "footwear",
+    "group": "Monica's clothing",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Belt",
+        "Weather Vane",
+        "Windmill Feather"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Sturdy Cloth",
+        "qty": 3
+      },
+      {
+        "item": "Wind Element",
+        "qty": 1
+      }
+    ],
+    "description": "Let you walk even over muddy floors with ease.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "wing-shoes",
+    "name": "Wing Shoes",
+    "category": "footwear",
+    "group": "Maximilian's clothing",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Cloth",
+        "Parasol",
+        "Windmill Feather"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Thick Hide",
+        "qty": 2
+      },
+      {
+        "item": "Wind Crystal",
+        "qty": 1
+      }
+    ],
+    "description": "Nice, airy shoes. Easy to wear. Make you feel any lighter?",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "work-shoes",
+    "name": "Work Shoes",
+    "category": "footwear",
+    "group": "Maximilian's clothing",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Cloth",
+        "Constructor",
+        "Ladder"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Sturdy Cloth",
+        "qty": 3
+      },
+      {
+        "item": "Protector Crystal",
+        "qty": 1
+      }
+    ],
+    "description": "Shoes for working in.  Who cares if they get dirty?",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "anti-curse-amulet",
+    "name": "Anti-Curse Amulet",
+    "category": "item",
+    "group": "Amulets",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Hmmmm! Jurak",
+        "Holy Emblem",
+        "Saint's Writings"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Holy Water",
+        "qty": 3
+      },
+      {
+        "item": "Sturdy Cloth",
+        "qty": 1
+      }
+    ],
+    "description": "Prevents enemy curse attacks but breaks after a while.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "antidote-amulet",
+    "name": "Antidote Amulet",
+    "category": "item",
+    "group": "Amulets",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Bed",
+        "Dell Clinic Sign",
+        "Holy Emblem"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Antidote Drink",
+        "qty": 3
+      },
+      {
+        "item": "Sturdy Cloth",
+        "qty": 1
+      }
+    ],
+    "description": "Prevents enemy poison attacks.  Eventually breaks.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "antidote-drink",
+    "name": "Antidote Drink",
+    "category": "item",
+    "group": "Recovery items",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Bottle",
+        "Dell Clinic Sign",
+        "Well"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Poison",
+        "qty": 2
+      },
+      {
+        "item": "Tasty Water",
+        "qty": 2
+      },
+      {
+        "item": "Poison Apple",
+        "qty": 1
+      }
+    ],
+    "description": "Cleanses poison from the body.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "anti-goo-amulet",
+    "name": "Anti-Goo Amulet",
+    "category": "item",
+    "group": "Amulets",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Laundry",
+        "Ruler of the Pond",
+        "Waterfall"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Soap",
+        "qty": 3
+      },
+      {
+        "item": "Sturdy Cloth",
+        "qty": 1
+      }
+    ],
+    "description": "Prevents enemy gooey attacks but breaks after a while.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "anti-petrify-amulet",
+    "name": "Anti-Petrify Amulet",
+    "category": "item",
+    "group": "Amulets",
+    "chapter": 2,
+    "recipes": [
+      [
+        "Clock",
+        "Jurak's Eye",
+        "Morning Sun"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Stone Berry",
+        "qty": 3
+      },
+      {
+        "item": "Sturdy Cloth",
+        "qty": 1
+      }
+    ],
+    "description": "Prevents enemy petrify attacks.  Eventually breaks.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "aquarium",
+    "name": "Aquarium",
+    "category": "item",
+    "group": "Miscellaneous",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Fountain",
+        "Window",
+        "Wooden Box"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 5
+      },
+      {
+        "item": "Glass Material",
+        "qty": 4
+      },
+      {
+        "item": "Water Element",
+        "qty": 15
+      }
+    ],
+    "description": "Aquarium for fish.  Raise them well!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://www.thegamer.com/dark-cloud-sequel-greatest-worst-inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bomb",
+    "name": "Bomb",
+    "category": "item",
+    "group": "Throwing items",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Candle",
+        "Pot",
+        "Weapon Shop Sign"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Flame Crystal",
+        "qty": 1
+      },
+      {
+        "item": "Gunpowder",
+        "qty": 5
+      },
+      {
+        "item": "Wind Crystal",
+        "qty": 1
+      }
+    ],
+    "description": "Causes great damage when thrown at an opponent.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bread",
+    "name": "Bread",
+    "category": "item",
+    "group": "Recovery items",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Fireplace",
+        "Polly's Bakery Sign",
+        "Wheat Flour"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Flour",
+        "qty": 3
+      },
+      {
+        "item": "Water Element",
+        "qty": 1
+      },
+      {
+        "item": "Fire Element",
+        "qty": 1
+      }
+    ],
+    "description": "Restores a little health when eaten.",
+    "notes": "Restores 32 HP.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://www.thegamer.com/dark-cloud-sequel-greatest-worst-inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cheese",
+    "name": "Cheese",
+    "category": "item",
+    "group": "Recovery items",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Cafe Sign",
+        "Lao Chao's Trademark",
+        "Milk Can"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Flour",
+        "qty": 8
+      },
+      {
+        "item": "Water Element",
+        "qty": 2
+      },
+      {
+        "item": "Tasty Water",
+        "qty": 1
+      }
+    ],
+    "description": "Fairly good restoration of health when eaten.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "double-pudding",
+    "name": "Double Pudding",
+    "category": "item",
+    "group": "Recovery items",
+    "chapter": 2,
+    "recipes": [
+      [
+        "Find the Golden Egg!",
+        "Milk Can",
+        "Wheat Flour"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Cheese",
+        "qty": 4
+      },
+      {
+        "item": "Life Element",
+        "qty": 10
+      },
+      {
+        "item": "Tasty Water",
+        "qty": 4
+      }
+    ],
+    "description": "Fully restores the health on two characters when eaten.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "escape-powder",
+    "name": "Escape Powder",
+    "category": "item",
+    "group": "Powders",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Ancient Mural",
+        "Elevator",
+        "Transmission Device"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Wind Element",
+        "qty": 10
+      },
+      {
+        "item": "Holy Water",
+        "qty": 2
+      }
+    ],
+    "description": "Allows you to escape dungeons on command.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "final-bomb",
+    "name": "Final Bomb",
+    "category": "item",
+    "group": "Throwing items",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Candle",
+        "Cinders",
+        "Oven"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Flame Crystal",
+        "qty": 7
+      },
+      {
+        "item": "Bomb",
+        "qty": 10
+      },
+      {
+        "item": "Power Crystal",
+        "qty": 3
+      }
+    ],
+    "description": "Bomb with a wide explosive range.  Difficult to make.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "gift-capsule",
+    "name": "Gift Capsule",
+    "category": "item",
+    "group": "Throwing items",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Bone",
+        "Letter",
+        "Pot"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Unknown Bone",
+        "qty": 12
+      },
+      {
+        "item": "Sticky Clay",
+        "qty": 15
+      }
+    ],
+    "description": "Put an item inside as a present to a monster.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://www.thegamer.com/dark-cloud-sequel-greatest-worst-inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "holy-water",
+    "name": "Holy Water",
+    "category": "item",
+    "group": "Recovery items",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Bottle",
+        "Holy Emblem",
+        "The Sun"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Tasty Water",
+        "qty": 2
+      },
+      {
+        "item": "Holy Element",
+        "qty": 5
+      },
+      {
+        "item": "Light Element",
+        "qty": 5
+      }
+    ],
+    "description": "Lifts curses.  Causes heavy damage against the undead.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "improved-bomb",
+    "name": "Improved Bomb",
+    "category": "item",
+    "group": "Throwing items",
+    "chapter": 2,
+    "recipes": [
+      [
+        "Candle",
+        "Coal",
+        "Egg"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Flame Crystal",
+        "qty": 3
+      },
+      {
+        "item": "Bomb",
+        "qty": 1
+      },
+      {
+        "item": "Wind Crystal",
+        "qty": 3
+      }
+    ],
+    "description": "The old bomb, but now with a bigger explosion.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "level-up-powder",
+    "name": "Level-up Powder",
+    "category": "item",
+    "group": "Powders",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Sun Chair",
+        "Sun Table",
+        "The Sun"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Diamond",
+        "qty": 1
+      },
+      {
+        "item": "Experience Coin",
+        "qty": 1
+      },
+      {
+        "item": "Final Bomb",
+        "qty": 1
+      }
+    ],
+    "description": "Instantly upgrades a weapon to the next level.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://www.thegamer.com/dark-cloud-sequel-greatest-worst-inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "lightspeed",
+    "name": "Lightspeed",
+    "category": "item",
+    "group": "Throwing items",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Candle",
+        "Flower",
+        "Rock"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Light Element",
+        "qty": 10
+      },
+      {
+        "item": "Holy Stone",
+        "qty": 1
+      },
+      {
+        "item": "Lightning Crystal",
+        "qty": 5
+      }
+    ],
+    "description": "Bomb that shoots lasers like fireworks.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "lure-rod",
+    "name": "Lure Rod",
+    "category": "item",
+    "group": "Miscellaneous",
+    "chapter": 2,
+    "recipes": [
+      [
+        "Fish",
+        "Lafrescia Stem",
+        "River"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 10
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 10
+      },
+      {
+        "item": "Sea Dragon Crystal",
+        "qty": 3
+      }
+    ],
+    "description": "Rod that can take a lure.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://www.thegamer.com/dark-cloud-sequel-greatest-worst-inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "non-stop-amulet",
+    "name": "Non-Stop Amulet",
+    "category": "item",
+    "group": "Amulets",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Clock",
+        "Monument",
+        "Starglass"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Heart-Throb Cherry",
+        "qty": 3
+      },
+      {
+        "item": "Sturdy Cloth",
+        "qty": 1
+      }
+    ],
+    "description": "Prevents enemy stop attacks.  Breaks after a while.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "premium-chicken",
+    "name": "Premium Chicken",
+    "category": "item",
+    "group": "Recovery items",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Burning Dragon Fire",
+        "Pork Dumpling",
+        "Special Peking Duck"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Life Element",
+        "qty": 10
+      },
+      {
+        "item": "Fire Element",
+        "qty": 10
+      },
+      {
+        "item": "Super Hot Pepper",
+        "qty": 2
+      }
+    ],
+    "description": "Fully restores health when eaten.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "resurrection-powder",
+    "name": "Resurrection Powder",
+    "category": "item",
+    "group": "Powders",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Fruit",
+        "Hot Springs Spirit",
+        "Lotus Flower"
+      ],
+      [
+        "Fruit",
+        "Hot Springs Pond",
+        "Lotus Flower"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Life Element",
+        "qty": 50
+      },
+      {
+        "item": "Holy Stone",
+        "qty": 5
+      },
+      {
+        "item": "Stamina Drink",
+        "qty": 2
+      }
+    ],
+    "description": "Prevents unconsciousness when equipped.",
+    "notes": "Recipe 2 is from the wiki only; the GameFAQs guide doesn't list it.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://www.thegamer.com/dark-cloud-sequel-greatest-worst-inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "ridepod-fuel",
+    "name": "Ridepod Fuel",
+    "category": "item",
+    "group": "Recovery items",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Luna Stone Shards",
+        "Mud",
+        "Stardust Pond"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Poison",
+        "qty": 20
+      },
+      {
+        "item": "Improved Bomb",
+        "qty": 5
+      },
+      {
+        "item": "Stamina Drink",
+        "qty": 5
+      }
+    ],
+    "description": "Use it to refuel the Ridepod.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://www.thegamer.com/dark-cloud-sequel-greatest-worst-inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "soap",
+    "name": "Soap",
+    "category": "item",
+    "group": "Recovery items",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Laundry",
+        "Palm Tree",
+        "Waterfall"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Bomb Nut",
+        "qty": 1
+      },
+      {
+        "item": "Unknown Bone",
+        "qty": 5
+      }
+    ],
+    "description": "Cleanses goo.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "stamina-drink",
+    "name": "Stamina Drink",
+    "category": "item",
+    "group": "Recovery items",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Bottle",
+        "Chinese Lantern",
+        "King Mardan"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Tasty Water",
+        "qty": 2
+      },
+      {
+        "item": "Super Hot Pepper",
+        "qty": 30
+      },
+      {
+        "item": "Mighty Healing",
+        "qty": 5
+      }
+    ],
+    "description": "Bestows energy.  A temporary ability boost.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "tasty-water",
+    "name": "Tasty Water",
+    "category": "item",
+    "group": "Recovery items",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Bottle",
+        "Fountain",
+        "Waterfall"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Water Element",
+        "qty": 5
+      }
+    ],
+    "description": "From a deep mountain spring.  Simply mouth-watering.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "treasure-chest-key",
+    "name": "Treasure Chest Key",
+    "category": "item",
+    "group": "Miscellaneous",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Golden Door",
+        "Labyrinth Door",
+        "Sun Chamber Gate Keeper"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Gold Bar",
+        "qty": 1
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 5
+      },
+      {
+        "item": "Hunk Of Copper",
+        "qty": 10
+      }
+    ],
+    "description": "A key for a treasure chest.  Defeats traps, too.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://www.thegamer.com/dark-cloud-sequel-greatest-worst-inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "barrel-cannon",
+    "name": "Barrel Cannon",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 2,
+    "recipes": [
+      [
+        "Barrel",
+        "Fountain",
+        "Mushroom"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 10
+      },
+      {
+        "item": "Gunpowder",
+        "qty": 10
+      }
+    ],
+    "description": "Made from a water barrel, but it doesn't shoot water!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "barrel-cannon-ii",
+    "name": "Barrel Cannon II",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Barrel",
+        "Fountain",
+        "Well"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 15
+      },
+      {
+        "item": "Gunpowder",
+        "qty": 20
+      },
+      {
+        "item": "Sturdy Cloth",
+        "qty": 4
+      }
+    ],
+    "description": "Made from a water barrel, but it doesn't shoot water!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "barrel-cannon-iii",
+    "name": "Barrel Cannon III",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Barrel",
+        "Water Tank",
+        "Waterfall"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 17
+      },
+      {
+        "item": "Gunpowder",
+        "qty": 25
+      },
+      {
+        "item": "Hunter Crystal",
+        "qty": 4
+      }
+    ],
+    "description": "Made from a water barrel, but it doesn't shoot water!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "barrel-cannon-iv",
+    "name": "Barrel Cannon IV",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Air Cleaner",
+        "Barrel",
+        "Fire Squall"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 20
+      },
+      {
+        "item": "Gunpowder",
+        "qty": 40
+      },
+      {
+        "item": "Bull's-Eye Coin",
+        "qty": 1
+      }
+    ],
+    "description": "Made from a water barrel, but it doesn't shoot water!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bucket-leg",
+    "name": "Bucket Leg",
+    "category": "ridepod",
+    "group": "Leg parts",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Can",
+        "River",
+        "Well"
+      ],
+      [
+        "River",
+        "Trashcan",
+        "Water Tank"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Water Element",
+        "qty": 5
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 30
+      }
+    ],
+    "description": "Unique part made of buckets.  Won't rust, either.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bucket-pack",
+    "name": "Bucket Pack",
+    "category": "ridepod",
+    "group": "Energy Packs",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Mailbox",
+        "Trashcan",
+        "Warehouse"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 40
+      },
+      {
+        "item": "Thick Hide",
+        "qty": 2
+      },
+      {
+        "item": "Paint (Red)",
+        "qty": 30
+      }
+    ],
+    "description": "Based on a steel bucket.  Will this actually work?",
+    "notes": "Stores 160 units of energy.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "buggy",
+    "name": "Buggy",
+    "category": "ridepod",
+    "group": "Leg parts",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Belt",
+        "Car",
+        "System 5WP2"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 30
+      },
+      {
+        "item": "Fire Element",
+        "qty": 7
+      },
+      {
+        "item": "Thick Hide",
+        "qty": 8
+      }
+    ],
+    "description": "High speeds over any surface! Whee!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cannon-ball-arm",
+    "name": "Cannon Ball Arm",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Manhole",
+        "Old-Style Robot",
+        "Post"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 15
+      },
+      {
+        "item": "Rolling Log",
+        "qty": 2
+      },
+      {
+        "item": "Destruction Crystal",
+        "qty": 1
+      }
+    ],
+    "description": "Arm part with a steel ball.  A mean one-two punch.",
+    "notes": "The Ridepod starts the game equipped with this.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cannon-ball-arm-ii",
+    "name": "Cannon Ball Arm II",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Constructor",
+        "Post",
+        "Rock"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 20
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 5
+      },
+      {
+        "item": "Destruction Crystal",
+        "qty": 1
+      }
+    ],
+    "description": "Arm part with a steel ball.  A mean one-two punch.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cannon-ball-arm-iii",
+    "name": "Cannon Ball Arm III",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Constructor",
+        "Moon Crystal",
+        "Post"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Silver Ball",
+        "qty": 10
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 20
+      },
+      {
+        "item": "Destruction Crystal",
+        "qty": 2
+      }
+    ],
+    "description": "Arm part with a steel ball.  A mean one-two punch.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cannon-ball-arm-iv",
+    "name": "Cannon Ball Arm IV",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Constructor",
+        "Egg Chair",
+        "Rock"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Gold Bar",
+        "qty": 3
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 5
+      },
+      {
+        "item": "Destruction Crystal",
+        "qty": 4
+      }
+    ],
+    "description": "Arm part with a steel ball.  A mean one-two punch.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "caterpillar",
+    "name": "Caterpillar",
+    "category": "ridepod",
+    "group": "Leg parts",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Car",
+        "Cart",
+        "Wheel"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 30
+      },
+      {
+        "item": "Thick Hide",
+        "qty": 3
+      }
+    ],
+    "description": "Travels smoothly over the bumpiest of roads, but slow.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cleaner-pack",
+    "name": "Cleaner Pack",
+    "category": "ridepod",
+    "group": "Energy Packs",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Air Cleaner",
+        "Belt",
+        "Vacuum"
+      ],
+      [
+        "Can",
+        "Vacuum Bag",
+        "Water Tank"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 50
+      },
+      {
+        "item": "Thick Hide",
+        "qty": 4
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 8
+      }
+    ],
+    "description": "Energy pack made out of an empty vacuum cleaner.",
+    "notes": "Stores 200 units of energy.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "clown-body",
+    "name": "Clown Body",
+    "category": "ridepod",
+    "group": "Body parts",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Cup",
+        "Paints",
+        "Parasol"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 50
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 25
+      },
+      {
+        "item": "Paint (Green)",
+        "qty": 10
+      }
+    ],
+    "description": "Torso part made to look like a clown.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "clown-foot",
+    "name": "Clown Foot",
+    "category": "ridepod",
+    "group": "Leg parts",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Clown Robo's Attack",
+        "Egg",
+        "Scale"
+      ],
+      [
+        "Clown Robo's Attack",
+        "Eyeball",
+        "Paints"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 30
+      },
+      {
+        "item": "Paint (Green)",
+        "qty": 10
+      }
+    ],
+    "description": "Ridepod foot part made to look like a clown's foot.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "clown-hand",
+    "name": "Clown Hand",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Clown Robo's Attack",
+        "Parasol",
+        "Pipe"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Hunk of Copper",
+        "qty": 10
+      },
+      {
+        "item": "Paint (Black)",
+        "qty": 10
+      },
+      {
+        "item": "Paint (Green)",
+        "qty": 5
+      }
+    ],
+    "description": "Ridepod arm part made to look like a clown's hand.",
+    "notes": "The wiki lists different materials: 10x Hunk of Copper, 10x Paint (Black), 10x Paint (Green).",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "clown-hand-ii",
+    "name": "Clown Hand II",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Clown Robo's Attack",
+        "Parasol",
+        "Scale"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Hunk of Copper",
+        "qty": 12
+      },
+      {
+        "item": "Paint (Red)",
+        "qty": 10
+      },
+      {
+        "item": "Paint (Yellow)",
+        "qty": 10
+      }
+    ],
+    "description": "Ridepod arm part made to look like a clown's hand.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "clown-hand-iii",
+    "name": "Clown Hand III",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Clown Robo's Attack",
+        "Flag",
+        "Work Arm"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Silver Ball",
+        "qty": 5
+      },
+      {
+        "item": "Paint (Purple)",
+        "qty": 20
+      },
+      {
+        "item": "Paint (Green)",
+        "qty": 20
+      }
+    ],
+    "description": "Ridepod arm part made to look like a clown's hand.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "clown-hand-iv",
+    "name": "Clown Hand IV",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Clown Robo's Attack",
+        "Paints",
+        "Power Arm"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Silver Ball",
+        "qty": 10
+      },
+      {
+        "item": "Paint (Red)",
+        "qty": 6
+      },
+      {
+        "item": "Gold Bar",
+        "qty": 2
+      }
+    ],
+    "description": "Ridepod arm part made to look like a clown's hand.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "drill-arm",
+    "name": "Drill Arm",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Auto Book Reader",
+        "Fan",
+        "Windmill"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 20
+      },
+      {
+        "item": "Destruction Crystal",
+        "qty": 3
+      },
+      {
+        "item": "Protector Crystal",
+        "qty": 1
+      }
+    ],
+    "description": "Arm part with a drill on the end.  Bores into any enemy!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "drill-arm-ii",
+    "name": "Drill Arm II",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Electric Sesame",
+        "Horn",
+        "Work Arm"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 2
+      },
+      {
+        "item": "Destruction Crystal",
+        "qty": 4
+      },
+      {
+        "item": "Power Crystal",
+        "qty": 2
+      }
+    ],
+    "description": "Arm part with a drill on the end.  Bores into any enemy!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "drill-arm-iii",
+    "name": "Drill Arm III",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Ixion",
+        "Luna Stone Shards",
+        "Work Arm"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Gold Bar",
+        "qty": 2
+      },
+      {
+        "item": "Destruction Crystal",
+        "qty": 5
+      },
+      {
+        "item": "Power Crystal",
+        "qty": 4
+      }
+    ],
+    "description": "Arm part with a drill on the end.  Bores into any enemy!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "drill-arm-iv",
+    "name": "Drill Arm IV",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Deer Horn",
+        "Flower of the Sun",
+        "Work Arm"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Silver Ball",
+        "qty": 15
+      },
+      {
+        "item": "Indestructible Coin",
+        "qty": 1
+      },
+      {
+        "item": "Diamond",
+        "qty": 1
+      }
+    ],
+    "description": "Arm part with a drill on the end.  Bores into any enemy!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "drum-can-body",
+    "name": "Drum Can Body",
+    "category": "ridepod",
+    "group": "Body parts",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Chair",
+        "Drum Can",
+        "Lamp"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 40
+      },
+      {
+        "item": "Rolling Log",
+        "qty": 5
+      },
+      {
+        "item": "Glass Material",
+        "qty": 4
+      }
+    ],
+    "description": "Torso part made out of a Drum Can.",
+    "notes": "Has 6 points of defense. NOTE: The Ridepod starts the game equipped with this.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "energy-pack",
+    "name": "Energy Pack",
+    "category": "ridepod",
+    "group": "Energy Packs",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Belt",
+        "Milk Can",
+        "Pipe"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 20
+      },
+      {
+        "item": "Thick Hide",
+        "qty": 1
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 2
+      }
+    ],
+    "description": "Max's first invention.  Now the Ridepod is all set!",
+    "notes": "Stores 80 units of energy.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://www.speedrun.com/dc2/guides/k3rg5"
+    ],
+    "verified": true
+  },
+  {
+    "id": "energy-pack-barrel",
+    "name": "Energy Pack (Barrel)",
+    "category": "ridepod",
+    "group": "Energy Packs",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Barrel",
+        "Belt",
+        "Tree"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 10
+      },
+      {
+        "item": "Thick Hide",
+        "qty": 2
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 30
+      }
+    ],
+    "description": "Improved Energy Pack.  Has more capacity.",
+    "notes": "Stores 120 units of energy.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "energy-pack-urn",
+    "name": "Energy Pack (Urn)",
+    "category": "ridepod",
+    "group": "Energy Packs",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Energy Pipe",
+        "Generator",
+        "Pot"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Sticky Clay",
+        "qty": 20
+      },
+      {
+        "item": "Sturdy Rock",
+        "qty": 20
+      },
+      {
+        "item": "Earth Element",
+        "qty": 10
+      }
+    ],
+    "description": "Energy pack made out of an urn. Don't break it!",
+    "notes": "Stores 240 units of energy.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hammer-arm",
+    "name": "Hammer Arm",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Barrel",
+        "Post",
+        "Work Robot"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 50
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 10
+      }
+    ],
+    "description": "This arm crushes enemies with its tremendous hammer.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hammer-arm-ii",
+    "name": "Hammer Arm II",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Hammer",
+        "Post",
+        "Work Arm"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 50
+      },
+      {
+        "item": "Rough Rock",
+        "qty": 20
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 1
+      }
+    ],
+    "description": "This arm crushes enemies with its tremendous hammer.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hammer-arm-iii",
+    "name": "Hammer Arm III",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 6,
+    "recipes": [
+      [
+        "Chimney",
+        "Earth Gem Altar",
+        "Hammer"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 50
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 30
+      },
+      {
+        "item": "Protector Crystal",
+        "qty": 5
+      }
+    ],
+    "description": "This arm crushes enemies with its tremendous hammer.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hammer-arm-iv",
+    "name": "Hammer Arm IV",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Moon Column",
+        "Power Arm",
+        "Tiny Hammer"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 20
+      },
+      {
+        "item": "Protector Crystal",
+        "qty": 7
+      },
+      {
+        "item": "Diamond",
+        "qty": 1
+      }
+    ],
+    "description": "This arm crushes enemies with its tremendous hammer.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "iron-leg",
+    "name": "Iron Leg",
+    "category": "ridepod",
+    "group": "Leg parts",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Fence",
+        "Old-Style Robot",
+        "Trashcan"
+      ],
+      [
+        "Constructor",
+        "Phonograph",
+        "Saw"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 20
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 2
+      }
+    ],
+    "description": "Leg part made out of iron.  It's strong, but slow.",
+    "notes": "The Ridepod starts the game equipped with this.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "jet-hover",
+    "name": "Jet Hover",
+    "category": "ridepod",
+    "group": "Leg parts",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Candle",
+        "Fire House",
+        "Relaxation Fountain"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Sticky Clay",
+        "qty": 30
+      },
+      {
+        "item": "Fire Element",
+        "qty": 6
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 15
+      }
+    ],
+    "description": "Yippee! Whoosh!  It's invigorating to go so fast!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "laser-arm",
+    "name": "Laser Arm",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Barrel",
+        "Energy Pipe",
+        "Geyser"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Silver Ball",
+        "qty": 5
+      },
+      {
+        "item": "Light Element",
+        "qty": 10
+      },
+      {
+        "item": "Rolling Log",
+        "qty": 10
+      }
+    ],
+    "description": "Arm fires homing lasers.  Great on flying enemies!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "laser-arm-ii",
+    "name": "Laser Arm II",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Crescent-Shaped Light",
+        "Energy Pipe",
+        "Ixion"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Silver Ball",
+        "qty": 5
+      },
+      {
+        "item": "Light Element",
+        "qty": 20
+      },
+      {
+        "item": "Rolling Log",
+        "qty": 12
+      }
+    ],
+    "description": "Arm fires homing lasers.  Great on flying enemies!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "laser-arm-iii",
+    "name": "Laser Arm III",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Energy Pipe",
+        "Relaxation Fountain",
+        "Search Light"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Silver Ball",
+        "qty": 9
+      },
+      {
+        "item": "Light Element",
+        "qty": 15
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 20
+      }
+    ],
+    "description": "Arm fires homing lasers.  Great on flying enemies!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "laser-arm-iv",
+    "name": "Laser Arm IV",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Blue Lantern",
+        "Energy Pipe",
+        "Legend of the Moon"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Gold Bar",
+        "qty": 4
+      },
+      {
+        "item": "Holy Stone",
+        "qty": 4
+      },
+      {
+        "item": "Diamond",
+        "qty": 1
+      }
+    ],
+    "description": "Arm fires homing lasers.  Great on flying enemies!",
+    "notes": "Materials are from the wiki (the GameFAQs guide lists them as unknown).",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "machine-gun-arm",
+    "name": "Machine Gun Arm",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Fan",
+        "Rifle",
+        "Runaway Dragon"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 15
+      },
+      {
+        "item": "Gunpowder",
+        "qty": 15
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 10
+      }
+    ],
+    "description": "Ridepod arm equipped with a machine gun.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "machine-gun-arm-ii",
+    "name": "Machine Gun Arm II",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Fan",
+        "Telescope",
+        "Windmill"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Silver Ball",
+        "qty": 8
+      },
+      {
+        "item": "Gunpowder",
+        "qty": 20
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 15
+      }
+    ],
+    "description": "Ridepod arm equipped with a machine gun.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "machine-gun-arm-iii",
+    "name": "Machine Gun Arm III",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Propeller",
+        "Rifle",
+        "Windmill"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Silver Ball",
+        "qty": 5
+      },
+      {
+        "item": "Thunder Element",
+        "qty": 30
+      },
+      {
+        "item": "Gold Bar",
+        "qty": 1
+      }
+    ],
+    "description": "Ridepod arm equipped with a machine gun.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "machine-gun-arm-iv",
+    "name": "Machine Gun Arm IV",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 6,
+    "recipes": [
+      [
+        "Drum Can",
+        "Propeller",
+        "Wind Gem Altar"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Silver Ball",
+        "qty": 10
+      },
+      {
+        "item": "Thunder Element",
+        "qty": 40
+      },
+      {
+        "item": "Ruby",
+        "qty": 1
+      }
+    ],
+    "description": "Ridepod arm equipped with a machine gun.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "milk-can-body",
+    "name": "Milk Can Body",
+    "category": "ridepod",
+    "group": "Body parts",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Chimney",
+        "Milk Can",
+        "Peeping Pole"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Glass Material",
+        "qty": 10
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 40
+      }
+    ],
+    "description": "Torso part made in the shape of a huge Milk Can.",
+    "notes": "Has 12 points of Defense.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "missile-pod-arm",
+    "name": "Missile Pod Arm",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Mushroom",
+        "Rotating Sign",
+        "Wooden Box"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 10
+      },
+      {
+        "item": "Gunpowder",
+        "qty": 20
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 10
+      }
+    ],
+    "description": "Fires missiles.  Effective on many enemies at once.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "missile-pod-arm-ii",
+    "name": "Missile Pod Arm II",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Fountain",
+        "Symbol of Luna Lab",
+        "Wooden Box"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Hunk of Copper",
+        "qty": 20
+      },
+      {
+        "item": "Gunpowder",
+        "qty": 30
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 10
+      }
+    ],
+    "description": "Fires missiles.  Effective on many enemies at once.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "missile-pod-arm-iii",
+    "name": "Missile Pod Arm III",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Deer Horn",
+        "Generator",
+        "Gold Store"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 20
+      },
+      {
+        "item": "Flame Stone",
+        "qty": 3
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 5
+      }
+    ],
+    "description": "Fires missiles.  Effective on many enemies at once.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "missile-pod-arm-iv",
+    "name": "Missile Pod Arm IV",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 6,
+    "recipes": [
+      [
+        "Fire Gem Altar",
+        "Gold Store",
+        "Mount Gundor"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Gold Bar",
+        "qty": 3
+      },
+      {
+        "item": "Flame Stone",
+        "qty": 8
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 3
+      }
+    ],
+    "description": "Fires missiles.  Effective on many enemies at once.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "multi-feet",
+    "name": "Multi Feet",
+    "category": "ridepod",
+    "group": "Leg parts",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Deer Horn",
+        "Post",
+        "Work Robot"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Silver Ball",
+        "qty": 15
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 30
+      }
+    ],
+    "description": "Hey, four have got to be better than two, right?",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "nova-cannon",
+    "name": "Nova Cannon",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Generator",
+        "Rapper",
+        "The Sun"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Sticky Clay",
+        "qty": 10
+      },
+      {
+        "item": "Sun Stone",
+        "qty": 1
+      },
+      {
+        "item": "Fire Element",
+        "qty": 10
+      }
+    ],
+    "description": "Changes the sun's energy into a powerful attack beam.",
+    "notes": "Received as reward for completing Veniccio 100%.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "nova-cannon-ii",
+    "name": "Nova Cannon II",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 6,
+    "recipes": [
+      [
+        "Fire Gem Altar",
+        "Streetlight",
+        "The Sun"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Sticky Clay",
+        "qty": 12
+      },
+      {
+        "item": "Holy Element",
+        "qty": 50
+      },
+      {
+        "item": "Fire Element",
+        "qty": 20
+      }
+    ],
+    "description": "Changes the sun's energy into a powerful attack beam.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://www.thegamer.com/dark-cloud-sequel-greatest-worst-inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "nova-cannon-iii",
+    "name": "Nova Cannon III",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Moon Column",
+        "Stove",
+        "The Sun"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Sticky Clay",
+        "qty": 14
+      },
+      {
+        "item": "Holy Element",
+        "qty": 99
+      },
+      {
+        "item": "Holy Stone",
+        "qty": 3
+      }
+    ],
+    "description": "Changes the sun's energy into a powerful attack beam.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "nova-cannon-iv",
+    "name": "Nova Cannon IV",
+    "category": "ridepod",
+    "group": "Ranged arms",
+    "chapter": 8,
+    "recipes": [
+      [
+        "Flotsam Revived!",
+        "Pot Torch",
+        "The Sun"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Sun Stone",
+        "qty": 1
+      },
+      {
+        "item": "Holy Stone",
+        "qty": 5
+      },
+      {
+        "item": "Sticky Clay",
+        "qty": 15
+      }
+    ],
+    "description": "Changes the sun's energy into a powerful attack beam.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "propeller-leg",
+    "name": "Propeller Leg",
+    "category": "ridepod",
+    "group": "Leg parts",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Cart",
+        "Fan",
+        "Windmill Feather"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Silver Ball",
+        "qty": 10
+      },
+      {
+        "item": "Wind Element",
+        "qty": 7
+      }
+    ],
+    "description": "Spins round and round and lifts you into the air.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "refrigerator-body",
+    "name": "Refrigerator Body",
+    "category": "ridepod",
+    "group": "Body parts",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Refrigerator",
+        "Small Generator",
+        "Traffic Light"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 50
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 10
+      },
+      {
+        "item": "Chill Crystal",
+        "qty": 1
+      }
+    ],
+    "description": "It's made out of a Refrigerator, so it's cold.",
+    "notes": "Has 22 points of defense.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "roller-foot",
+    "name": "Roller Foot",
+    "category": "ridepod",
+    "group": "Leg parts",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Freight Train",
+        "Rotating Sign",
+        "Wheel"
+      ],
+      [
+        "Freight Train",
+        "Ventilation",
+        "Wheel"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 30
+      },
+      {
+        "item": "Rolling Log",
+        "qty": 10
+      }
+    ],
+    "description": "Foot that lets you glide along like on roller skates.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "samurai-arm",
+    "name": "Samurai Arm",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Barrel",
+        "Crescent-Shaped Light",
+        "Weapon"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 10
+      },
+      {
+        "item": "Rolling Log",
+        "qty": 10
+      },
+      {
+        "item": "Thick Hide",
+        "qty": 10
+      }
+    ],
+    "description": "Powerful arm equipped with a Japanese sword.  Very sweet!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "samurai-arm-ii",
+    "name": "Samurai Arm II",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Runaway Dragon",
+        "Weapon",
+        "Work Crane"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 15
+      },
+      {
+        "item": "Rolling Log",
+        "qty": 15
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 5
+      }
+    ],
+    "description": "Powerful arm equipped with a Japanese sword.  Very smooth!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "samurai-arm-iii",
+    "name": "Samurai Arm III",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Deer Horn",
+        "Moon Column",
+        "Weapon"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 20
+      },
+      {
+        "item": "Rolling Log",
+        "qty": 20
+      },
+      {
+        "item": "Life Element",
+        "qty": 30
+      }
+    ],
+    "description": "Powerful arm equipped with a Japanese sword.  Very smooth!",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "samurai-arm-iv",
+    "name": "Samurai Arm IV",
+    "category": "ridepod",
+    "group": "Melee arms",
+    "chapter": 8,
+    "recipes": [
+      [
+        "A Surviving Soldier",
+        "Flotsam Revived!",
+        "Legend of the Moon"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Diamond",
+        "qty": 2
+      },
+      {
+        "item": "Rolling Logs",
+        "qty": 25
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 25
+      }
+    ],
+    "description": "",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "samurai-body",
+    "name": "Samurai Body",
+    "category": "ridepod",
+    "group": "Body parts",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Cedric's Shop Sign",
+        "Crescent-Shaped Light",
+        "Telescope"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Paint (Red)",
+        "qty": 10
+      },
+      {
+        "item": "Rolling Log",
+        "qty": 40
+      },
+      {
+        "item": "Gold Bar",
+        "qty": 1
+      }
+    ],
+    "description": "Torso part made to look like a samurai of the East.",
+    "notes": "Has 19 points of defense.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sun-moon-armor",
+    "name": "Sun & Moon Armor",
+    "category": "ridepod",
+    "group": "Body parts",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Electric Sesame",
+        "The Moon",
+        "The Sun"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Light Element",
+        "qty": 50
+      },
+      {
+        "item": "Holy Element",
+        "qty": 50
+      },
+      {
+        "item": "Sticky Clay",
+        "qty": 50
+      }
+    ],
+    "description": "Strongest torso of all. Contains ancient strength.",
+    "notes": "Has 30 points of defense.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "super-alloy-body",
+    "name": "Super-Alloy Body",
+    "category": "ridepod",
+    "group": "Body parts",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Gold Store",
+        "Search Light",
+        "Work Equipment"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Gold Bar",
+        "qty": 1
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 5
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 10
+      }
+    ],
+    "description": "Super-alloy torso. Defends against almost any attack.",
+    "notes": "Has 24 points of defense.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "triple-urn-pack",
+    "name": "Triple-Urn Pack",
+    "category": "ridepod",
+    "group": "Energy Packs",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Flower Chandelier",
+        "Light of Luna Stone",
+        "Pot"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Sticky Clay",
+        "qty": 40
+      },
+      {
+        "item": "Earth Element",
+        "qty": 20
+      },
+      {
+        "item": "Sturdy Rock",
+        "qty": 40
+      }
+    ],
+    "description": "Energy pack made out of three urns.",
+    "notes": "Stores 300 units of energy.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "wooden-box-body",
+    "name": "Wooden Box Body",
+    "category": "ridepod",
+    "group": "Body parts",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Giant Yorda Tree",
+        "Hmmmm! Jurak",
+        "Wooden Box"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 20
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 30
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 10
+      }
+    ],
+    "description": "Wooden Box torso part.  Surprisingly sturdy.",
+    "notes": "Has 18 points of defense.",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "albatross",
+    "name": "Albatross",
+    "category": "weapon",
+    "group": "Maximilian's melee weapons",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Fire Squall",
+        "Geyser",
+        "Tree"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 7
+      },
+      {
+        "item": "Gold Bar",
+        "qty": 1
+      },
+      {
+        "item": "Holy Element",
+        "qty": 2
+      }
+    ],
+    "description": "Spheda club.  Good for long and curved shots.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Albatross"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bandit-brassard",
+    "name": "Bandit Brassard",
+    "category": "weapon",
+    "group": "Monica's ranged weapons",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Clock",
+        "Gold Store",
+        "Show Window"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Wind Element",
+        "qty": 10
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 10
+      },
+      {
+        "item": "Bandit Coin",
+        "qty": 1
+      }
+    ],
+    "description": "Lets you steal enemy's items in battle.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Bandit_Brassard"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bell-trigger",
+    "name": "Bell Trigger",
+    "category": "weapon",
+    "group": "Maximilian's ranged weapons",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Fountain",
+        "Phone",
+        "Tree"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Wind Element",
+        "qty": 2
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 2
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 10
+      }
+    ],
+    "description": "Charming gun made from a bell.  Kind of cute, really.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Bell_Trigger"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bone-rapier",
+    "name": "Bone Rapier",
+    "category": "weapon",
+    "group": "Monica's melee weapons",
+    "chapter": 2,
+    "recipes": [
+      [
+        "Bone",
+        "Cloth",
+        "Withered Jurak"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Life Element",
+        "qty": 5
+      },
+      {
+        "item": "Unknown Bone",
+        "qty": 30
+      },
+      {
+        "item": "Thick Hide",
+        "qty": 5
+      }
+    ],
+    "description": "Sword made of bone. Its abilities are unknown.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Bone_Rapier"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cubic-hammer",
+    "name": "Cubic Hammer",
+    "category": "weapon",
+    "group": "Maximilian's melee weapons",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Dresser",
+        "Gold Store",
+        "Work Equipment"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 20
+      },
+      {
+        "item": "Gold Bar",
+        "qty": 1
+      },
+      {
+        "item": "Light Element",
+        "qty": 2
+      }
+    ],
+    "description": "Powerful. Sharp corners. Delivers heavy damage.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Cubic_Hammer"
+    ],
+    "verified": true
+  },
+  {
+    "id": "dark-viper",
+    "name": "Dark Viper",
+    "category": "weapon",
+    "group": "Maximilian's ranged weapons",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Night Stalker",
+        "Puppet Shingala",
+        "Rifle"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Gunpowder",
+        "qty": 6
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 3
+      },
+      {
+        "item": "Unknown Bone",
+        "qty": 6
+      }
+    ],
+    "description": "Sucks up and absorbs the effect of enemy attack.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Dark_Viper"
+    ],
+    "verified": true
+  },
+  {
+    "id": "digi-hammer",
+    "name": "Digi Hammer",
+    "category": "weapon",
+    "group": "Maximilian's melee weapons",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Computer",
+        "Constructor",
+        "Decorative Lights"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 20
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 3
+      }
+    ],
+    "description": "High-tech hammer designed for efficient attack.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Digi_Hammer"
+    ],
+    "verified": true
+  },
+  {
+    "id": "falcon",
+    "name": "Falcon",
+    "category": "weapon",
+    "group": "Maximilian's melee weapons",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Hammer",
+        "Large Crane",
+        "Withered Jurak"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 5
+      },
+      {
+        "item": "Hunter Crystal",
+        "qty": 3
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 1
+      }
+    ],
+    "description": "Spheda club.  Good for long shots.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Falcon"
+    ],
+    "verified": true
+  },
+  {
+    "id": "flamingo",
+    "name": "Flamingo",
+    "category": "weapon",
+    "group": "Maximilian's melee weapons",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Light of Luna Stone",
+        "Palm Tree",
+        "Tiny Hammer"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 5
+      },
+      {
+        "item": "Paint (Pink)",
+        "qty": 3
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 1
+      }
+    ],
+    "description": "Spheda club.  Good for medium range and curved shots.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing"
+    ],
+    "verified": true
+  },
+  {
+    "id": "grenade-launcher",
+    "name": "Grenade Launcher",
+    "category": "weapon",
+    "group": "Maximilian's ranged weapons",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Chimney",
+        "Egg",
+        "Fountain"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Gunpowder",
+        "qty": 2
+      },
+      {
+        "item": "Bomb",
+        "qty": 2
+      },
+      {
+        "item": "Rolling Log",
+        "qty": 4
+      }
+    ],
+    "description": "Allows rapid-fire of grenades.  A little heavy.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Grenade_Launcher"
+    ],
+    "verified": true
+  },
+  {
+    "id": "heavy-hammer",
+    "name": "Heavy Hammer",
+    "category": "weapon",
+    "group": "Maximilian's melee weapons",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Drum Can",
+        "Paznos",
+        "Power Arm"
+      ],
+      [
+        "Drum Can",
+        "Gigantor Paznos",
+        "Power Arm"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 30
+      },
+      {
+        "item": "Sturdy Rock",
+        "qty": 5
+      },
+      {
+        "item": "Power Crystal",
+        "qty": 2
+      }
+    ],
+    "description": "Battle hammer that packs a heavy wallop.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Heavy_Hammer"
+    ],
+    "verified": true
+  },
+  {
+    "id": "magic-gun",
+    "name": "Magic Gun",
+    "category": "weapon",
+    "group": "Maximilian's ranged weapons",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Fountain",
+        "Moon Crystal",
+        "The Moon"
+      ],
+      [
+        "Fountain",
+        "Moon Crystal",
+        "The Sun"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Holy Crystal",
+        "qty": 3
+      },
+      {
+        "item": "Gold Bar",
+        "qty": 1
+      },
+      {
+        "item": "Glass Material",
+        "qty": 3
+      }
+    ],
+    "description": "Forms magic power in the atmosphere into bullets.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Magic_Gun"
+    ],
+    "verified": true
+  },
+  {
+    "id": "poison-wrench",
+    "name": "Poison Wrench",
+    "category": "weapon",
+    "group": "Maximilian's melee weapons",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Deer Horn",
+        "Mushroom",
+        "Sulfur-Colored Juice"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 15
+      },
+      {
+        "item": "Poison",
+        "qty": 5
+      },
+      {
+        "item": "Destruction Crystal",
+        "qty": 3
+      }
+    ],
+    "description": "Wrench that can sting the enemy with poison.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Poison_Wrench"
+    ],
+    "verified": true
+  },
+  {
+    "id": "question-shooter",
+    "name": "Question Shooter",
+    "category": "weapon",
+    "group": "Maximilian's ranged weapons",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Brave Little Linda",
+        "Fountain",
+        "Neo-Projector"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Silver Ball",
+        "qty": 3
+      },
+      {
+        "item": "Gold Bar",
+        "qty": 1
+      }
+    ],
+    "description": "Interrogates the enemy.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Question_Shooter"
+    ],
+    "verified": true
+  },
+  {
+    "id": "ruler-s-sword",
+    "name": "Ruler's Sword",
+    "category": "weapon",
+    "group": "Monica's melee weapons",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Figure",
+        "Iron Maiden",
+        "Paznos"
+      ],
+      [
+        "Figure",
+        "Gigantor Paznos",
+        "Iron Maiden"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Holy Element",
+        "qty": 20
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 10
+      },
+      {
+        "item": "Light Element",
+        "qty": 20
+      }
+    ],
+    "description": "Sword once used by the legendary Aga.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Ruler's_Sword"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sand-breaker",
+    "name": "Sand Breaker",
+    "category": "weapon",
+    "group": "Monica's melee weapons",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Hand-Sewn Silk Flag",
+        "Horn",
+        "Spinning Ivanoff"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rough Rock",
+        "qty": 20
+      },
+      {
+        "item": "Gunpowder",
+        "qty": 5
+      },
+      {
+        "item": "Sticky Clay",
+        "qty": 20
+      }
+    ],
+    "description": "Rare sword made from desert sand.  Easily broken, though.",
+    "notes": "Weapon comes with \"Fragile\" attribute (faster WHP loss).",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Sand_Breaker"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sexy-panther",
+    "name": "Sexy Panther",
+    "category": "weapon",
+    "group": "Maximilian's ranged weapons",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Elena's Portrait",
+        "Flower Bathed in Light",
+        "Rifle"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Gunpowder",
+        "qty": 15
+      },
+      {
+        "item": "Ruby",
+        "qty": 1
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 14
+      }
+    ],
+    "description": "A sexy little number.  Can't get enough of this one.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Sexy_Panther"
+    ],
+    "verified": true
+  },
+  {
+    "id": "smash-wrench",
+    "name": "Smash Wrench",
+    "category": "weapon",
+    "group": "Maximilian's melee weapons",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Constructor",
+        "Rock",
+        "Star Lamp"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 10
+      },
+      {
+        "item": "Destruction Crystal",
+        "qty": 2
+      }
+    ],
+    "description": "Powerful wrench that smashes monsters into pieces.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Smash_Wrench"
+    ],
+    "verified": true
+  },
+  {
+    "id": "soul-breaker",
+    "name": "Soul Breaker",
+    "category": "weapon",
+    "group": "Maximilian's ranged weapons",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Energy Pipe",
+        "Geyser",
+        "Transmission Device"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Destruction Crystal",
+        "qty": 5
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 5
+      },
+      {
+        "item": "Glass Material",
+        "qty": 7
+      }
+    ],
+    "description": "Legend says it can smash any living creature's soul.",
+    "notes": "Weapon comes with \"Sacrifice\" attribute (attacks cost HP).",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Soul_Breaker"
+    ],
+    "verified": true
+  },
+  {
+    "id": "star-breaker",
+    "name": "Star Breaker",
+    "category": "weapon",
+    "group": "Maximilian's ranged weapons",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Chimney",
+        "Fire House",
+        "Phantom Memo Eater"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Gunpowder",
+        "qty": 6
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 15
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 6
+      }
+    ],
+    "description": "Its trademark is the destroyed star on its side.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Star_Breaker"
+    ],
+    "verified": true
+  },
+  {
+    "id": "steal-gun",
+    "name": "Steal Gun",
+    "category": "weapon",
+    "group": "Maximilian's ranged weapons",
+    "chapter": 5,
+    "recipes": [
+      [
+        "Book",
+        "Fountain",
+        "Work Crane"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Light Element",
+        "qty": 10
+      },
+      {
+        "item": "Bandit Coin",
+        "qty": 1
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 10
+      }
+    ],
+    "description": "Steals enemy's items.  Also called the \"Thief Gun.\"",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Steal_Gun"
+    ],
+    "verified": true
+  },
+  {
+    "id": "stinger-wrench",
+    "name": "Stinger Wrench",
+    "category": "weapon",
+    "group": "Maximilian's melee weapons",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Air Cleaner",
+        "Pipe",
+        "Wheel"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Scrap of Metal",
+        "qty": 15
+      },
+      {
+        "item": "Bandit Coin",
+        "qty": 1
+      }
+    ],
+    "description": "Special wrench that can steal items from the enemy.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Stinger_Wrench"
+    ],
+    "verified": true
+  },
+  {
+    "id": "swan",
+    "name": "Swan",
+    "category": "weapon",
+    "group": "Maximilian's melee weapons",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Boat",
+        "Tiny Hammer",
+        "Tree"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 3
+      },
+      {
+        "item": "Wind Element",
+        "qty": 3
+      }
+    ],
+    "description": "Spheda Club.  Good for medium range.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Swan"
+    ],
+    "verified": true
+  },
+  {
+    "id": "trumpet-gun",
+    "name": "Trumpet Gun",
+    "category": "weapon",
+    "group": "Maximilian's ranged weapons",
+    "chapter": 1,
+    "recipes": [
+      [
+        "Fountain",
+        "Rapper",
+        "Tree"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Wind Element",
+        "qty": 1
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 10
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 2
+      }
+    ],
+    "description": "Gun made from a trumpet.  What'll they think of next?",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Trumpet_Gun"
+    ],
+    "verified": true
+  },
+  {
+    "id": "turkey",
+    "name": "Turkey",
+    "category": "weapon",
+    "group": "Maximilian's melee weapons",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Special Peking Duck",
+        "Tree",
+        "Windmill Feather"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Rolling Log",
+        "qty": 3
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 3
+      }
+    ],
+    "description": "Spheda putter. Good for short distances.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Turkey"
+    ],
+    "verified": true
+  },
+  {
+    "id": "twin-buster",
+    "name": "Twin Buster",
+    "category": "weapon",
+    "group": "Maximilian's ranged weapons",
+    "chapter": 7,
+    "recipes": [
+      [
+        "Flower Chandelier",
+        "Jurak's Nose",
+        "Rifle"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Gunpowder",
+        "qty": 15
+      },
+      {
+        "item": "Gold Bar",
+        "qty": 2
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 20
+      }
+    ],
+    "description": "A double-barreled gun.  Twice the power?",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Twin_Buster"
+    ],
+    "verified": true
+  },
+  {
+    "id": "wild-cat",
+    "name": "Wild Cat",
+    "category": "weapon",
+    "group": "Maximilian's ranged weapons",
+    "chapter": 4,
+    "recipes": [
+      [
+        "Charging Ram",
+        "Rifle",
+        "Work Equipment"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Gunpowder",
+        "qty": 10
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 15
+      },
+      {
+        "item": "Silver Ball",
+        "qty": 8
+      }
+    ],
+    "description": "Cursed machine gun. Brings out the beast in its user.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Wild_Cat"
+    ],
+    "verified": true
+  },
+  {
+    "id": "wise-owl-sword",
+    "name": "Wise Owl Sword",
+    "category": "weapon",
+    "group": "Monica's melee weapons",
+    "chapter": 3,
+    "recipes": [
+      [
+        "Charging Ram",
+        "Grass",
+        "Tree"
+      ]
+    ],
+    "materials": [
+      {
+        "item": "Hunter Crystal",
+        "qty": 4
+      },
+      {
+        "item": "Scrap of Metal",
+        "qty": 10
+      },
+      {
+        "item": "Hunk of Copper",
+        "qty": 10
+      }
+    ],
+    "description": "Legendary sword made by the white-bearded owl's artisan.",
+    "notes": "",
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://darkcloud.fandom.com/wiki/Inventing",
+      "https://darkcloud.fandom.com/wiki/Wise_Owl_Sword"
+    ],
+    "verified": true
+  }
+]

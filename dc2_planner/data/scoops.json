@@ -1,0 +1,1092 @@
+[
+  {
+    "id": "a-surviving-soldier",
+    "name": "A Surviving Soldier",
+    "category": "Veniccio",
+    "chapter": 4,
+    "location": "Veniccio - beach cave tunnel (night)",
+    "how": "Ghost: at the dead end of the long beach tunnel, aim behind the lone boulder between 12 AM and 4 AM; visible only in the flash.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": true,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "ancient-mural",
+    "name": "Ancient Mural",
+    "category": "Veniccio",
+    "chapter": 4,
+    "location": "Ocean's Roar Cave - Cave of the Ancient Mural",
+    "how": "Photograph the giant mural on the wall of the boss room.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "baron-s-hangin-on",
+    "name": "Baron's Hangin' On",
+    "category": "Palm Brinks",
+    "chapter": 1,
+    "location": "Underground Water Channel (enemy)",
+    "how": "Snap a Vanguard mid slam/flip attack (the jump where it turns upside down); bait it by stepping in and backing off.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bomber-head-boom",
+    "name": "Bomber Head Boom!",
+    "category": "Heim Rada",
+    "chapter": 5,
+    "location": "Mount Gundor (enemy)",
+    "how": "Weaken a Bomber Head until it inflates and floats, then snap it just as it explodes (Danger Zone floor).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "brave-little-linda",
+    "name": "Brave Little Linda",
+    "category": "Palm Brinks",
+    "chapter": 1,
+    "location": "Underground Water Channel (boss)",
+    "how": "During the Linda boss fight, shoot her as she rears up on her forelegs to stomp.",
+    "missable": true,
+    "missable_note": "Only during boss battle",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "burning-dragon-fire",
+    "name": "Burning Dragon Fire",
+    "category": "Balance Valley",
+    "chapter": 3,
+    "location": "Starlight Canyon (enemy)",
+    "how": "Photograph a Dragon while it breathes fire (late floors such as Nature's Threat).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "changing-dog-statue",
+    "name": "Changing Dog Statue",
+    "category": "Balance Valley",
+    "chapter": 3,
+    "location": "Starlight Canyon (enemy)",
+    "how": "Hit a Dog Statue from range and snap it as it turns from block into dog (Earth-Shaking Demon floor).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "charging-ram",
+    "name": "Charging Ram",
+    "category": "Balance Valley",
+    "chapter": 3,
+    "location": "Starlight Canyon (enemy)",
+    "how": "Snap a Ram as it charges at you (first floor, Headlong Dash).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "clown-robo-s-attack",
+    "name": "Clown Robo's Attack",
+    "category": "Palm Brinks",
+    "chapter": 1,
+    "location": "Underground Water Channel - Channel Reservoir (boss)",
+    "how": "In the Halloween/Clown Robo fight, catch the moment it fires missiles from its eyes.",
+    "missable": true,
+    "missable_note": "Only during boss battle",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "dangerous-pumpkin",
+    "name": "Dangerous Pumpkin",
+    "category": "Sindain",
+    "chapter": 2,
+    "location": "Rainbow Butterfly Wood (enemy)",
+    "how": "Snap a Pumpkinhead while it twirls its spear (floor 2 'Strange Tree' onward).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "doctor-jaming",
+    "name": "Doctor Jaming",
+    "category": "Veniccio",
+    "chapter": 4,
+    "location": "Ocean's Roar Cave - Shigura Village (boss)",
+    "how": "In the Jaming fight, stand nearly under his hover platform and snap him.",
+    "missable": true,
+    "missable_note": "Only during boss battle",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "earth-gem-altar",
+    "name": "Earth Gem Altar",
+    "category": "Star Path altars",
+    "chapter": 6,
+    "location": "Rainbow Butterfly Wood - Chamber of the Sleeping Earth Gem",
+    "how": "Once you hold the Star Key, follow the star path and photograph the altar.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "face-behind-the-devil-mask",
+    "name": "Face Behind the Devil Mask",
+    "category": "Balance Valley",
+    "chapter": 3,
+    "location": "Starlight Canyon (enemy)",
+    "how": "Shoot a Masked Tribesman when its mask opens to bite, or while stunned by a boulder (early floors).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "faintin-bone-lord",
+    "name": "Faintin' Bone Lord",
+    "category": "Heim Rada",
+    "chapter": 5,
+    "location": "Mount Gundor (enemy)",
+    "how": "Stun a Bone Lord by throwing a rock/small monster, then shoot it while dizzy (Burning Undead floor).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fallen-battleship",
+    "name": "Fallen Battleship",
+    "category": "Heim Rada",
+    "chapter": 5,
+    "location": "Mount Gundor - Mount Gundor Mouth",
+    "how": "Photograph the crashed battleship in the crater/boss area.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "find-the-golden-egg",
+    "name": "Find the Golden Egg!",
+    "category": "Sindain",
+    "chapter": 2,
+    "location": "Future Sindain - Jurak Mall",
+    "how": "After finishing future Georama conditions, climb the ramps around Jurak and shoot the Golden Egg nest.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Gone once Chapter 7 ends; Chapter 8 blocks the Future, Moon Flower Palace and Kazarov Stonehenge",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fire-gem-altar",
+    "name": "Fire Gem Altar",
+    "category": "Star Path altars",
+    "chapter": 6,
+    "location": "Mount Gundor - Chamber of the Blazing Fire Gem",
+    "how": "Once you hold the Star Key, follow the star path and photograph the altar.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fire-squall",
+    "name": "Fire Squall",
+    "category": "Heim Rada",
+    "chapter": 5,
+    "location": "Mount Gundor - Mount Gundor Peak",
+    "how": "Shoot the face of the Fire Squall machine before you plant the bomb.",
+    "missable": true,
+    "missable_note": "Only before you blow it up :-)",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "floatin-earth-digger",
+    "name": "Floatin' Earth Digger",
+    "category": "Sindain",
+    "chapter": 2,
+    "location": "Rainbow Butterfly Wood (enemy)",
+    "how": "Catch a Moler mid-jump out of the ground (usually when you get close).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "flotsam-revived",
+    "name": "Flotsam Revived!",
+    "category": "Zelmite Mines",
+    "chapter": 8,
+    "location": "Zelmite Mines - Suspicious Opening (boss)",
+    "how": "Photograph Metal Flotsam during the fight.",
+    "missable": true,
+    "missable_note": "Only during boss battle",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "flower-of-the-sun",
+    "name": "Flower of the Sun",
+    "category": "Kazarov / Moon Flower Palace",
+    "chapter": 7,
+    "location": "Moon Flower Palace dungeon - Garden / Alexandria's Room",
+    "how": "Photograph the Sunflower on the Garden table, or after placing it in the vase in Alexandria's Room.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Gone once Chapter 7 ends; Chapter 8 blocks the Future, Moon Flower Palace and Kazarov Stonehenge",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "flying-battleship",
+    "name": "Flying Battleship",
+    "category": "Balance Valley",
+    "chapter": 3,
+    "location": "Starlight Canyon - Lighthouse / Cape (event)",
+    "how": "Photograph Gaspard's battleship during the lighthouse defense. Further chances in the Ch4 Dr. Jaming fight and the Ch5 Mount Gundor Summit fight.",
+    "missable": true,
+    "missable_note": "Only during boss battles",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "gigantor-paznos",
+    "name": "Gigantor Paznos",
+    "category": "Kazarov / Moon Flower Palace",
+    "chapter": 6,
+    "location": "Kazarov Stonehenge",
+    "how": "After delivering all four gems and the cutscene, face Ixion from the altars and shoot the robot Paznos above it.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Gone once Chapter 7 ends; Chapter 8 blocks the Future, Moon Flower Palace and Kazarov Stonehenge",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "griffon-s-real-face",
+    "name": "Griffon's Real Face",
+    "category": "Kazarov / Moon Flower Palace",
+    "chapter": 7,
+    "location": "Moon Flower Palace (boss)",
+    "how": "Photograph Griffon's face as the first fight with him begins.",
+    "missable": true,
+    "missable_note": "Only during boss battle",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "gyumo-s-yell",
+    "name": "Gyumo's Yell",
+    "category": "Sindain",
+    "chapter": 2,
+    "location": "Rainbow Butterfly Wood (enemy)",
+    "how": "Wait for a Gyumo to throw its head back and howl (from the Legendary Killer Snake floor).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hot-springs-spirit",
+    "name": "Hot Springs Spirit",
+    "category": "Heim Rada",
+    "chapter": 5,
+    "location": "Heim Rada - hot springs (night)",
+    "how": "Ghost: at the bottom of the hot springs, aim at the pointed rock on the right between 12 AM and 4 AM; flashes slightly left of it.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": true,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hurray-for-rock-man",
+    "name": "Hurray For Rock Man!",
+    "category": "Balance Valley",
+    "chapter": 3,
+    "location": "Starlight Canyon (enemy)",
+    "how": "Snap a Golem as it raises both arms for its ground slam (Warrior in Starlight Canyon floor).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hmmmm-jurak",
+    "name": "Hmmmm! Jurak",
+    "category": "Sindain",
+    "chapter": 2,
+    "location": "Future Sindain - Jurak Mall",
+    "how": "Photograph Jurak after reviving him in the future.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Gone once Chapter 7 ends; Chapter 8 blocks the Future, Moon Flower Palace and Kazarov Stonehenge",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "ixion",
+    "name": "Ixion",
+    "category": "Kazarov / Moon Flower Palace",
+    "chapter": 6,
+    "location": "Moon Flower Palace station / any train stop",
+    "how": "Photograph the time train Ixion once you have it.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Gone once Chapter 7 ends; Chapter 8 blocks the Future, Moon Flower Palace and Kazarov Stonehenge",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "kazarov-stonehenge",
+    "name": "Kazarov Stonehenge",
+    "category": "Kazarov / Moon Flower Palace",
+    "chapter": 6,
+    "location": "Kazarov Stonehenge",
+    "how": "Shoot the three central standing stones (not the gem pillars).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Gone once Chapter 7 ends; Chapter 8 blocks the Future, Moon Flower Palace and Kazarov Stonehenge",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "king-mardan",
+    "name": "King Mardan",
+    "category": "Sindain",
+    "chapter": 2,
+    "location": "Rainbow Butterfly Wood - Fish Monster Swamp",
+    "how": "After Master Utan tells you about him, fish King Mardan up with a Poisonous Apple and snap him.",
+    "missable": true,
+    "missable_note": "Only until you give him the Priscleen",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "lafrescia-stem",
+    "name": "Lafrescia Stem",
+    "category": "Sindain",
+    "chapter": 2,
+    "location": "Rainbow Butterfly Wood - Rainbow Falls",
+    "how": "Shoot the fully grown Lafrescia flower; works from the area entrance.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "lava-road",
+    "name": "Lava Road",
+    "category": "Heim Rada",
+    "chapter": 5,
+    "location": "Mount Gundor - Mount Gundor Mouth",
+    "how": "After parting the lava with the Fire Horn from future Heim Rada, photograph the new path.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "legend-of-the-moon",
+    "name": "Legend of the Moon",
+    "category": "Kazarov / Moon Flower Palace",
+    "chapter": 7,
+    "location": "Dream Spiral - Palace Terrace (boss)",
+    "how": "Once the Dark Element fight starts, photograph the falling moon.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Boss fight only - end of Chapter 7",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "master-utan",
+    "name": "Master Utan",
+    "category": "Sindain",
+    "chapter": 2,
+    "location": "Rainbow Butterfly Wood - Fish Monster Swamp",
+    "how": "Get right up close to Master Utan while he sits under the Poison Apple tree.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "moon-crystal",
+    "name": "Moon Crystal",
+    "category": "Balance Valley",
+    "chapter": 3,
+    "location": "Future - Starlight Temple",
+    "how": "After 100% Balance Valley Georama, go to the future and shoot the floating Moon Crystal.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Gone once Chapter 7 ends; Chapter 8 blocks the Future, Moon Flower Palace and Kazarov Stonehenge",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "moon-flower-palace",
+    "name": "Moon Flower Palace",
+    "category": "Kazarov / Moon Flower Palace",
+    "chapter": 6,
+    "location": "Moon Flower Palace - front doors",
+    "how": "Past the courtyard and first stairs, photograph the palace's main doors.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Gone once Chapter 7 ends; Chapter 8 blocks the Future, Moon Flower Palace and Kazarov Stonehenge",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "mr-big-shot-s-shadow",
+    "name": "Mr. Big Shot's Shadow",
+    "category": "Zelmite Mines",
+    "chapter": 8,
+    "location": "Zelmite Mines - Zelmite Mine Depths",
+    "how": "Photograph the giant flying genie on the Mine Depths floor.",
+    "missable": true,
+    "missable_note": "Only during boss battle",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "nice-massage",
+    "name": "Nice Massage",
+    "category": "Balance Valley",
+    "chapter": 3,
+    "location": "Starlight Canyon (enemy)",
+    "how": "Catch a Priest of Rama rubbing its own shoulder/back, usually right after it spots you (Nature's Threat).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "night-stalker",
+    "name": "Night Stalker",
+    "category": "Palm Brinks",
+    "chapter": 1,
+    "location": "Underground Water Channel (enemy)",
+    "how": "Photograph a Night Stalker during its close-range spinning swoop (appears from the Ghost in the Channel floor).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "paznos",
+    "name": "Paznos",
+    "category": "Heim Rada",
+    "chapter": 5,
+    "location": "Future Heim Rada - Gundorada Workshop",
+    "how": "After fully restoring Heim Rada, shoot the floating fortress Paznos in the future town center.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Gone once Chapter 7 ends; Chapter 8 blocks the Future, Moon Flower Palace and Kazarov Stonehenge",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "phantom-memo-eater",
+    "name": "Phantom Memo Eater",
+    "category": "Balance Valley",
+    "chapter": 3,
+    "location": "Starlight Canyon - Yorda's Valley (boss)",
+    "how": "Photograph the Phantom Memo Eater any time during the boss fight.",
+    "missable": true,
+    "missable_note": "Only during boss battle",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "puppet-shingala",
+    "name": "Puppet Shingala",
+    "category": "Veniccio",
+    "chapter": 4,
+    "location": "Ocean's Roar Cave - Cave of the Ancient Mural (boss)",
+    "how": "Photograph the controlled Shingala (its head) during the fight.",
+    "missable": true,
+    "missable_note": "Only during boss battle",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "r-butterfly-united",
+    "name": "R. Butterfly United",
+    "category": "Sindain",
+    "chapter": 2,
+    "location": "Rainbow Butterfly Wood (boss)",
+    "how": "In the Rainbow Butterfly fight, defeat the small butterflies out of order and snap them as they re-merge.",
+    "missable": true,
+    "missable_note": "Only during boss battle",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "ruler-of-the-pond",
+    "name": "Ruler of the Pond",
+    "category": "Palm Brinks",
+    "chapter": 1,
+    "location": "Palm Brinks - lake by Dell Clinic (night)",
+    "how": "Ghost: from the pier, aim over the lake between 12 AM and 4 AM; the white haze only shows in the flash.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": true,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "spinning-ivanoff",
+    "name": "Spinning Ivanoff",
+    "category": "Balance Valley",
+    "chapter": 3,
+    "location": "Starlight Canyon (enemy)",
+    "how": "Snap an Ivanoff as it rolls at you; shooting it first makes it turn and roll (Nature's Threat).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "spooky-grass-smile",
+    "name": "Spooky Grass Smile",
+    "category": "Sindain",
+    "chapter": 2,
+    "location": "Rainbow Butterfly Wood (enemy)",
+    "how": "Shoot a Man-Eating Grass while it chews/'smiles', just before it attacks (first floor onward).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sun-chamber-gate-keeper",
+    "name": "Sun Chamber Gate Keeper",
+    "category": "Kazarov / Moon Flower Palace",
+    "chapter": 7,
+    "location": "Moon Flower Palace dungeon - Sun Chamber",
+    "how": "Photograph either gargoyle beside the golden door.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Gone once Chapter 7 ends; Chapter 8 blocks the Future, Moon Flower Palace and Kazarov Stonehenge",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "symbol-of-luna-lab",
+    "name": "Symbol of Luna Lab",
+    "category": "Veniccio",
+    "chapter": 4,
+    "location": "Future Veniccio - Luna Lab",
+    "how": "After restoring the future Luna Lab (100% Georama), shoot the big yellow symbol on the central building.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Gone once Chapter 7 ends; Chapter 8 blocks the Future, Moon Flower Palace and Kazarov Stonehenge",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "the-ultimate-gaspard",
+    "name": "The Ultimate Gaspard",
+    "category": "Heim Rada",
+    "chapter": 5,
+    "location": "Mount Gundor - crater (boss)",
+    "how": "Snap Gaspard in his lava/flame giant final form (after the mid-fight cutscene).",
+    "missable": true,
+    "missable_note": "Only during boss battle",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "tore-s-nap",
+    "name": "Tore's Nap",
+    "category": "Sindain",
+    "chapter": 2,
+    "location": "Rainbow Butterfly Wood (enemy)",
+    "how": "Sneak up on a Tore and photograph it before it notices you (Strange Tree floor onward).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "veniccio-s-evening-sun",
+    "name": "Veniccio's Evening Sun",
+    "category": "Veniccio",
+    "chapter": 4,
+    "location": "Veniccio - beach / Georama area (sunset)",
+    "how": "Shoot the sun repeatedly as it sets until credit switches from 'The Sun' to this scoop.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "water-gem-altar",
+    "name": "Water Gem Altar",
+    "category": "Star Path altars",
+    "chapter": 6,
+    "location": "Ocean's Roar Cave - Chamber of the Sleeping Water Gem",
+    "how": "Once you hold the Star Key, follow the star path and photograph the altar.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  },
+  {
+    "id": "wind-gem-altar",
+    "name": "Wind Gem Altar",
+    "category": "Star Path altars",
+    "chapter": 6,
+    "location": "Starlight Canyon - Chamber of the Defending Wind Gem",
+    "how": "Once you hold the Star Key, follow the star path and photograph the altar.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/scoops/",
+      "https://darkcloud.fandom.com/wiki/Scoop",
+      "https://darkchronicle.fandom.com/wiki/Scoop"
+    ],
+    "verified": true
+  }
+]

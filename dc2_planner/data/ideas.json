@@ -1,0 +1,4734 @@
+[
+  {
+    "id": "air-cleaner",
+    "name": "Air Cleaner",
+    "category": "",
+    "chapter": 4,
+    "location": "Luna Labs (future Veniccio) – outer labs",
+    "how": "Restore one of Luna Labs 1-4; shoot the tall machine standing in a corner of the room.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "alexandra-s-bed",
+    "name": "Alexandra's Bed",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace (dungeon) – Alexandra's Room",
+    "how": "Photograph the bed on the Alexandra's Room floor.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "auto-book-reader",
+    "name": "Auto Book Reader",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop",
+    "how": "The book on a stand with mechanical page-turning hands, upstairs near the stairs.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "banana",
+    "name": "Banana",
+    "category": "",
+    "chapter": 4,
+    "location": "Veniccio – Iron House interior",
+    "how": "Build and place an Iron House Georama piece, enter it and shoot the banana on the table.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bar-sign",
+    "name": "Bar Sign",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – outside the Bar",
+    "how": "Sign by the bar near the train station.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "barrel",
+    "name": "Barrel",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop",
+    "how": "Common wooden barrel; also inside the Bar.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "basket-steamer",
+    "name": "Basket Steamer",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley – Chinese Stand (Georama)",
+    "how": "Place the Chinese Stand Georama piece; shoot the brown steamer basket on its cart.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bed",
+    "name": "Bed",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Parn's Studio",
+    "how": "Any bed works; Parn's Studio is an early one.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "belt",
+    "name": "Belt",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Sheriff Blinkhorn",
+    "how": "Zoom in on the sheriff's belt; he stands outside the Police Station by day and inside at night.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bench",
+    "name": "Bench",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Police Station / lakeside",
+    "how": "Bench by the Police Station door, or near the lake.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "binoculars",
+    "name": "Binoculars",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop",
+    "how": "Odd-looking binoculars on the counter/desk by the front door.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "blackstone-one",
+    "name": "Blackstone One",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – train station",
+    "how": "Shoot the train (left track) at the station; from Ch.2-5 any train stop works. Not available in Ch.6-7, returns in Ch.8.",
+    "missable": true,
+    "missable_note": "Only before you get Ixion",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "blue-lantern",
+    "name": "Blue Lantern",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace (dungeon) – Garden",
+    "how": "Blue crystals atop the pillars near the table on the Garden floor.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "boat",
+    "name": "Boat",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – lake/pond by the pier",
+    "how": "Across the drawbridge; the boat sits beside the pier.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bone",
+    "name": "Bone",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Dell Clinic",
+    "how": "Photograph the skeleton in Dr. Dell's clinic.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "book",
+    "name": "Book",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Morton's Sundries",
+    "how": "Book on the counter; common item.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bottle",
+    "name": "Bottle",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Bar",
+    "how": "Bottle in the car the bartender stands in; common item.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bread",
+    "name": "Bread",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Polly's Bakery",
+    "how": "Bread on the table right of the door.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "bridge",
+    "name": "Bridge",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – near Max's House",
+    "how": "Arched stone bridge by the gate to Max's House.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cafe-sign",
+    "name": "Cafe Sign",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cafe",
+    "how": "Sign by/atop the cup-shaped cafe near the Bar. aka Café Sign.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "camellia-tree",
+    "name": "Camellia Tree",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace – courtyard (Georama)",
+    "how": "Shoot an already-placed tree or build the Camellia Tree Georama piece.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "can",
+    "name": "Can",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Polly's Bakery",
+    "how": "On the shelf above the bread.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "candle",
+    "name": "Candle",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Church",
+    "how": "Candles at the ends of the pews.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "car",
+    "name": "Car",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Bar",
+    "how": "The car the bartender stands in; shoot it from the front.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cart",
+    "name": "Cart",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop",
+    "how": "Wooden two-wheeled cart beside boxes and barrels.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cedric-s-shop-sign",
+    "name": "Cedric's Shop Sign",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – outside Cedric's Shop",
+    "how": "Sign held by iron clamps above the entrance.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "chair",
+    "name": "Chair",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Bar",
+    "how": "Any chair; common item (also Morton's Sundries).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "chandelier",
+    "name": "Chandelier",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Morton's Sundries",
+    "how": "Ceiling light; also in Max's House.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "chimney",
+    "name": "Chimney",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – rooftops",
+    "how": "Any chimney, e.g. on Polly's Bakery or Parn's Studio.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "chinese-lantern",
+    "name": "Chinese Lantern",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley – Chinese Stand (Georama)",
+    "how": "Round hanging paper lantern on the Chinese Stand; also in Lao Chao's Bistro (future).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cinders",
+    "name": "Cinders",
+    "category": "",
+    "chapter": 5,
+    "location": "Heim Rada",
+    "how": "While embers are falling on town, place a straw/wooden house, leave and return; shoot the ash pile it becomes.",
+    "missable": true,
+    "missable_note": "Only before you destroy the Fire Squall",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "clock",
+    "name": "Clock",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop",
+    "how": "Small alarm clock on a desk; also Morton's Sundries and above the station entrance.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cloth",
+    "name": "Cloth",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Parn's Studio",
+    "how": "The piece of cloth lying on the floor.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "coal",
+    "name": "Coal",
+    "category": "",
+    "chapter": 2,
+    "location": "Blackstone One – engine room",
+    "how": "Inside the locomotive cab (first enterable at Sindain Station). Not available in Ch.6-7, returns in Ch.8.",
+    "missable": true,
+    "missable_note": "Only before you get Ixion",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "computer",
+    "name": "Computer",
+    "category": "",
+    "chapter": 5,
+    "location": "Gundorada Workshop (future Heim Rada) – Operations Room",
+    "how": "Restore the Operations Room; shoot one of the blue-screened computers.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "constructor",
+    "name": "Constructor",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop (downstairs)",
+    "how": "The lever platform the Ridepod stands on.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "crescent-shaped-light",
+    "name": "Crescent-Shaped Light",
+    "category": "",
+    "chapter": 3,
+    "location": "Starlight Temple (future Balance Valley) – Star Items",
+    "how": "Restore the tool shop; shoot a yellow crescent light near the ceiling. aka Crescent Shaped Light.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "cup",
+    "name": "Cup",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – train station",
+    "how": "On the counter beside the station attendant/bartender.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "curtain",
+    "name": "Curtain",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Parn's Studio",
+    "how": "Hanging cloths on the studio walls; also in Max's room.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "dead-tree",
+    "name": "Dead Tree",
+    "category": "",
+    "chapter": 6,
+    "location": "Moon Flower Palace Stop",
+    "how": "Shoot one of the dead trees around the palace grounds on your first visit.",
+    "missable": true,
+    "missable_note": "???",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "decorative-lights",
+    "name": "Decorative Lights",
+    "category": "",
+    "chapter": 5,
+    "location": "Gundorada Workshop (future Heim Rada) – G-Tools",
+    "how": "Restore the item shop; shoot the moving purple string lights on the wall.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "deer-horn",
+    "name": "Deer Horn",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – City Hall, Mayor's office",
+    "how": "Antlers on the mounted deer head; also in Max's House.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "dell-clinic-sign",
+    "name": "Dell Clinic Sign",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Dell Clinic",
+    "how": "Duck-head sign on the clinic beside the lake, across the drawbridge.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "display-robo",
+    "name": "Display Robo",
+    "category": "",
+    "chapter": 5,
+    "location": "Gundorada Workshop (future Heim Rada) – G-Parts",
+    "how": "Restore the parts shop; shoot the large robot display case near the counter.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "drawbridge",
+    "name": "Drawbridge",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – river crossing",
+    "how": "The big wooden bridge over the river.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "drawer",
+    "name": "Drawer",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House",
+    "how": "Glass-fronted cabinet beside the fireplace in Gerald's (Max's father's) room.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122"
+    ],
+    "verified": true
+  },
+  {
+    "id": "dresser",
+    "name": "Dresser",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House, Max's room",
+    "how": "The wardrobe near the door upstairs; other dressers exist later (e.g. Balance Valley).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122"
+    ],
+    "verified": true
+  },
+  {
+    "id": "drum-can",
+    "name": "Drum Can",
+    "category": "",
+    "chapter": 5,
+    "location": "Gundorada Workshop (future Heim Rada) – G-Parts",
+    "how": "Restore the parts shop; shoot one of the red metal drums.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "earth-altar",
+    "name": "Earth Altar",
+    "category": "",
+    "chapter": 6,
+    "location": "Kazarov Stonehenge",
+    "how": "Pillar with the yellow light. Not the same as the Earth Gem Altar scoop.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Kazarov Stonehenge is unreachable once Chapter 8 begins; shoot it in Ch.6-7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "egg",
+    "name": "Egg",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Dell Clinic",
+    "how": "Egg in a nest on the high shelf above the skeleton.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "egg-chair",
+    "name": "Egg Chair",
+    "category": "",
+    "chapter": 4,
+    "location": "Luna Labs (future Veniccio) – outer labs",
+    "how": "Restore a lab; shoot the white egg-shaped work chair.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "egg-shaped-transmitter",
+    "name": "Egg-Shaped Transmitter",
+    "category": "",
+    "chapter": 4,
+    "location": "Veniccio – Iron House interior",
+    "how": "Build and enter an Iron House; shoot the blue egg-shaped device.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "electric-bulletin",
+    "name": "Electric Bulletin",
+    "category": "",
+    "chapter": 3,
+    "location": "Palm Brinks – Fishing Contest tent",
+    "how": "Scoreboard screen inside the tent, which appears near City Hall late in the Starlight Canyon dungeon.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "electric-sesame",
+    "name": "Electric Sesame",
+    "category": "",
+    "chapter": 5,
+    "location": "Gundorada Workshop (future Heim Rada) – G-Parts",
+    "how": "Restore the parts shop; shoot the glowing top-shaped machine right of the door.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "elena-s-portrait",
+    "name": "Elena's Portrait",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House, Gerald's room",
+    "how": "Over the bed; only visible in first-person camera view.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "elevator",
+    "name": "Elevator",
+    "category": "",
+    "chapter": 5,
+    "location": "Gundorada Workshop (future Heim Rada)",
+    "how": "Restore the workshop elevator, then shoot the glowing blue lift.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "energy-pipe",
+    "name": "Energy Pipe",
+    "category": "",
+    "chapter": 4,
+    "location": "Luna Labs (future Veniccio) – outer labs",
+    "how": "Restore a lab; shoot one of the glowing pipes.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "evening-sun",
+    "name": "Evening Sun",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – outdoors",
+    "how": "Shoot the sun at dusk (roughly 4:30-6:15 PM in-game), e.g. from the street outside Cedric's Shop.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "eyeball",
+    "name": "Eyeball",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Dell Clinic",
+    "how": "Giant eyeball model near the skeleton.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fan",
+    "name": "Fan",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop",
+    "how": "Fan on the wall near the stairs/barrel.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fence",
+    "name": "Fence",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House",
+    "how": "The fence surrounding Max's House (also by Morton's house).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "figure",
+    "name": "Figure",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Parn's Studio",
+    "how": "Any statue in the studio; also above the Church altar.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fire-altar",
+    "name": "Fire Altar",
+    "category": "",
+    "chapter": 6,
+    "location": "Kazarov Stonehenge",
+    "how": "Pillar with the red light. Not the same as the Fire Gem Altar scoop.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Kazarov Stonehenge is unreachable once Chapter 8 begins; shoot it in Ch.6-7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fire-house",
+    "name": "Fire House",
+    "category": "",
+    "chapter": 2,
+    "location": "Blackstone One – engine room",
+    "how": "The open firebox of the locomotive (first enterable at Sindain Station). Not available in Ch.6-7, returns in Ch.8.",
+    "missable": true,
+    "missable_note": "Only before you get Ixion",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fireplace",
+    "name": "Fireplace",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House, Gerald's room",
+    "how": "Any fireplace; also Claire's house.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fish",
+    "name": "Fish",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House kitchen",
+    "how": "Fish lying on the kitchen table.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fish-race-sign",
+    "name": "Fish Race Sign",
+    "category": "",
+    "chapter": 4,
+    "location": "Palm Brinks – Finny Frenzy tent",
+    "how": "Sign over the entrance of the Finny Frenzy tent, which appears near City Hall late in Ocean's Roar Cave.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fishing-contest-sign",
+    "name": "Fishing Contest Sign",
+    "category": "",
+    "chapter": 3,
+    "location": "Palm Brinks – Fishing Contest tent",
+    "how": "Sign over the tent entrance; tent appears near City Hall late in Starlight Canyon.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "flag",
+    "name": "Flag",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – street outside Cedric's Shop",
+    "how": "The strings of triangular orange/yellow flags; also in Max's House dining room.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "flower",
+    "name": "Flower",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Polly's Bakery",
+    "how": "Flowers on top of a barrel; also Dell Clinic and Max's House.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "flower-bathed-in-light",
+    "name": "Flower Bathed in Light",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace (dungeon) – Garden",
+    "how": "Sunflowers in pots beside the water.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "flower-bed",
+    "name": "Flower Bed",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace – courtyard (Georama)",
+    "how": "Build and place the Flower Bed Georama piece.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "flower-chair",
+    "name": "Flower Chair",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – train station",
+    "how": "Metal flower sculpture with a seat around its base near the entrance.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "flower-chandelier",
+    "name": "Flower Chandelier",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace (dungeon) – Sun Chamber",
+    "how": "Blue ceiling lights on the Sun Chamber floor. (Misspelled 'Flower Chanelier' on one fandom table.)",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fountain",
+    "name": "Fountain",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – outside the Bar/Cafe/station",
+    "how": "",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "freight-train",
+    "name": "Freight Train",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – train station",
+    "how": "The train on the right-hand track.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fresco-painting",
+    "name": "Fresco Painting",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley – Church (Georama)",
+    "how": "Build the Church piece, go inside and shoot the wall painting near the door.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "fruit",
+    "name": "Fruit",
+    "category": "",
+    "chapter": 2,
+    "location": "Sindain – Fruit Tree (Georama)",
+    "how": "Build the Fruit Tree piece; shoot the yellow fruit.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "futuron-800",
+    "name": "Futuron 800",
+    "category": "",
+    "chapter": 4,
+    "location": "Luna Labs (future Veniccio) – central lab",
+    "how": "Restore the central lab; shoot the machines at the base of the glowing piped columns around the ring.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "gate",
+    "name": "Gate",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House",
+    "how": "The gate in the fence around Max's House.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "generator",
+    "name": "Generator",
+    "category": "",
+    "chapter": 5,
+    "location": "Heim Rada (Georama)",
+    "how": "Build and place the Generator Georama piece.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "geyser",
+    "name": "Geyser",
+    "category": "",
+    "chapter": 5,
+    "location": "Heim Rada",
+    "how": "Shoot any geyser in town before capping them all with Hardened Mud.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Lost if every geyser in Heim Rada is capped with Hardened Mud; otherwise available all game.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "giant-yorda-tree",
+    "name": "Giant Yorda Tree",
+    "category": "",
+    "chapter": 3,
+    "location": "Starlight Canyon (dungeon) – Yorda's Valley",
+    "how": "The huge tree on the Yorda's Valley floor.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "glasses-case",
+    "name": "Glasses Case",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – City Hall, Mayor's office",
+    "how": "Display case full of eyeglasses near the phonograph.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "glowing-gate",
+    "name": "Glowing Gate",
+    "category": "",
+    "chapter": 3,
+    "location": "Palm Brinks – Fishing Contest tent",
+    "how": "Red glowing arch just inside the tent entrance.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "gold-gate",
+    "name": "Gold Gate",
+    "category": "",
+    "chapter": 6,
+    "location": "Moon Flower Palace Stop",
+    "how": "The gate leading into the palace courtyard.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "gold-store",
+    "name": "Gold Store",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Milane's Weapon Shop",
+    "how": "Curved vault doors behind the counter.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "golden-door",
+    "name": "Golden Door",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace (dungeon) – Sun Chamber",
+    "how": "Red-and-gold door between the two gargoyles, leading on toward Griffon.",
+    "missable": true,
+    "missable_note": "???",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "grass",
+    "name": "Grass",
+    "category": "",
+    "chapter": 2,
+    "location": "Sindain",
+    "how": "Darker grass patches on the ground (also a Georama piece).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hammer",
+    "name": "Hammer",
+    "category": "",
+    "chapter": 5,
+    "location": "Gundorada Workshop (future Heim Rada) – G-Weapons",
+    "how": "Restore the weapon shop; shoot the big hammer by the counter.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hammock",
+    "name": "Hammock",
+    "category": "",
+    "chapter": 2,
+    "location": "Sindain – Firbits' house",
+    "how": "At the back of the house.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hand-sewn-silk-flag",
+    "name": "Hand-Sewn Silk Flag",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley – Chinese Stand (Georama)",
+    "how": "Blue flags hanging on the Chinese Stand.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hat",
+    "name": "Hat",
+    "category": "",
+    "chapter": 3,
+    "location": "Starlight Temple (future Balance Valley) – Star Weapons",
+    "how": "Restore the weapon shop; shoot the giant hat on the awning (or smaller hats below).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hoe",
+    "name": "Hoe",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Morton's house",
+    "how": "Row of hoes upstairs inside (also one leaning outside).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "holy-emblem",
+    "name": "Holy Emblem",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley – Church (Georama)",
+    "how": "Emblem on the roof or behind Priest Bruno inside the Church piece.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hooked-nose",
+    "name": "Hooked Nose",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace – courtyard/facade",
+    "how": "Beak-like stone overhang above the palace entrance stairs.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "horn",
+    "name": "Horn",
+    "category": "",
+    "chapter": 3,
+    "location": "Starlight Temple (future Balance Valley) – Star Weapons",
+    "how": "Restore the weapon shop; shoot the horn(s) on the wall/above the entrance.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "hot-springs-pond",
+    "name": "Hot Springs Pond",
+    "category": "",
+    "chapter": 5,
+    "location": "Heim Rada",
+    "how": "Pools down the ramp to the far left of the town entrance. aka Hot Spring Pond / Hot-Springs Pond.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "iron-bridge",
+    "name": "Iron Bridge",
+    "category": "",
+    "chapter": 1,
+    "location": "Underground Water Channel (dungeon) – Channel Exit",
+    "how": "Any of the iron bridges on the exit floor.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "iron-maiden",
+    "name": "Iron Maiden",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Milane's Weapon Shop",
+    "how": "Bottom level, down both flights of stairs.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "iron-shed",
+    "name": "Iron Shed",
+    "category": "",
+    "chapter": 4,
+    "location": "Veniccio (Georama)",
+    "how": "Build the Iron Shed piece and attach it to a house.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "jurak-arms-sign",
+    "name": "Jurak Arms Sign",
+    "category": "",
+    "chapter": 2,
+    "location": "Jurak Mall (future Sindain)",
+    "how": "Restore the weapon shop; shoot its sign. aka Jurak's Arms Sign.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "jurak-s-eye",
+    "name": "Jurak's Eye",
+    "category": "",
+    "chapter": 2,
+    "location": "Sindain – Eye Tree (Georama)",
+    "how": "Build an Eye Tree piece and photograph it.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "jurak-s-nose",
+    "name": "Jurak's Nose",
+    "category": "",
+    "chapter": 2,
+    "location": "Sindain – Nose Tree (Georama)",
+    "how": "Build the Nose Tree piece and photograph it.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "labyrinth-door",
+    "name": "Labyrinth Door",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace (dungeon) – Sun Chamber",
+    "how": "The flower-shaped door you enter the Sun Chamber through.",
+    "missable": true,
+    "missable_note": "???",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "ladder",
+    "name": "Ladder",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Bar",
+    "how": "Short steps above the bartender's car; aim from the front of the car.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "lamp",
+    "name": "Lamp",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Milane's Weapon Shop",
+    "how": "Blue wall lamp; common item.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "lao-chao-s-trademark",
+    "name": "Lao Chao's Trademark",
+    "category": "",
+    "chapter": 3,
+    "location": "Starlight Temple (future Balance Valley) – Lao Chao's Bistro",
+    "how": "Restore the bistro; shoot the pink emblem above Lao Chao, over the dragon heads.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "large-crane",
+    "name": "Large Crane",
+    "category": "",
+    "chapter": 5,
+    "location": "Heim Rada (Georama)",
+    "how": "Build the Large Crane piece and attach it to a house.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "laundry",
+    "name": "Laundry",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley (Georama)",
+    "how": "Build the Laundry piece and attach it to a house.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "letter",
+    "name": "Letter",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House, servants' quarters",
+    "how": "Envelope on a desk upstairs (via the kitchen stairs).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "light",
+    "name": "Light",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Milane's Weapon Shop",
+    "how": "Blue ceiling light; also a lamp in Gerald's room.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "light-of-luna-stone",
+    "name": "Light of Luna Stone",
+    "category": "",
+    "chapter": 4,
+    "location": "Veniccio (Georama)",
+    "how": "Build and place the Luna Stone Light piece.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "lin-s-house",
+    "name": "Lin's House",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley",
+    "how": "Exterior of the house where you meet Lin.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "log",
+    "name": "Log",
+    "category": "",
+    "chapter": 2,
+    "location": "Sindain",
+    "how": "Logs lying around town (also a Georama piece).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "lotus-flower",
+    "name": "Lotus Flower",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace (dungeon) – Garden",
+    "how": "Pink flowers floating in the ponds.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "luna-stone-shards",
+    "name": "Luna Stone Shards",
+    "category": "",
+    "chapter": 4,
+    "location": "Veniccio – sea",
+    "how": "Look into the ocean for the glowing blue lights underwater. aka Luna Stone Shard.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "mailbox",
+    "name": "Mailbox",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – outside Milane's Weapon Shop",
+    "how": "Red mailbox near the shop entrance.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "manhole",
+    "name": "Manhole",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – alley by Cedric's Shop",
+    "how": "The Underground Channel entrance.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "milk-can",
+    "name": "Milk Can",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – outside Polly's Bakery",
+    "how": "Grey cans by the bakery door.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "monument",
+    "name": "Monument",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – lakeside",
+    "how": "Large white stone monument near the lake, across the drawbridge.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "moon-column",
+    "name": "Moon Column",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace – courtyard (Georama)",
+    "how": "Build and place the Moon Column piece.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "morning-sun",
+    "name": "Morning Sun",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – outdoors",
+    "how": "Shoot the sun in early morning (roughly 6:00-8:30 AM in-game).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "morton-s-sundries-sign",
+    "name": "Morton's Sundries Sign",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – outside Morton's Sundries",
+    "how": "Small sign above the pumpkin by the shop door.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "mount-gundor",
+    "name": "Mount Gundor",
+    "category": "",
+    "chapter": 5,
+    "location": "Heim Rada",
+    "how": "Turn toward the big mountain right of the town entrance. aka Mount Gundar.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "mud",
+    "name": "Mud",
+    "category": "",
+    "chapter": 5,
+    "location": "Heim Rada (Georama)",
+    "how": "Build the Hardened Mud Pile piece; don't drop it on a geyser or it vanishes.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "mushroom",
+    "name": "Mushroom",
+    "category": "",
+    "chapter": 2,
+    "location": "Jurak Mall (future Sindain)",
+    "how": "Complete the glowing-mushroom restoration condition, then shoot them.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "mushroom-burgers-sign",
+    "name": "Mushroom Burgers Sign",
+    "category": "",
+    "chapter": 2,
+    "location": "Jurak Mall (future Sindain)",
+    "how": "Restore the eatery; shoot its sign from the ground below the ladder.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "neo-projector",
+    "name": "Neo-Projector",
+    "category": "",
+    "chapter": 4,
+    "location": "Luna Labs (future Veniccio) – central lab",
+    "how": "Restore the central lab; machine hanging from the ceiling at the center. aka Neo Projector.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "old-style-robot",
+    "name": "Old-Style Robot",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop",
+    "how": "Robot beside the door.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "opposed-island",
+    "name": "Opposed Island",
+    "category": "",
+    "chapter": 4,
+    "location": "Palm Brinks – Finny Frenzy tent",
+    "how": "Islands in the middle of the fish-race track (tent appears late in Ocean's Roar Cave).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "oven",
+    "name": "Oven",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Polly's Bakery",
+    "how": "Back wall; Polly may block the shot.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "painting",
+    "name": "Painting",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Morton's Sundries",
+    "how": "Wall painting; also Dell Clinic and Max's House.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "paints",
+    "name": "Paints",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Parn's Studio",
+    "how": "Open paint can(s) on the floor near the stairs.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "palm-tree",
+    "name": "Palm Tree",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House",
+    "how": "Trees in the hallway/waterfall room where Granny Rose is.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "parasol",
+    "name": "Parasol",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – street tables",
+    "how": "Umbrella over the table near the drawbridge or the cafe.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "parn-s-studio-sign",
+    "name": "Parn's Studio Sign",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – outside Parn's Studio",
+    "how": "Sign above the studio door, across the drawbridge.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "patterned-rug",
+    "name": "Patterned Rug",
+    "category": "",
+    "chapter": 5,
+    "location": "Gundorada Workshop (future Heim Rada) – G-Tools",
+    "how": "Restore the item shop; shoot the floor rug.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "paznos-pattern",
+    "name": "Paznos Pattern",
+    "category": "",
+    "chapter": 5,
+    "location": "Paznos bridge (future Heim Rada)",
+    "how": "Flower-like emblem on the wall above the bridge's view screen.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "peeping-pole",
+    "name": "Peeping Pole",
+    "category": "",
+    "chapter": 3,
+    "location": "Starlight Temple (future Balance Valley) – Star Items",
+    "how": "Restore the tool shop; spyglass in the glass case near the counter.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "phone",
+    "name": "Phone",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House, servants' quarters",
+    "how": "On the wall at the top of the first stairs; only visible in camera view.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "phonograph",
+    "name": "Phonograph",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Morton's Sundries",
+    "how": "Record player on the shelf behind Morton; also in the Mayor's office.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "piano",
+    "name": "Piano",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Bar",
+    "how": "Also one in Max's House.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "pier",
+    "name": "Pier",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – lake",
+    "how": "Wooden pier on the lake across the drawbridge.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122"
+    ],
+    "verified": true
+  },
+  {
+    "id": "pinky",
+    "name": "Pinky",
+    "category": "",
+    "chapter": 6,
+    "location": "Ixion (train) interior",
+    "how": "Pink machines beside the doors between cars.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "pipe",
+    "name": "Pipe",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop roof",
+    "how": "Pipes on the top/side of the shop.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "police-sign",
+    "name": "Police Sign",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Police Station",
+    "how": "Sign above the station.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "polly-s-bakery-sign",
+    "name": "Polly's Bakery Sign",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Polly's Bakery",
+    "how": "Sign next to the bakery entrance.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "pork-dumpling",
+    "name": "Pork Dumpling",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley – Chinese Stand (Georama)",
+    "how": "White dumplings on the Chinese Stand; also in Lao Chao's Bistro (future).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "post",
+    "name": "Post",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – streets / Police Station",
+    "how": "Tall posts holding blank street signs, or stone pillars inside the Police Station.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "pot",
+    "name": "Pot",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – train station shop stall",
+    "how": "Shelves behind the stall girl; common item (also Georama).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "pot-torch",
+    "name": "Pot Torch",
+    "category": "",
+    "chapter": 2,
+    "location": "Sindain (Georama)",
+    "how": "Build and place the Pot Torch piece.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "power-arm",
+    "name": "Power Arm",
+    "category": "",
+    "chapter": 5,
+    "location": "Heim Rada (Georama)",
+    "how": "Build the Power Arm piece and attach it to a house (similar arms also in Gundorada).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "propeller",
+    "name": "Propeller",
+    "category": "",
+    "chapter": 5,
+    "location": "Gundorada Workshop (future Heim Rada) – Operations Room",
+    "how": "Restore the room; shoot a spinning propeller by the door.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "pumpkin",
+    "name": "Pumpkin",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – outside Morton's Sundries",
+    "how": "",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "quartz",
+    "name": "Quartz",
+    "category": "",
+    "chapter": 2,
+    "location": "Jurak Mall (future Sindain)",
+    "how": "Restore the weapon shop; crystal above the Jurak Arms sign.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "railroad",
+    "name": "Railroad",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – train station",
+    "how": "The tracks; any rail line works.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "rapper",
+    "name": "Rapper",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop",
+    "how": "Brass horn on the barrel near the door; also atop the Bar piano.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "red-house",
+    "name": "Red House",
+    "category": "",
+    "chapter": 4,
+    "location": "Veniccio – cliffs",
+    "how": "Red houses on the cliff across from the town entrance.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "refrigerator",
+    "name": "Refrigerator",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Morton's Sundries",
+    "how": "Blue fridge (with a watermelon) upstairs/in back.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "register",
+    "name": "Register",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop counter",
+    "how": "Any shop register.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "relaxation-fountain",
+    "name": "Relaxation Fountain",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace – courtyard (Georama)",
+    "how": "Build and place the Fountain piece.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "rifle",
+    "name": "Rifle",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House, Gerald's room",
+    "how": "Gun mounted over the door.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "river",
+    "name": "River",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – under the drawbridge",
+    "how": "",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "road-to-golbad",
+    "name": "Road to Golbad",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace – courtyard (Georama)",
+    "how": "Build and place the Road to Golbad piece.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "robot",
+    "name": "Robot",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House, Max's room",
+    "how": "Toy robot in Max's upstairs room.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "rock",
+    "name": "Rock",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks lakeside / Sindain",
+    "how": "Any large rock, e.g. by the lake across the drawbridge or on the ground in Sindain.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "rotating-sign",
+    "name": "Rotating Sign",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley – Chinese Stand (Georama)",
+    "how": "Spinning round sign on top of the stand.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "rug",
+    "name": "Rug",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Church",
+    "how": "Rug between the rows of pews.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "runaway-dragon",
+    "name": "Runaway Dragon",
+    "category": "",
+    "chapter": 3,
+    "location": "Starlight Temple (future Balance Valley) – Lao Chao's Bistro",
+    "how": "Restore the bistro; shoot one of the big dragons on the wall/ceiling.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "saint-s-writings",
+    "name": "Saint's Writings",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley – Church (Georama)",
+    "how": "Book on the stand/altar behind Priest Bruno.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "saw",
+    "name": "Saw",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Dell Clinic",
+    "how": "On the floor by the dentist-style chair.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "scale",
+    "name": "Scale",
+    "category": "",
+    "chapter": 3,
+    "location": "Palm Brinks – Fishing Contest tent",
+    "how": "Big fish-weighing scale in the tent's center.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "scroll",
+    "name": "Scroll",
+    "category": "",
+    "chapter": 3,
+    "location": "Starlight Temple (future Balance Valley) – Lao Chao's Bistro",
+    "how": "Restore the bistro; shoot the hanging calligraphy scrolls.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "search-light",
+    "name": "Search Light",
+    "category": "",
+    "chapter": 4,
+    "location": "Luna Labs (future Veniccio) – walkway",
+    "how": "Restore the search lights; pink/red orbs on each side of the walkway from the Time Gate. aka Searchlight.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "shield",
+    "name": "Shield",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Milane's Weapon Shop",
+    "how": "Large shield on the wall/shelf.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "show-window",
+    "name": "Show Window",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Milane's Weapon Shop",
+    "how": "Lit display window with weapons, downstairs near the counter.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "shrubbery",
+    "name": "Shrubbery",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Police Station / streets",
+    "how": "Potted plants inside the station, or the boxed bushes outside.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sign",
+    "name": "Sign",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – streets / train station",
+    "how": "Any blank hanging sign on buildings, or the station's ticket sign.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "silver-bench",
+    "name": "Silver Bench",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace – courtyard (Georama)",
+    "how": "Build and place the Silver Bench piece.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "small-generator",
+    "name": "Small Generator",
+    "category": "",
+    "chapter": 4,
+    "location": "Veniccio – Iron House interior",
+    "how": "Build and enter an Iron House; shoot the moving gold-colored generator.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "special-peking-duck",
+    "name": "Special Peking Duck",
+    "category": "",
+    "chapter": 3,
+    "location": "Starlight Temple (future Balance Valley) – Lao Chao's Bistro",
+    "how": "Restore the bistro; roast duck on the counter.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "stained-glass",
+    "name": "Stained Glass",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House",
+    "how": "Window high above the front door inside.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122"
+    ],
+    "verified": true
+  },
+  {
+    "id": "staircase",
+    "name": "Staircase",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop / train station",
+    "how": "Any staircase, e.g. Cedric's first flight or the station stairs.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "stand",
+    "name": "Stand",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – City Hall, Mayor's office",
+    "how": "Small desk lamp on Mayor Need's desk (2nd floor).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "star-lamp",
+    "name": "Star Lamp",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley (Georama)",
+    "how": "Build the Star Lamp piece and attach it to a house.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "stardust-pond",
+    "name": "Stardust Pond",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace – courtyard (Georama)",
+    "how": "Build and place the Stardust Pond piece.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "starlight-stairway",
+    "name": "Starlight Stairway",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace – courtyard (Georama)",
+    "how": "Build the Starlight Stairs piece and shoot the stairs.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "starlight-tunnel",
+    "name": "Starlight Tunnel",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace – courtyard (Georama)",
+    "how": "Tunnel under the Starlight Stairs piece; water must be flowing beneath it.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "starglass",
+    "name": "Starglass",
+    "category": "",
+    "chapter": 3,
+    "location": "Starlight Temple (future Balance Valley) – Star Items",
+    "how": "Restore the tool shop; big pink crystal above the counter.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "stove",
+    "name": "Stove",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House kitchen",
+    "how": "Large kitchen stove/hearth; also Polly's Bakery and elsewhere.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "streetlight",
+    "name": "Streetlight",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – street corners",
+    "how": "Double-lamp iron post, e.g. near the Police Station.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sulfur-colored-juice",
+    "name": "Sulfur-Colored Juice",
+    "category": "",
+    "chapter": 5,
+    "location": "Gundorada Workshop (future Heim Rada) – G-Tools",
+    "how": "Restore the item shop; yellow jug on the floor or shelf. aka Sulphur-Colored Juice.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sun-chair",
+    "name": "Sun Chair",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace (dungeon) – Garden",
+    "how": "Chairs at the end of the garden path.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sun-table",
+    "name": "Sun Table",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace (dungeon) – Garden",
+    "how": "Table at the end of the garden path.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "sunshade",
+    "name": "Sunshade",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – over doors/windows",
+    "how": "Striped awnings, e.g. over Polly's Bakery door.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "system-5wp2",
+    "name": "System 5WP2",
+    "category": "",
+    "chapter": 4,
+    "location": "Luna Labs (future Veniccio) – central lab",
+    "how": "Restore the central lab; gear-like yellow wall machine ringed with purple circles.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "t-v",
+    "name": "T.V.",
+    "category": "",
+    "chapter": 4,
+    "location": "Veniccio – Iron House interior",
+    "how": "Build and enter an Iron House; shoot the TV.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "table",
+    "name": "Table",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop",
+    "how": "Round table; common item.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "telescope",
+    "name": "Telescope",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Max's House, Max's room",
+    "how": "Telescope in Max's upstairs room.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "the-moon",
+    "name": "The Moon",
+    "category": "",
+    "chapter": 1,
+    "location": "Any outdoor area at night",
+    "how": "Shoot the moon (e.g. outside Cedric's Shop). Keep a physical copy to recruit Rufio.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "the-sun",
+    "name": "The Sun",
+    "category": "",
+    "chapter": 1,
+    "location": "Any outdoor area by day",
+    "how": "Shoot the sun mid-day (roughly 8:30 AM-4:45 PM in-game).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "tiny-hammer",
+    "name": "Tiny Hammer",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop",
+    "how": "The big hammer on the wall, partly behind the fan.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "torch",
+    "name": "Torch",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley",
+    "how": "Flaming torches around the valley (also around Starlight Temple).",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "traffic-light",
+    "name": "Traffic Light",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – above the drawbridge",
+    "how": "",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "transmission-device",
+    "name": "Transmission Device",
+    "category": "",
+    "chapter": 5,
+    "location": "Gundorada Workshop (future Heim Rada)",
+    "how": "Circular teleport pad near the Time Gate.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "trashcan",
+    "name": "Trashcan",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – near Cedric's Shop",
+    "how": "Grey trash cans by the shop entrance/alleys.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "tree",
+    "name": "Tree",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – by the drawbridge",
+    "how": "Any tree; common item.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "vacuum",
+    "name": "Vacuum",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop (downstairs)",
+    "how": "The vacuum on the work desk from the opening scene.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "vacuum-bag",
+    "name": "Vacuum Bag",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop (downstairs)",
+    "how": "Wheeled trash bin next to the Auto Book Reader.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "vegetable-fruit",
+    "name": "Vegetable/Fruit",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Morton's Sundries",
+    "how": "The watermelon in the refrigerator. aka Vegetables/Fruit.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "vending-machine",
+    "name": "Vending Machine",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Morton's Sundries",
+    "how": "Just inside the door, left side.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "ventilation",
+    "name": "Ventilation",
+    "category": "",
+    "chapter": 4,
+    "location": "Veniccio – Iron House interior",
+    "how": "Build and enter an Iron House; ceiling fan.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "victory-stand",
+    "name": "Victory Stand",
+    "category": "",
+    "chapter": 3,
+    "location": "Palm Brinks – Fishing Contest tent",
+    "how": "1st/2nd/3rd podium near the big screen; also in the Finny Frenzy tent.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "warehouse",
+    "name": "Warehouse",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley (Georama)",
+    "how": "Build the Warehouse piece and attach it to a house.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "water-altar",
+    "name": "Water Altar",
+    "category": "",
+    "chapter": 6,
+    "location": "Kazarov Stonehenge",
+    "how": "Pillar with the blue/purple light. Not the same as the Water Gem Altar scoop.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Kazarov Stonehenge is unreachable once Chapter 8 begins; shoot it in Ch.6-7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "water-tank",
+    "name": "Water Tank",
+    "category": "",
+    "chapter": 4,
+    "location": "Palm Brinks – Finny Frenzy tent",
+    "how": "Grey fish tanks around the tent's edge.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "water-wheel",
+    "name": "Water Wheel",
+    "category": "",
+    "chapter": 2,
+    "location": "Sindain (Georama)",
+    "how": "Build the Water Wheel piece on a river and shoot it turning.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "waterfall",
+    "name": "Waterfall",
+    "category": "",
+    "chapter": 1,
+    "location": "Underground Water Channel (dungeon) – Channel Exit",
+    "how": "Water pouring from the pipes; aim at the pipe mouth and zoom if it won't register.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "waterfall-curtain",
+    "name": "Waterfall Curtain",
+    "category": "",
+    "chapter": 7,
+    "location": "Moon Flower Palace (dungeon) – Garden",
+    "how": "Waterfalls flanking the path/ponds.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Moon Flower Palace is unreachable once Chapter 8 begins; shoot it before finishing Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "weapon",
+    "name": "Weapon",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Milane's Weapon Shop",
+    "how": "Weapons on the wall or in the boxes under the stairs.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "weapon-shop-sign",
+    "name": "Weapon Shop Sign",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – outside Milane's Weapon Shop",
+    "how": "Small round pink sign by the entrance.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "weather-vane",
+    "name": "Weather Vane",
+    "category": "",
+    "chapter": 4,
+    "location": "Balance Valley (Georama)",
+    "how": "Build the Weather Vane piece and attach it to a house.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "weight-gauge",
+    "name": "Weight Gauge",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop",
+    "how": "Scale near the door, next to the robot.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "well",
+    "name": "Well",
+    "category": "",
+    "chapter": 3,
+    "location": "Balance Valley (Georama)",
+    "how": "Build and place the Well piece.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/missablephotos/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "wheat-flour",
+    "name": "Wheat Flour",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Morton's Sundries",
+    "how": "White sacks near the door.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "wheel",
+    "name": "Wheel",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Bar",
+    "how": "Big wooden wheel high on the wall.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "wind-altar",
+    "name": "Wind Altar",
+    "category": "",
+    "chapter": 6,
+    "location": "Kazarov Stonehenge",
+    "how": "Pillar with the green light. Not the same as the Wind Gem Altar scoop.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Kazarov Stonehenge is unreachable once Chapter 8 begins; shoot it in Ch.6-7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "windmill",
+    "name": "Windmill",
+    "category": "",
+    "chapter": 4,
+    "location": "Veniccio / Veniccio Station – cliffs",
+    "how": "Turning windmills on the huts on the cliffs; zoom in from the station.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "windmill-feather",
+    "name": "Windmill Feather",
+    "category": "",
+    "chapter": 4,
+    "location": "Veniccio – Windmill (Georama)",
+    "how": "Build the Windmill piece and shoot its turning blades.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "window",
+    "name": "Window",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – houses / Police Station",
+    "how": "Any window.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "withered-jurak",
+    "name": "Withered Jurak",
+    "category": "",
+    "chapter": 2,
+    "location": "Sindain",
+    "how": "The huge dead tree stump at the back with water pouring off it.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "wooden-bookshelf",
+    "name": "Wooden Bookshelf",
+    "category": "",
+    "chapter": 2,
+    "location": "Sindain – Firbits' house",
+    "how": "Small shelf of books on the tree inside.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "wooden-box",
+    "name": "Wooden Box",
+    "category": "",
+    "chapter": 1,
+    "location": "Palm Brinks – Cedric's Shop",
+    "how": "Large wooden crate; common item.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "woody-tailor-sign",
+    "name": "Woody Tailor Sign",
+    "category": "",
+    "chapter": 2,
+    "location": "Jurak Mall (future Sindain)",
+    "how": "Restore the tailor shop; shoot its sign.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  },
+  {
+    "id": "work-arm",
+    "name": "Work Arm",
+    "category": "",
+    "chapter": 4,
+    "location": "Luna Labs (future Veniccio) – central lab",
+    "how": "Mechanical arms attached to the Futuron 800 machines.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "work-crane",
+    "name": "Work Crane",
+    "category": "",
+    "chapter": 5,
+    "location": "Gundorada Workshop (future Heim Rada) – 3rd level",
+    "how": "Restore the work crane; shoot the big cranes.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "work-equipment",
+    "name": "Work Equipment",
+    "category": "",
+    "chapter": 4,
+    "location": "Luna Labs (future Veniccio) – outer labs",
+    "how": "Restore a lab; machine on the ceiling above the glowing platform.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "work-robot",
+    "name": "Work Robot",
+    "category": "",
+    "chapter": 4,
+    "location": "Luna Labs (future Veniccio) – outer labs",
+    "how": "Restore a lab; white unit at the edge of the central glowing platform.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": true,
+    "maybe_missable_note": "Future-only location; unreachable once Chapter 8 begins, so shoot it by the end of Ch.7.",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea",
+      "https://almarsguides.com/retro/walkthroughs/ps2/games/darkcloud2/photography/Inventions/"
+    ],
+    "verified": true
+  },
+  {
+    "id": "zelmite-found",
+    "name": "Zelmite Found!",
+    "category": "",
+    "chapter": 8,
+    "location": "Zelmite Mine (dungeon) – Zelmite Mine Depths",
+    "how": "Blue crystals in the wall. aka Zelmite Found.",
+    "missable": false,
+    "missable_note": "",
+    "maybe_missable": false,
+    "maybe_missable_note": "",
+    "ghost": false,
+    "sources": [
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/21897",
+      "https://gamefaqs.gamespot.com/ps2/561438-dark-cloud-2/faqs/22122",
+      "https://darkcloud.fandom.com/wiki/Idea"
+    ],
+    "verified": true
+  }
+]
